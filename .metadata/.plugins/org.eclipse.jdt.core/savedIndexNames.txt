@@ -1,0 +1,2 @@
+INDEX VERSION 1.131+C:\bu\CS622\ap2\helpfinder\.metadata\.plugins\org.eclipse.jdt.core
+1865797976.index
