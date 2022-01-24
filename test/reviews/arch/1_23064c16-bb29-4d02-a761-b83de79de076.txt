@@ -1,0 +1,12 @@
+UserId
+1
+Title
+big title2022/01/23 18:14:04.8037
+Comment
+a big bold comment
+ReviewSubmittedOn
+2022/01/23 18:14:04.8040
+ReviewID
+C:\bu\CS622\ap2\helpfinder\test\reviews\1_23064c16-bb29-4d02-a761-b83de79de076.txt
+ReviewedDate
+2022/01/23 18:14:04.8140

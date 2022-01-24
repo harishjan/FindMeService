@@ -10,13 +10,25 @@ These are the following packages in the project
 * com.helpfinder: which contains the the spring boot application where the spring boot is begins the application.
 * com.helpfinder.model: which contains all model classes used in the project
 * com.helpfinder.repository: which contains all repos which connect to the respective data sources to add update delete data points.
-* com.helpfinder.service: which contains all services through wich different functionalities are exposed outside.
+* com.helpfinder.service: which contains all services through which different functionalities are exposed outside.
 * com.helpfinder.controller: which contains controllers for the api endpoints.
+* com.helpfinder.exception: which contains the user defined exceptions
+* com.helpfinder.model.request: which contains the model used in a api request 
 
 ###Notes
 This project does not have any integration with any repository data sources, currently there are dummy data points which helps to test assignment 1 use cases.
 
-### How to test The use cases 
+### How to test the use cases for Assignment 2 ###
+
+1) For File I/O related use case, Run unit test SiteReviewsRespositoryTest.java.
+This should create a folder in the root of the project file /test/reiviews/ and test/reviews/arch/
+The folder /test/reiviews/ should have the files created for the feedback given by the user(this is based on test case >> test_Create_SiteRevie_check_The_review_saved()).
+The folder test/reviews/arch/ will have the archived files once review is archived(this is based on test case >> test_Create_SiteReview_Archive_And_Check_if_Review_Exist()).
+
+2) For User defined exception, run unit test UserServiceTest.java
+The unit test case check if the UserExistException is throw while creating an already existing user
+
+### How to test The use cases for Assignment 1 ###
 
 
 * open command prompt and Navigate to helpfinder\ project folder

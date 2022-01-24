@@ -8,9 +8,9 @@
  */
 package com.helpfinder.repository;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Repository
+@Component
 public interface LocationServiceRepository {
 	// gets the latLog From a given address
 	public Double[] getLatLogFromAddress(String address);

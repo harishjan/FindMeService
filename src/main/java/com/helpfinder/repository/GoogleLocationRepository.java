@@ -7,9 +7,9 @@
  */
 package com.helpfinder.repository;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-@Repository
+@Component
 public class GoogleLocationRepository implements LocationServiceRepository {
 
 	/**

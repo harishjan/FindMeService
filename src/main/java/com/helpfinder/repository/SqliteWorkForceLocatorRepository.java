@@ -14,13 +14,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.helpfinder.model.User;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
 
-@Repository
+@Component
 //This class is still not implemented these are dummy data
 public class SqliteWorkForceLocatorRepository implements WorkForceLocatorRepository {
 
@@ -28,8 +30,10 @@ public class SqliteWorkForceLocatorRepository implements WorkForceLocatorReposit
 	static HashMap<Integer, WorkInquiry> dummaryWorkInquiries = new HashMap<Integer, WorkInquiry>();
 
 	// store the user repo instance
+	@Autowired
 	private UserRepository userRepo;
 
+	//@Autowired
 	public SqliteWorkForceLocatorRepository(UserRepository userRepo) {
 		this.userRepo = userRepo;
 

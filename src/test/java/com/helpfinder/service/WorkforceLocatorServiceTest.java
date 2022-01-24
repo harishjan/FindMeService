@@ -16,19 +16,25 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.HelpFinderUser;
+import com.helpfinder.model.EUserRole;
 import com.helpfinder.model.User;
+import com.helpfinder.model.UserRole;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
+import com.helpfinder.repository.CoreWorkerSkillRepository;
+import com.helpfinder.repository.DatabaseRepository;
 import com.helpfinder.repository.GoogleLocationRepository;
 import com.helpfinder.repository.SQLiteUserRepository;
 import com.helpfinder.repository.SqliteWorkForceLocatorRepository;
+import com.helpfinder.repository.SqlliteRepository;
 
 public class WorkforceLocatorServiceTest {
 	GoogleLocationRepository locationRepo;
@@ -38,23 +44,37 @@ public class WorkforceLocatorServiceTest {
 	WorkforceLocatorService locatorService;
 	User helpFinderUser;
 	ArrayList<WorkerSkill> workerUserSkills;
-	private final PrintStream standardOut = System.out;
+	DatabaseRepository databaseRepo;	
+	CoreWorkerSkillRepository workerSkillRepository;	
+	UserService userService;
 	private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 	
 	@Before
 	public void setup()
 	{
+		//create role
+		UserRole userRole = new UserRole();		
+		userRole.setUserRole(EUserRole.ROLE_HELPFINDER_USER);			
+		Set<UserRole> userRoles = new HashSet<>();
+		userRoles.add(userRole);
+		// create an object of type WorkerUSer
+		WorkerSkill skill = new WorkerSkill(1, "handyman");
+		ArrayList<WorkerSkill> workerSkills = new ArrayList<WorkerSkill>();
+		workerSkills.add(skill);
 		locationRepo = new GoogleLocationRepository();
-		userRepo = new SQLiteUserRepository(locationRepo);
+		databaseRepo = new SqlliteRepository();
+		workerSkillRepository = new CoreWorkerSkillRepository(databaseRepo);
+		userRepo = new SQLiteUserRepository(locationRepo, workerSkillRepository);
+		userService = new UserService(userRepo);
 		workforceLocatorRepo = new SqliteWorkForceLocatorRepository(userRepo);
 		notificationService = new InquiryEmailNotificationService();
-		locatorService = new WorkforceLocatorService(workforceLocatorRepo,userRepo,notificationService);
+		locatorService = new WorkforceLocatorService(workforceLocatorRepo, userService, notificationService);
 		//create user and work skills for testing
-		helpFinderUser = new HelpFinderUser();
-		helpFinderUser.setUserInformation("test helpfinderuser address", "David", "walt", "waltDavid@test.com");
+		helpFinderUser = new BasicUser();
+		helpFinderUser.setUserInformation("test helpfinderuser address", "David", "walt", "waltDavid@test.com", userRoles);
 		helpFinderUser = userRepo.createUser(helpFinderUser);
 		workerUserSkills = new ArrayList<WorkerSkill>();
-		workerUserSkills.add(userRepo.getAllSkillsets().get(0));		
+		workerUserSkills.add(workerSkillRepository.getAllSkillsets().get(0));		
 		System.setOut(new PrintStream(outputStreamCaptor));
 
 	}
@@ -64,9 +84,9 @@ public class WorkforceLocatorServiceTest {
 	{	
 		
 		List<User> users = locatorService.findWorkforce(helpFinderUser, workerUserSkills, 1.0);
-		//check size and email address retured are correct
+		//check size and email address returned are correct
 		assertEquals(users.size(), 1);		
-		assertEquals(((BasicUser)users.get(0)).emailAddress, "mattm@test.com");
+		assertEquals(((BasicUser)users.get(0)).getEmailAddress(), "mattm@test.com");
 	}
 	@Test
 	public void test_send_workinquiry_flow_until_hire() throws IOException
@@ -74,7 +94,7 @@ public class WorkforceLocatorServiceTest {
 		
 		List<User> users = locatorService.findWorkforce(helpFinderUser, workerUserSkills, 1.0);
 		assertEquals(users.size(), 1);		
-		assertEquals(((BasicUser)users.get(0)).emailAddress, "mattm@test.com");
+		assertEquals(((BasicUser)users.get(0)).getEmailAddress(), "mattm@test.com");
 		List<WorkInquiry> workInquiries = new ArrayList<WorkInquiry>();				
 		WorkInquiry inquiry1 = null;
 		// create work inquiries to send to all users returned by work force locator

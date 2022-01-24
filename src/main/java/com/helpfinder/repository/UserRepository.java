@@ -10,13 +10,15 @@ package com.helpfinder.repository;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.helpfinder.model.User;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
 
-@Repository
+@Component
+//interface to implement functionalities specific to users
 public interface UserRepository {
 	// get the user for the given userId
 	public User getUser(long userId);
@@ -50,8 +52,19 @@ public interface UserRepository {
 
 	// update hired status for inquiry
 	public boolean updateHiredStatusForEnquiry(int inquiryId, boolean hiredStatus);
-
-	// get all allowed skills in the system for users
-	public List<WorkerSkill> getAllSkillsets();
+	
+	//get user by username
+	public User findByUsername(String userName);
+	
+	//get user by emailAddress
+	public User findByEmailAddress(String emailAdress);
+	
+	//set latlong based on the address
+	public void updateLatLongByAddress(long userID, String address);
+	//get work comment by user
+	public List<WorkInquiry> getWorkInquiryCommited(Long userId);
+	//get work for which user is hired
+	public List<WorkInquiry> getWorkInquiriesHired(Long userId);
+	
 
 }

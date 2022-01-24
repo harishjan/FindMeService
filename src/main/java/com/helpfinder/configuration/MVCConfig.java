@@ -1,12 +1,10 @@
 package com.helpfinder.configuration;
-
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
 
 //@EnableWebMvc
-public class MVCConfig //extends WebMvcConfigurerAdapter
+public class MVCConfig 
 {
 //	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {

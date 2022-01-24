@@ -9,6 +9,8 @@
 package com.helpfinder.service;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.helpfinder.model.User;
 import com.helpfinder.model.WorkInquiry;
@@ -20,22 +22,24 @@ import com.helpfinder.repository.WorkForceLocatorRepository;
 @Service
 public class WorkforceLocatorService {
 	// instance of workforcelocator repository
+	@Autowired
 	private WorkForceLocatorRepository workforceLocatorRepo;
-	// instance of User repository
-	private UserRepository userRepo;
+	// instance of User service
+	@Autowired
+	private UserService userService;
 	// instance through which notification are sent to user
+	@Autowired
 	private InquiryNotificationService notificationService;
 
 	/**
-	 * Constructor
-	 * 
+	 * Constructor	 * 
 	 * @param workforceLocatorRepo the implementation of WorkForceLocatorRepository
 	 * @param userRepo             the implementation of UserRepository
-	 */
-	public WorkforceLocatorService(WorkForceLocatorRepository workforceLocatorRepo, UserRepository userRepo,
+	 */	
+	public WorkforceLocatorService(WorkForceLocatorRepository workforceLocatorRepo, UserService userService,
 			InquiryNotificationService notificationService) {
 		this.workforceLocatorRepo = workforceLocatorRepo;
-		this.userRepo = userRepo;
+		this.userService = userService;
 		this.notificationService = notificationService;
 	}
 
@@ -68,7 +72,7 @@ public class WorkforceLocatorService {
 			// TODO hard coded now
 			// TODO: update worker user with the new inquiry in DB
 			// update the user with the inquiry
-			((WorkerUser) inquiry.getWorkerUser()).getWorkInquirieReceived().add(inquiry);
+			userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
 			// notify the user about the inquiry
 			notificationService.notifyUserAboutWork(inquiry);
 		});
@@ -84,7 +88,7 @@ public class WorkforceLocatorService {
 	public void commitWork(WorkInquiry inquiry, boolean commit) {
 		// TODO creating dummy data		
 		
-		((WorkerUser) inquiry.getWorkerUser()).getWorkInquirieReceived().add(inquiry);
+		userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
 		// notify the user about the update committed status
 		notificationService.notifyUserCommittedStatusChange(inquiry);
 
@@ -100,7 +104,7 @@ public class WorkforceLocatorService {
 		// TODO creating dummy data
 		// workforceLocatorRepo.getInquiry(inquiryId)		
 
-		((WorkerUser) inquiry.getWorkerUser()).getWorkInquirieReceived().add(inquiry);
+		userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
 		// notify the user about the update committed status
 		notificationService.notifyWorkHireStatusChange(inquiry);
 

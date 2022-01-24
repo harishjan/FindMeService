@@ -9,26 +9,46 @@ package com.helpfinder.model;
 
 public class WorkerSkill {
 	// id reference of the work skill
-	public int workSkillId;
+	private int workerSkillId;
 	//the name of the skill
-	public String workSkillName;
+	private String workerSkillName;
 	
 	/**
 	 * constructor
 	 * @param workSkillId id reference of the work skill 
 	 * @param workSkillName the name of the skill	
 	 */
-	public WorkerSkill(int workSkillId, String workSkillName)
+	public WorkerSkill(int workerSkillId, String workerSkillName)
 	{
-		this.workSkillId = workSkillId;
-		this.workSkillName = workSkillName;
+		this.workerSkillId = workerSkillId;
+		this.workerSkillName = workerSkillName;
 		
 	}
 	
 	/**
+	 * gets the id of the work skill	 * 	
+	 */
+	public int getWorkSkillId()	{
+		return this.workerSkillId;
+	}
+	
+	/**
+	 * sets the id of the work skill	 * 	
+	 */
+	public void setWorkSkillId(int workerSkillId)	{
+		this.workerSkillId = workerSkillId;
+	}
+	/**
 	 * gets the name of the work skill	 * 	
 	 */
 	public String getSkillName()	{
-		return this.workSkillName;
+		return this.workerSkillName;
+	}
+	
+	/**
+	 * sets the name of the work skill	 * 	
+	 */
+	public void setSkillName(String workerSkillName)	{
+		this.workerSkillName = workerSkillName;
 	}
 }

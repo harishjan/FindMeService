@@ -9,26 +9,27 @@ package com.helpfinder.model;
 
 import java.util.Date;
 
+//work inquiry made by a user
 public class WorkInquiry {
 	
 	//id reference for the inquiry
-	protected int inquiryId;	
+	private int inquiryId;	
 	//status if the worked committed to do this work
-	protected boolean isCommitted = false;
+	private boolean isCommitted = false;
 	//sets the date the work commitment was last updated
-	protected Date committedDate;
+	private Date committedDate;
 	//the Date when should the work is expected to start 
-	protected Date workStartDate;
+	private Date workStartDate;
 	//the Date when the work is expected to end
-	protected Date workEndDate;
+	private Date workEndDate;
 	//the user who is requesting for the work
-	protected User helpFinderUser;
+	private User helpFinderUser;
 	// the user who receiving the work
-	protected User workerUser;
+	private User workerUser;
 	//the Date when the hire status is last updated
-	protected Date hiredDate;
+	private Date hiredDate;
 	//status which shows if the worker is hired 
-	protected boolean isHired = false;
+	private boolean isHired = false;
 	
 	/**
 	 * constructor
@@ -103,6 +104,22 @@ public class WorkInquiry {
 	}
 	
 	/**
+	 * returns the work committed date
+	 * @return
+	 */
+	public Date getWorkCommitedDate() {		
+		return this.committedDate ;
+	}
+	
+	/**
+	 * returns the worked hired date
+	 * @return
+	 */
+	public Date getWorkHiredDate() {		
+		return this.hiredDate;
+	}
+	
+	/**
 	 * Sets the status of hired along with the date when the status is changed
 	 * @param isHired boolean value to set the hired status 
 	 * @param hiredDate the Date value when the status is updated
@@ -123,5 +140,50 @@ public class WorkInquiry {
 	}
 	
 
-
+	/**
+	 * sets the id reference of the inquiry
+	 *@param inquiryId int the inquiry reference id
+	 *
+	 * */
+	public void getInquiryId(int inquiryId) {
+		this.inquiryId = inquiryId;
+	}
+	
+	
+	/**
+	 * sets the work start date
+	 * @param workStartDate the work start date 
+	 *@return Date date when the work should start
+	 * */
+	public void getWorkStartDate(Date workStartDate)	{
+		this.workStartDate = workStartDate;
+	}
+	
+	/**
+	 * Gets the work end date
+	 * @param workEndDate the date when work ends
+	 *@return Date date when the work should end
+	 * */
+	public void getWorkEndDate(Date workEndDate)	{
+		this.workEndDate = workEndDate;
+	}
+	
+	/**
+	 * Gets the worker user
+	 * @param workerUser the work user instance
+	 *@return USer the worker user
+	 * */
+	public void setWorkerUser(User workerUser)	{
+		this.workerUser = workerUser;
+	}
+	
+	/**
+	 * Gets the user who requested for work
+	 * @param helpFinderUser the help finder user instance 
+	 *@return User user who requested for work
+	 * */
+	public void setHelpFinderUser(User helpFinderUser)	{
+		this.helpFinderUser = helpFinderUser;
+	}
+	
 }
