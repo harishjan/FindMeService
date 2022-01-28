@@ -7,8 +7,6 @@
 
 package com.helpfinder.model.request;
 
-import java.util.Set;
-
 import javax.validation.constraints.*;
 
 public class SignupRequest {
@@ -18,7 +16,7 @@ public class SignupRequest {
   @Email
   private String email;
 
-  private Set<String> role;
+  private String userType;
 
   @NotBlank
   @Size(min = 6, max = 40)
@@ -77,11 +75,11 @@ public class SignupRequest {
     this.password = password;
   }
 
-  public Set<String> getRole() {
-    return this.role;
+  public String getUserType() {
+    return this.userType;
   }
 
-  public void setRole(Set<String> role) {
-    this.role = role;
+  public void setUserType(String userType) {
+    this.userType = userType;
   }
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,16 +33,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.helpfinder.security.jwt.JwtUtils;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.EUserRole;
+import com.helpfinder.model.EUserType;
 import com.helpfinder.model.SecureUserDetails;
 import com.helpfinder.model.User;
-import com.helpfinder.model.UserRole;
 import com.helpfinder.model.request.AuthRequest;
 import com.helpfinder.model.request.SignupRequest;
 import com.helpfinder.model.response.JwtResponse;
 import com.helpfinder.model.response.MessageResponse;
 import com.helpfinder.service.UserService;
-import com.helpfinder.repository.RoleRepository;
 
 
 // This class is used for exposing the apis required for User authentication and registration  
@@ -55,10 +54,7 @@ public class AuthController {
 
   @Autowired
   UserService<BasicUser> userService;
-
-  @Autowired
-  RoleRepository roleRepository;
-
+  
   @Autowired
   PasswordEncoder encoder;
 
@@ -92,73 +88,80 @@ public class AuthController {
   }
 
   /***
-   * User sign-up to the system using this endpoint 
+   * User sign-up as a basic user to the system using this endpoint 
    * @param signUpRequest the request with the details required for sign-up
    * @return BasicUser the instance of user if successful
    */
   @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-    if (userService.findByUsername(signUpRequest.getEmail()) == null) {
-      return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Username is already taken!"));
-    }
-
-    if (userService.existsByEmailAddress(signUpRequest.getEmail()) == null) {
-      return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Email is already in use!"));
-    }
-
-    // Create new user's account
-    User user = new BasicUser();
-    
-    Set<String> strRoles = signUpRequest.getRole();
-    Set<UserRole> userRoles = new HashSet<>();
-
-    if (strRoles == null) {
-        UserRole userRole = roleRepository.findByName(EUserRole.ROLE_HELPFINDER_USER)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        userRoles.add(userRole);
-    } else {
-      strRoles.forEach(role -> {
-        switch (role) {
-        case "admin":
-            UserRole adminRole = roleRepository.findByName(EUserRole.ROLE_ADMIN)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            userRoles.add(adminRole);
-
-          break;
-        case "mod":
-            UserRole modRole = roleRepository.findByName(EUserRole.ROLE_MODERATOR)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            userRoles.add(modRole);
-
-          break;
-        case "work":
-            UserRole workerRole = roleRepository.findByName(EUserRole.ROLE_WORKER_USER)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            userRoles.add(workerRole);
-
-            break;
-        default:
-            UserRole userRole = roleRepository.findByName(EUserRole.ROLE_HELPFINDER_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            userRoles.add(userRole);
-        }
-      });
-    }    
-    user.setUserInformation(signUpRequest.getAddress(), signUpRequest.getFirstName(),signUpRequest.getLastName(), signUpRequest.getEmail(), userRoles);
-    user.setPassword(encoder.encode(signUpRequest.getPassword()));
-    user.setUserName(signUpRequest.getEmail());
-    try    {
-        userService.createUser(user);
-    }
-    catch (UserExistException e) {
-        System.err.println("User exist in the system " + e.getMessage());
-        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-    }
-
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+  public ResponseEntity<?> registerBsicUser(@Valid @RequestBody SignupRequest signUpRequest) {
+	return registerUser(signUpRequest, EUserType.ROLE_HELPFINDER_USER);    
   }
+  
+  
+  /***
+   * User sign-up as worker to the system using this endpoint 
+   * @param signUpRequest the request with the details required for sign-up
+   * @return BasicUser the instance of user if successful
+   */
+  @PostMapping("/signup/registerWorker/")
+  public ResponseEntity<?> registerWorker(@Valid @RequestBody SignupRequest signUpRequest) {
+	return registerUser(signUpRequest, EUserType.ROLE_WORKER_USER);    
+  }
+  
+  
+  /***
+   * User sign-up as admin to the system using this endpoint 
+   * only an admin user can create an admin users
+   * @param signUpRequest the request with the details required for sign-up
+   * @return BasicUser the instance of user if successful
+   */
+  @PostMapping("/signup/registerAdmin/")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<?> registerAdmin(@Valid @RequestBody SignupRequest signUpRequest) {
+	return registerUser(signUpRequest, EUserType.ROLE_ADMIN);
+  }
+  
+  
+  /***
+   * User sign-up as moderator to the system using this endpoint 
+   * only an admin user can create an moderator users
+   * @param signUpRequest the request with the details required for sign-up
+   * @return BasicUser the instance of user if successful
+   */
+  @PostMapping("/signup/registerModerator/")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<?> registerModerator(@Valid @RequestBody SignupRequest signUpRequest) {
+	  return registerUser(signUpRequest, EUserType.ROLE_MODERATOR);
+  }
+
+  private ResponseEntity<?> registerUser(SignupRequest signUpRequest, EUserType userType)
+  {
+	  if (userService.findByUsername(signUpRequest.getEmail()) == null) {
+	      return ResponseEntity
+	          .badRequest()
+	          .body(new MessageResponse("Error: Username is already taken!"));
+	    }
+
+	    if (userService.existsByEmailAddress(signUpRequest.getEmail()) == null) {
+	      return ResponseEntity
+	          .badRequest()
+	          .body(new MessageResponse("Error: Email is already in use!"));
+	    }
+
+	    // Create new user's account
+	    BasicUser user = new BasicUser();    
+	    user.setUserInformation(signUpRequest.getAddress(), signUpRequest.getFirstName(),signUpRequest.getLastName(), signUpRequest.getEmail(), userType);
+	    user.setPassword(encoder.encode(signUpRequest.getPassword()));
+	    user.setUserName(signUpRequest.getEmail());
+	    try    {
+	        userService.createUser(user);
+	    }
+	    catch (UserExistException e) {
+	        System.err.println("User exist in the system " + e.getMessage());
+	        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+	    }
+
+	    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+  }
+  
 }

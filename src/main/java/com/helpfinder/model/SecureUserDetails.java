@@ -8,10 +8,7 @@
 
 package com.helpfinder.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,12 +45,8 @@ public class SecureUserDetails implements UserDetails {
   }
 
   public static SecureUserDetails build(User user) {
-	  
-	  Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-	  for(UserRole role : user.getRoles()) {
-		  authorities.addAll( AbstractUser.rolePermissionMapping.get(role).stream().map(permission -> new SimpleGrantedAuthority(permission.name()))
-		  .collect(Collectors.toList()));  
-	  }    
+	  Set<GrantedAuthority> authorities = user.getPermissions().stream().map(p -> new SimpleGrantedAuthority(p.name())).collect(Collectors.toSet());			 
+	     
     return new SecureUserDetails(
         user.getUserId(), 
         user.getUserName(), 
@@ -73,6 +66,9 @@ public class SecureUserDetails implements UserDetails {
 
   public String getEmail() {
     return email;
+  }
+  public void setPassword(String password) {
+	    this.password = password;
   }
 
   @Override

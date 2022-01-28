@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.EUserRole;
+import com.helpfinder.model.EUserType;
 import com.helpfinder.model.User;
 import com.helpfinder.model.UserRole;
 import com.helpfinder.model.WorkInquiry;
@@ -57,7 +57,7 @@ public class WorkforceLocatorServiceTest {
     {
         //create role
         UserRole userRole = new UserRole();        
-        userRole.setUserRole(EUserRole.ROLE_HELPFINDER_USER);            
+        userRole.setUserRole(EUserType.ROLE_HELPFINDER_USER);            
         Set<UserRole> userRoles = new HashSet<>();
         userRoles.add(userRole);
         // create an object of type WorkerUSer

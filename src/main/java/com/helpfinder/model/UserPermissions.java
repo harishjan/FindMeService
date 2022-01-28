@@ -5,5 +5,6 @@ public enum UserPermissions {
     SEARCH_FOR_WORKERS,
     REVIEW_SITE_FEEDBACK,
     ARCH_SITE_FEEDBACK,
-    ADD_ADMIN_USER
+    ADD_ADMIN_USER,
+    ALLOWED_TO_BE_HIRE
 }

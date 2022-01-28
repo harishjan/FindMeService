@@ -25,7 +25,7 @@ public class HelpFinderUserTests {
             //create role
             UserRole userRole = new UserRole();
             userRole.setUserId((long)1);
-            userRole.setUserRole(EUserRole.ROLE_HELPFINDER_USER);
+            userRole.setUserRole(EUserType.ROLE_HELPFINDER_USER);
             Set<UserRole> userRoles = new HashSet<>();
             userRoles.add(userRole);
             

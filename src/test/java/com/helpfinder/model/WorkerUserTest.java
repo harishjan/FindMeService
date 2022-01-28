@@ -31,7 +31,7 @@ public class WorkerUserTest {
         //create role
         UserRole userRole = new UserRole();
         userRole.setUserId((long)1);
-        userRole.setUserRole(EUserRole.ROLE_WORKER_USER);            
+        userRole.setUserRole(EUserType.ROLE_WORKER_USER);            
         Set<UserRole> userRoles = new HashSet<>();
         userRoles.add(userRole);
         

@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.EUserRole;
+import com.helpfinder.model.EUserType;
 import com.helpfinder.model.User;
 import com.helpfinder.model.UserRole;
 import com.helpfinder.repository.CoreWorkerSkillRepository;
@@ -55,7 +55,7 @@ public class UserServiceTest {
     public void test_Create_new_user_which_alreadyexist_throws_UserExistException()
     {    //create role
         UserRole userRole = new UserRole();        
-        userRole.setUserRole(EUserRole.ROLE_HELPFINDER_USER);            
+        userRole.setUserRole(EUserType.ROLE_HELPFINDER_USER);            
         Set<UserRole> userRoles = new HashSet<>();
         userRoles.add(userRole);
         //test creating new helpfinder user who already is registered

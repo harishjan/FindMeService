@@ -8,7 +8,6 @@
  */
 package com.helpfinder.model;
 import java.util.List;
-import java.util.Set;
 
 // the work user implementation from BasicUser
 public class WorkerUser extends BasicUser{
@@ -24,11 +23,12 @@ public class WorkerUser extends BasicUser{
      * @param firstName first name of the user
      * @param lastname last name of the user    
      * @param emailAddress email address of the user
+     * @param EUserType user type
      * @param workSkills list of WorkSkill that are specific for this user
      */
-    public WorkerUser(long userId, String address, String firstName, String lastname, String emailAddress, Set<UserRole> userRoles, List<WorkerSkill> workSkills)
+    public WorkerUser(long userId, String address, String firstName, String lastname, String emailAddress, EUserType userType, List<WorkerSkill> workSkills)
     {
-        super(userId, address, firstName, lastname, emailAddress, userRoles);                
+        super(userId, address, firstName, lastname, emailAddress, userType);                
         this.setSkills(workSkills);
     }
     
@@ -39,11 +39,12 @@ public class WorkerUser extends BasicUser{
      * @param address the address of the user 
      * @param firstName first name of the user
      * @param lastname last name of the user
+     * @param EUserType user type
      * @param workSkills a list of WorkerSkill of the user         
      */
-    public void setUserInformation(String address, String firstName, String lastname, String emailAddress, Set<UserRole> userRoles, List<WorkerSkill> workSkills)
+    public void setUserInformation(String address, String firstName, String lastname, String emailAddress, EUserType userType, List<WorkerSkill> workSkills)
     {        
-        super.setUserInformation(address, firstName, lastname, emailAddress, userRoles);
+        super.setUserInformation(address, firstName, lastname, emailAddress, userType);
         this.setSkills(workSkills);
     }
     

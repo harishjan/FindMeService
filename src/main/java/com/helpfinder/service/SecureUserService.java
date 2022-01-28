@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.SecureUserDetails;
 import com.helpfinder.model.User;
 import com.helpfinder.repository.UserRepository;
@@ -19,18 +21,20 @@ import com.helpfinder.repository.UserRepository;
 @Service
 public class SecureUserService implements UserDetailsService {
     @Autowired
-    final UserRepository userRepo;
-    public SecureUserService(UserRepository userRepo)    {
-        this.userRepo = userRepo;
+    final UserService<BasicUser> userService;
+    public SecureUserService(UserService<BasicUser> userService)    {
+        this.userService = userService;
     }
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username);
+        User user = userService.findByUsername(username);
         if(user == null)
             throw new UsernameNotFoundException("User Not Found with username: " + username);
 
         return SecureUserDetails.build(user);
     }
+    
+    
 
 }

@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.EUserRole;
+import com.helpfinder.model.EUserType;
 import com.helpfinder.model.User;
 import com.helpfinder.model.UserRole;
 import com.helpfinder.model.WorkerSkill;
@@ -50,7 +50,7 @@ public class UserRepositoryTest {
     {    
         //create role
         UserRole userRole = new UserRole();        
-        userRole.setUserRole(EUserRole.ROLE_WORKER_USER);            
+        userRole.setUserRole(EUserType.ROLE_WORKER_USER);            
         Set<UserRole> userRoles = new HashSet<>();
         userRoles.add(userRole);
         User workerUser = new WorkerUser();
@@ -69,7 +69,7 @@ public class UserRepositoryTest {
     public void test_Create_new_HelpFinderUser_should_have_latLong_userid()
     {    //create role
         UserRole userRole = new UserRole();        
-        userRole.setUserRole(EUserRole.ROLE_HELPFINDER_USER);            
+        userRole.setUserRole(EUserType.ROLE_HELPFINDER_USER);            
         Set<UserRole> userRoles = new HashSet<>();
         userRoles.add(userRole);
         //test creating new helpfinder user 

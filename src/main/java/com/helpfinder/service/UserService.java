@@ -7,15 +7,17 @@
  */
 
 package com.helpfinder.service;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.EUserRole;
 import com.helpfinder.model.User;
 import com.helpfinder.model.UserPermissions;
 import com.helpfinder.model.WorkInquiry;
@@ -24,6 +26,11 @@ import com.helpfinder.repository.UserRepository;
 
 @Service
 public class UserService<T extends User> {
+	
+	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	@Autowired
+	private ApplicationContext context;
+	
     @Autowired
     final UserRepository<T> userRepo;
     
@@ -135,6 +142,32 @@ public class UserService<T extends User> {
         return userRepo.getUserWorkInquiriesSent(userId);        
         
     }
+    
+    /**
+     * This will tell if this user is allowed to work
+     * A basic user is not allowed to work
+     * @return boolean true if allowed to work otherwise false
+     */
+    public boolean isAllowedToTakeWork() {
+    	//check in the authenticated context if user has permissions
+    	if(!(authentication instanceof AnonymousAuthenticationToken))
+    		return authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserPermissions.ALLOWED_TO_BE_HIRE.name()));
+    	return false;
+    }
+    
+    /***
+     * checks if user has a certain permissions
+     * @param UserPErmission the permission to check for
+     * @return boolean true if user has permissions else false
+     */    
+    public boolean hasPermission(UserPermissions permission) {
+       
+    	//check in the authenticated context if user has permissions
+    	if(!(authentication instanceof AnonymousAuthenticationToken))
+    		return authentication.getAuthorities().contains(new SimpleGrantedAuthority(permission.name()));
+    	return false;
+    }
+    
     
     
 }
