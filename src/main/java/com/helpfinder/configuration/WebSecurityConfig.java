@@ -14,11 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.helpfinder.repository.UserRepository;
 import com.helpfinder.security.jwt.AuthEntryPointJwt;
 import com.helpfinder.security.jwt.AuthTokenFilter;
 import com.helpfinder.service.SecureUserService;
 
+
+// web security related classed required to setup setup pipeline lines where certain resources can be opened up
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -26,44 +27,44 @@ import com.helpfinder.service.SecureUserService;
     // jsr250Enabled = true,
     prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	
-	 private static final String[] AUTH_WHITELIST = {
-			"/swagger-ui/*", "/swagger-ui.html", "/webjars/**", "/v2/**", "/swagger-resources/**","/auth/**", "/v3/api-docs/**",  "/webjars/swagger-ui/**"
-	 };
-	 @Autowired
-	 private SecureUserService secureUserService;
-	
-	@Autowired
-	private AuthEntryPointJwt unauthorizedHandler;
-	
-	@Bean
-	public AuthTokenFilter authenticationJwtTokenFilter() {
-		return new AuthTokenFilter();
-	}
-	
-	
-	 
-	@Override
-	public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-		authenticationManagerBuilder.userDetailsService(secureUserService).passwordEncoder(passwordEncoder());
-	}
-	  
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	  
-	@Override
-	   public void configure(WebSecurity web) {
-	    web.ignoring()
-	    .antMatchers(AUTH_WHITELIST).anyRequest();
-	   }
+    
+     private static final String[] AUTH_WHITELIST = {
+            "/swagger-ui/*", "/swagger-ui.html", "/webjars/**", "/v2/**", "/swagger-resources/**","/auth/**", "/v3/api-docs/**",  "/webjars/swagger-ui/**"
+     };
+     @Autowired
+     private SecureUserService secureUserService;
+    
+    @Autowired
+    private AuthEntryPointJwt unauthorizedHandler;
+    
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
+    }
+    
+    
+     
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder.userDetailsService(secureUserService).passwordEncoder(passwordEncoder());
+    }
+      
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+      
+    @Override
+       public void configure(WebSecurity web) {
+        web.ignoring()
+        .antMatchers(AUTH_WHITELIST).anyRequest();
+       }
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {

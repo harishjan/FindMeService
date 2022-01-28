@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface LocationServiceRepository {
-	// gets the latLog From a given address
-	public Double[] getLatLogFromAddress(String address);
+    // gets the latLog From a given address
+    public Double[] getLatLogFromAddress(String address);
 
-	// gets the distance between two lat longs
-	public double getDistanceBetweenLatLong(Double[] source, Double[] destination);
+    // gets the distance between two lat longs
+    public double getDistanceBetweenLatLong(Double[] source, Double[] destination);
 
 }

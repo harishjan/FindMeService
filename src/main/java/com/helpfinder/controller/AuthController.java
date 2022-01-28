@@ -1,3 +1,12 @@
+
+/*
+ * BU Term project for cs622
+ 
+ This class is used for exposing the apis required for User authentication and registration   
+ * @author  Harish Janardhanan * 
+ * @since   23-Jan-2022
+ */
+
 package com.helpfinder.controller;
 
 import java.util.HashSet;
@@ -34,6 +43,9 @@ import com.helpfinder.model.response.MessageResponse;
 import com.helpfinder.service.UserService;
 import com.helpfinder.repository.RoleRepository;
 
+
+// This class is used for exposing the apis required for User authentication and registration  
+//This is not implementation completely
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
@@ -42,7 +54,7 @@ public class AuthController {
   AuthenticationManager authenticationManager;
 
   @Autowired
-  UserService userService;
+  UserService<BasicUser> userService;
 
   @Autowired
   RoleRepository roleRepository;
@@ -53,6 +65,11 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
 
+  /***
+   * User sign-in though this endpoint
+   * @param loginRequest the login details
+   * @return JwtResponse jwt token and user details
+   */
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthRequest loginRequest) {
 
@@ -74,6 +91,11 @@ public class AuthController {
                          roles));
   }
 
+  /***
+   * User sign-up to the system using this endpoint 
+   * @param signUpRequest the request with the details required for sign-up
+   * @return BasicUser the instance of user if successful
+   */
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     if (userService.findByUsername(signUpRequest.getEmail()) == null) {
@@ -95,22 +117,22 @@ public class AuthController {
     Set<UserRole> userRoles = new HashSet<>();
 
     if (strRoles == null) {
-    	UserRole userRole = roleRepository.findByName(EUserRole.ROLE_HELPFINDER_USER)
+        UserRole userRole = roleRepository.findByName(EUserRole.ROLE_HELPFINDER_USER)
           .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-    	userRoles.add(userRole);
+        userRoles.add(userRole);
     } else {
       strRoles.forEach(role -> {
         switch (role) {
         case "admin":
-        	UserRole adminRole = roleRepository.findByName(EUserRole.ROLE_ADMIN)
+            UserRole adminRole = roleRepository.findByName(EUserRole.ROLE_ADMIN)
               .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        	userRoles.add(adminRole);
+            userRoles.add(adminRole);
 
           break;
         case "mod":
-        	UserRole modRole = roleRepository.findByName(EUserRole.ROLE_MODERATOR)
+            UserRole modRole = roleRepository.findByName(EUserRole.ROLE_MODERATOR)
               .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        	userRoles.add(modRole);
+            userRoles.add(modRole);
 
           break;
         case "work":
@@ -120,22 +142,22 @@ public class AuthController {
 
             break;
         default:
-        	UserRole userRole = roleRepository.findByName(EUserRole.ROLE_HELPFINDER_USER)
+            UserRole userRole = roleRepository.findByName(EUserRole.ROLE_HELPFINDER_USER)
               .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        	userRoles.add(userRole);
+            userRoles.add(userRole);
         }
       });
     }    
-	user.setUserInformation("", "","", signUpRequest.getEmail(), userRoles);
-	user.setPassword(encoder.encode(signUpRequest.getPassword()));	
-    try
-    {
-    	userService.createUser(user);
+    user.setUserInformation(signUpRequest.getAddress(), signUpRequest.getFirstName(),signUpRequest.getLastName(), signUpRequest.getEmail(), userRoles);
+    user.setPassword(encoder.encode(signUpRequest.getPassword()));
+    user.setUserName(signUpRequest.getEmail());
+    try    {
+        userService.createUser(user);
     }
     catch (UserExistException e) {
-		System.err.println("User exist in the system " + e.getMessage());
-	    return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-	}
+        System.err.println("User exist in the system " + e.getMessage());
+        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+    }
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }

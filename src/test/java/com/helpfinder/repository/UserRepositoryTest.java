@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,61 +28,61 @@ import com.helpfinder.model.WorkerUser;
 
 //Test class to verify UserRepository
 public class UserRepositoryTest {
-	
-	GoogleLocationRepository locationRepo;
-	DatabaseRepository databaseRepo;
-	DatabaseRepository dataSource;
-	SQLiteUserRepository userRepo;
-	CoreWorkerSkillRepository workerSkillRepository;
-	@Before
-	public void setup()
-	{
-		locationRepo = new GoogleLocationRepository();
-		
-		databaseRepo = new SqlliteRepository();
-		workerSkillRepository = new CoreWorkerSkillRepository(databaseRepo);
-		userRepo = new SQLiteUserRepository(locationRepo, workerSkillRepository);
-		
-	}
-	
-	@Test
-	public void test_Create_new_WorkerUser_should_have_latLong_userid()
-	{	
-		//create role
-		UserRole userRole = new UserRole();		
-		userRole.setUserRole(EUserRole.ROLE_WORKER_USER);			
-		Set<UserRole> userRoles = new HashSet<>();
-		userRoles.add(userRole);
-		User workerUser = new WorkerUser();
-		ArrayList<WorkerSkill> workerUserSkills = new ArrayList<WorkerSkill>();
-		workerUserSkills.add(workerSkillRepository.getAllSkillsets().get(0));
-		((WorkerUser) workerUser).setUserInformation("test workeruser address", "Peter", "h", "peterh@test.com", userRoles,
-				workerUserSkills);
-		workerUser = userRepo.createUser(workerUser);
-		assertEquals( workerUser.getLatLong()[0], 1.1);
-		assertEquals( workerUser.getLatLong()[1], 2.2);
-		assertNotNull( ((BasicUser) workerUser).getUserId());		
-		
-	}
+    
+    GoogleLocationRepository locationRepo;
+    DatabaseRepository databaseRepo;
+    DataSource dataSource;
+    SQLiteUserRepository userRepo;
+    CoreWorkerSkillRepository workerSkillRepository;
+    @Before
+    public void setup()
+    {
+        locationRepo = new GoogleLocationRepository();
+        
+        databaseRepo = new SqlliteRepository(dataSource);
+        workerSkillRepository = new CoreWorkerSkillRepository(databaseRepo);
+        userRepo = new SQLiteUserRepository(locationRepo, workerSkillRepository, databaseRepo);
+        
+    }
+    
+    @Test
+    public void test_Create_new_WorkerUser_should_have_latLong_userid()
+    {    
+        //create role
+        UserRole userRole = new UserRole();        
+        userRole.setUserRole(EUserRole.ROLE_WORKER_USER);            
+        Set<UserRole> userRoles = new HashSet<>();
+        userRoles.add(userRole);
+        User workerUser = new WorkerUser();
+        ArrayList<WorkerSkill> workerUserSkills = new ArrayList<WorkerSkill>();
+        workerUserSkills.add(workerSkillRepository.getAllSkillsets().get(0));
+        ((WorkerUser) workerUser).setUserInformation("test workeruser address", "Peter", "h", "peterh@test.com", userRoles,
+                workerUserSkills);
+        workerUser = userRepo.createUser(workerUser);
+        assertEquals( workerUser.getLatLong()[0], 1.1);
+        assertEquals( workerUser.getLatLong()[1], 2.2);
+        assertNotNull( ((BasicUser) workerUser).getUserId());        
+        
+    }
 
-	@Test
-	public void test_Create_new_HelpFinderUser_should_have_latLong_userid()
-	{	//create role
-		UserRole userRole = new UserRole();		
-		userRole.setUserRole(EUserRole.ROLE_HELPFINDER_USER);			
-		Set<UserRole> userRoles = new HashSet<>();
-		userRoles.add(userRole);
-		//test creating new helpfinder user 
-		User helpFinderUser = new BasicUser();
-		helpFinderUser.setUserInformation("test helpfinderuser address", "David", "walt", "waltDavid@test.com", userRoles);
-		helpFinderUser = userRepo.createUser(helpFinderUser);
-		assertEquals( helpFinderUser.getLatLong()[0], 1.1);
-		assertEquals( helpFinderUser.getLatLong()[1], 2.2);
-		assertNotNull( ((BasicUser) helpFinderUser).getUserId());		
-		
-	}
-	
+    @Test
+    public void test_Create_new_HelpFinderUser_should_have_latLong_userid()
+    {    //create role
+        UserRole userRole = new UserRole();        
+        userRole.setUserRole(EUserRole.ROLE_HELPFINDER_USER);            
+        Set<UserRole> userRoles = new HashSet<>();
+        userRoles.add(userRole);
+        //test creating new helpfinder user 
+        User helpFinderUser = new BasicUser();
+        helpFinderUser.setUserInformation("test helpfinderuser address", "David", "walt", "waltDavid@test.com", userRoles);
+        helpFinderUser = userRepo.createUser(helpFinderUser);
+        assertEquals( helpFinderUser.getLatLong()[0], 1.1);
+        assertEquals( helpFinderUser.getLatLong()[1], 2.2);
+        assertNotNull( ((BasicUser) helpFinderUser).getUserId());        
+        
+    }
+    
 
-	
+    
 
 }

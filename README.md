@@ -3,7 +3,7 @@
 ### Guides
 This project is work in progress to run as RESTful api using springboot framework
 NOTE:
-This project is coded to run with java runtime version 15
+This project is coded to run with java runtime version 8
 THis project requires MAVEN version 2.6.2
 
 These are the following packages in the project
@@ -16,7 +16,9 @@ These are the following packages in the project
 * com.helpfinder.model.request: which contains the model used in a api request 
 
 ###Notes
-This project does not have any integration with any repository data sources, currently there are dummy data points which helps to test assignment 1 use cases.
+1) This project does not have any integration with any repository data sources, Sqlite data repository is created but the hook-up with the repository classes are pending. currently there are dummy data points which helps to test assignment 1 and 2 user cases related to users.
+2) This Project is integrated with repositories where I/O read/write operation are working specific for Assignment 2
+3) Swagger integration is working with-out any security features which is in progress.
 
 ### How to test the use cases for Assignment 2 ###
 
@@ -27,6 +29,18 @@ The folder test/reviews/arch/ will have the archived files once review is archiv
 
 2) For User defined exception, run unit test UserServiceTest.java
 The unit test case check if the UserExistException is throw while creating an already existing user
+
+### Swagger UI ###
+To access swagger 
+1) Run >> mvn spring-boot:run
+2) On a web browser access>> http://localhost:8099/api/swagger-ui/index.html
+
+
+Following controllers are exposed[JWT token implementation is not complete]
+1) site-review-controller - site review flow functionality is implemented through this controller.
+2) user-controller - [DUMMY DATA]user basic operations are in this controller
+3) auth-controller - [IMPLEMENTATION not complete]
+
 
 ### How to test The use cases for Assignment 1 ###
 

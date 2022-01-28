@@ -8,9 +8,12 @@
 
 package com.helpfinder.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -34,6 +37,7 @@ public class SecureUserDetails implements UserDetails {
 
   private Collection<? extends GrantedAuthority> authorities;
 
+  
   public SecureUserDetails(Long id, String username, String email, String password,
       Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
@@ -44,10 +48,12 @@ public class SecureUserDetails implements UserDetails {
   }
 
   public static SecureUserDetails build(User user) {
-    List<GrantedAuthority> authorities = user.getRoles().stream()
-        .map(role -> new SimpleGrantedAuthority(role.getUserRoleEnum().name()))
-        .collect(Collectors.toList());
-
+	  
+	  Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+	  for(UserRole role : user.getRoles()) {
+		  authorities.addAll( AbstractUser.rolePermissionMapping.get(role).stream().map(permission -> new SimpleGrantedAuthority(permission.name()))
+		  .collect(Collectors.toList()));  
+	  }    
     return new SecureUserDetails(
         user.getUserId(), 
         user.getUserName(), 

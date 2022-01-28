@@ -2,7 +2,7 @@
 /*
  * BU Term project for cs622
  
- 	This class tells Hibernate how SQLite handles @Id columns, 
+     This class tells Hibernate how SQLite handles @Id columns, 
  * @author  Harish Janardhanan * 
  * @since   20-jan-2022
  */
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class SQLiteIdentityColumnSupport extends IdentityColumnSupportImpl {
 
-	/***
-	 * gets the value indicating if identity column is supported or not
-	 */
+    /***
+     * gets the value indicating if identity column is supported or not
+     */
     @Override
     public boolean supportsIdentityColumns() {
         return true;

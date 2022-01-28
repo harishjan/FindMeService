@@ -16,16 +16,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface DatabaseRepository {
-	
-	// executes select query and returns the results
-	public ResultSet executeSelectQuery(String query)  throws SQLException;
-	// executes an update query and returns the results
-	public int executeUpdateQuery(String query)  throws SQLException;	
-	// executes an insert query and returns the results
-	public int executeInsertQuery(String query)  throws SQLException;
-	// executes an delete query and returns the results
-	public int executeDeleteQuery(String query)  throws SQLException;	
-	// executes sproc
-	public ResultSet executeSproc(String sprocName, Consumer<CallableStatement> addParams)  throws SQLException, NotSupportedException;
+    
+    // executes select query and returns the results
+    public ResultSet executeSelectQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;
+    // executes an update query and returns the results
+    public int executeUpdateQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;    
+    // executes an insert query and returns the results
+    public int executeInsertQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;
+    // executes an delete query and returns the results
+    public int executeDeleteQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;    
+    // executes sproc
+    public ResultSet executeSproc(String sprocName, Consumer<CallableStatement> addParams)  throws SQLException, NotSupportedException;
 
 }

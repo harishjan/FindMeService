@@ -7,14 +7,14 @@ This class is used to notify a user already exist while creating a new user
 package com.helpfinder.exception;
 
 //this exception is used when a user already exist while creating a new user
-public class UserExistException extends Exception {	
+public class UserExistException extends Exception {    
 
-	/**
-	 * constructor
-	 * @param message the message associated with the exception
-	 */
-	public UserExistException(String message) {
-		super(message);
-	}
-	
+    /**
+     * constructor
+     * @param message the message associated with the exception
+     */
+    public UserExistException(String message) {
+        super(message);
+    }
+    
 }

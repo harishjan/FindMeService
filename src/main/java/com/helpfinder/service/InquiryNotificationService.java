@@ -13,9 +13,9 @@ import com.helpfinder.model.WorkInquiry;
 
 @Service
 public interface InquiryNotificationService {
-	public void notifyUserAboutWork(WorkInquiry inquiry);
+    public void notifyUserAboutWork(WorkInquiry inquiry);
 
-	public void notifyUserCommittedStatusChange(WorkInquiry inquiry);
+    public void notifyUserCommittedStatusChange(WorkInquiry inquiry);
 
-	public void notifyWorkHireStatusChange(WorkInquiry inquiry);
+    public void notifyWorkHireStatusChange(WorkInquiry inquiry);
 }

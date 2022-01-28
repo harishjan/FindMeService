@@ -32,8 +32,19 @@ public class SignupRequest {
   @Size(min = 10, max = 20)  
   private String lastName;
 
+  @NotBlank
+  @Size(min = 10, max = 100)  
+  private String address;
 
 
+
+  public void setAddress(String address) {
+    this.address = address;
+  }
+  public String getAddress() {
+    return address;
+  }
+  
   public String getFirstName() {
     return firstName;
   }

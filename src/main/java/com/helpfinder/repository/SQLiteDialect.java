@@ -1,8 +1,8 @@
 /*
  * BU Term project for cs622
  
- 	Hibernate doesn't ship with a Dialect for SQLite. This the custom implementation
- 	reference taken from https://fullstackdeveloper.guru/2020/05/01/how-to-integrate-sqlite-database-with-spring-boot/
+     Hibernate doesn't ship with a Dialect for SQLite. This the custom implementation
+     reference taken from https://fullstackdeveloper.guru/2020/05/01/how-to-integrate-sqlite-database-with-spring-boot/
  * @author  Harish Janardhanan * 
  * @since   20-jan-2022
  */
@@ -21,9 +21,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class SQLiteDialect extends Dialect {
 
-	//constructor
+    //constructor
     public SQLiteDialect() {
-    	registerColumnType(Types.BIT, "integer");
+        registerColumnType(Types.BIT, "integer");
         registerColumnType(Types.TINYINT, "tinyint");
         registerColumnType(Types.SMALLINT, "smallint");
         registerColumnType(Types.INTEGER, "integer");

@@ -10,9 +10,9 @@ package com.helpfinder.model;
 
 //enum defining different roles users can have
 public enum EUserRole {
- 		ROLE_ADMIN,
- 		ROLE_MODERATOR,
-	 	ROLE_WORKER_USER,
-	 	ROLE_HELPFINDER_USER,
+         ROLE_ADMIN,
+         ROLE_MODERATOR,
+         ROLE_WORKER_USER,
+         ROLE_HELPFINDER_USER,
 }
 

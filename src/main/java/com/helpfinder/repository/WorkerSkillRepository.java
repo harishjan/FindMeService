@@ -16,16 +16,16 @@ import com.helpfinder.model.WorkerSkill;
 
 @Component
 public interface WorkerSkillRepository {
-	// get all allowed skills in the system for users
-	public List<WorkerSkill> getAllSkillsets();
-	
-	// get all allowed skills in the system for users
-	public void captureNewSkillRequest(Long userId, List<WorkerSkill> skill); 
+    // get all allowed skills in the system for users
+    public List<WorkerSkill> getAllSkillsets();
+    
+    // get all allowed skills in the system for users
+    public void captureNewSkillRequest(Long userId, List<WorkerSkill> skill); 
 
-	// get all allowed skills in the system for users
-	public List<WorkerSkill> getUnreviewedSkillRequest(List<WorkerSkill> skill);
+    // get all allowed skills in the system for users
+    public List<WorkerSkill> getUnreviewedSkillRequest(List<WorkerSkill> skill);
 
-	// get all allowed skills in the system for users
-	public List<WorkerSkill> addNewSkill(List<WorkerSkill> skill);
+    // get all allowed skills in the system for users
+    public List<WorkerSkill> addNewSkill(List<WorkerSkill> skill);
 
 }

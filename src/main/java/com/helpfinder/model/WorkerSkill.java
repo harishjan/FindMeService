@@ -8,47 +8,47 @@
 package com.helpfinder.model;
 
 public class WorkerSkill {
-	// id reference of the work skill
-	private int workerSkillId;
-	//the name of the skill
-	private String workerSkillName;
-	
-	/**
-	 * constructor
-	 * @param workSkillId id reference of the work skill 
-	 * @param workSkillName the name of the skill	
-	 */
-	public WorkerSkill(int workerSkillId, String workerSkillName)
-	{
-		this.workerSkillId = workerSkillId;
-		this.workerSkillName = workerSkillName;
-		
-	}
-	
-	/**
-	 * gets the id of the work skill	 * 	
-	 */
-	public int getWorkSkillId()	{
-		return this.workerSkillId;
-	}
-	
-	/**
-	 * sets the id of the work skill	 * 	
-	 */
-	public void setWorkSkillId(int workerSkillId)	{
-		this.workerSkillId = workerSkillId;
-	}
-	/**
-	 * gets the name of the work skill	 * 	
-	 */
-	public String getSkillName()	{
-		return this.workerSkillName;
-	}
-	
-	/**
-	 * sets the name of the work skill	 * 	
-	 */
-	public void setSkillName(String workerSkillName)	{
-		this.workerSkillName = workerSkillName;
-	}
+    // id reference of the work skill
+    private int workerSkillId;
+    //the name of the skill
+    private String workerSkillName;
+    
+    /**
+     * constructor
+     * @param workSkillId id reference of the work skill 
+     * @param workSkillName the name of the skill    
+     */
+    public WorkerSkill(int workerSkillId, String workerSkillName)
+    {
+        this.workerSkillId = workerSkillId;
+        this.workerSkillName = workerSkillName;
+        
+    }
+    
+    /**
+     * gets the id of the work skill     *     
+     */
+    public int getWorkSkillId()    {
+        return this.workerSkillId;
+    }
+    
+    /**
+     * sets the id of the work skill     *     
+     */
+    public void setWorkSkillId(int workerSkillId)    {
+        this.workerSkillId = workerSkillId;
+    }
+    /**
+     * gets the name of the work skill     *     
+     */
+    public String getSkillName()    {
+        return this.workerSkillName;
+    }
+    
+    /**
+     * sets the name of the work skill     *     
+     */
+    public void setSkillName(String workerSkillName)    {
+        this.workerSkillName = workerSkillName;
+    }
 }
