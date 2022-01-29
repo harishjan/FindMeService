@@ -7,7 +7,9 @@
  */
 package com.helpfinder.repository;
 
+
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -19,8 +21,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.core.RepositoryCreationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
+import com.helpfinder.model.EUserType;
 import com.helpfinder.model.User;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
@@ -28,7 +34,7 @@ import com.helpfinder.model.WorkerUser;
 
 @Component
 // implementation is still not completed
-public class SQLiteUserRepository<T extends User> implements UserRepository<T> {
+public class SQLiteUserRepository<T extends BasicUser> implements UserRepository<T> {
     //date formaters
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSSS");
     private SimpleDateFormat simpleFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSSS");
@@ -79,7 +85,9 @@ public class SQLiteUserRepository<T extends User> implements UserRepository<T> {
     }
 
     String insertUserQuery = "insert into user (address, lat, long, firstName, lastName, emailAddress, userName, "
-            + "password, insertedOn) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            + "password, userType, insertedOn) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    String selectUserQuery = "select userId, address, lat, long, firstName, lastName, emailAddress, userName, "
+            + "password, userType, insertedOn, updatedOn from user where emailaddress = ?;";
     /***
      * This method creates a new user and stores it in sqlite
      * @param user is the instance of User object
@@ -94,15 +102,16 @@ public class SQLiteUserRepository<T extends User> implements UserRepository<T> {
             int userId = databaseRepository.executeInsertQuery(insertUserQuery, (statement)->{
                 try {
                 
-                        statement.setString(0, user.getAddress());                
-                        statement.setString(1, user.getLatLong().length < 2 ? "" : user.getLatLong()[0].toString());
-                        statement.setString(2, user.getLatLong().length < 2 ? "" : user.getLatLong()[0].toString());
-                        statement.setString(3, user.getFirstName());
-                        statement.setString(4, user.getLastName());
-                        statement.setString(5, user.getEmailAddress());
+                        statement.setString(1, user.getAddress());                
+                        statement.setFloat(2, (float) (user.getLatLong().length < 2 || user.getLatLong()[0] == null ? -1.0 : user.getLatLong()[0].floatValue()));
+                        statement.setFloat(3, (float) (user.getLatLong().length < 2  || user.getLatLong()[1] == null ? -1.0 : user.getLatLong()[1].floatValue()));
+                        statement.setString(4, user.getFirstName());
+                        statement.setString(5, user.getLastName());
                         statement.setString(6, user.getEmailAddress());
-                        statement.setString(7, user.getPassword());
-                        statement.setString(8, dateFormatter.format(Instant.ofEpochMilli((new Date()).getTime())
+                        statement.setString(7, user.getEmailAddress());
+                        statement.setString(8, user.getPassword());
+                        statement.setString(9, user.getUserType().name());
+                        statement.setString(10, dateFormatter.format(Instant.ofEpochMilli((new Date()).getTime())
                                   .atZone(ZoneId.systemDefault())
                                   .toLocalDateTime()));
                     }
@@ -111,6 +120,7 @@ public class SQLiteUserRepository<T extends User> implements UserRepository<T> {
                         throw new RepositoryCreationException("Error creating user "+ ex.getMessage(), SQLiteUserRepository.class);
                     }    
                 });
+            System.out.println(userId);
             if(userId == -1)
                 throw new RepositoryCreationException("Error creating user ", SQLiteUserRepository.class);
             
@@ -123,6 +133,89 @@ public class SQLiteUserRepository<T extends User> implements UserRepository<T> {
         return user;
     }
     
+    /***
+     * Get user details by email, system stores email and username as same, 
+     * hence this is is a common function to retrieve user using both
+     * @param emailAddress
+     * @return User
+     */
+
+    private T getByEmail(String emailAddress) {
+    	T user = (T)new BasicUser();
+    	
+    	try
+        {
+            databaseRepository.executeSelectQuery(selectUserQuery, (statement)->{
+                try {
+                		statement.setString(1, emailAddress);  
+                    }
+                    catch(SQLException ex)
+                    {
+                        throw new RepositoryCreationException("Error getting user "+ ex.getMessage(), SQLiteUserRepository.class);
+                    }    
+                },
+        		(result) ->{
+        			//only interested in the first record
+                	try {
+	        			if(result != null && result.next()) {
+	        				
+	        				user.setUserId(result.getInt("userId"));
+	                    	user.setAddress(result.getString("address"));
+	                    	//-1.0 is the default value set if lat log is not available
+	                    	Double[] latLong = new Double[2];
+	                    	latLong[0] = result.getFloat("lat") == -1.0 ? null : (double)result.getFloat("lat");
+	                    	latLong[0] = result.getFloat("long") == -1.0 ? null : (double)result.getFloat("long");
+	                    	user.setLatLong(latLong);
+	                    	user.setFirstName(result.getString("firstName"));
+	                    	user.setLastName(result.getString("lastName"));
+	                    	user.setEmailAddress(result.getString("emailAddress"));
+	                    	user.setUserName(result.getString("emailAddress"));
+	                    	user.setPassword(result.getString("password"));
+	                    	user.setUserType(EUserType.forName(result.getString("userType")).get());
+	                    	user.setCreatedOn(simpleFormatter.parse(result.getString("insertedOn")));
+	                    	user.setUpdatedOn(result.getString("updatedOn") == null ? null : simpleFormatter.parse(result.getString("updatedOn")));
+	                    	
+	                    }
+	        			
+                	} catch (SQLException | ParseException ex) {
+                		throw new RepositoryCreationException("Error fetching result set  "+ ex.getMessage(), SQLiteUserRepository.class);
+                        
+					}
+        		});
+        }
+        catch(SQLException ex)
+        {
+            throw new RepositoryCreationException("Error getting user "+ ex.getMessage(), SQLiteUserRepository.class);
+        }  
+    	
+  
+    	if(user.getUserId() < 1)
+    		return null;
+    	
+        return user;
+    }
+    /***
+     * get user based on userName
+     * @param userName user name of the user
+     * @return User the matching user with userName
+     */
+    @Override
+    public T findByUsername(String userName)
+    {
+        return getByEmail(userName);
+    }
+    
+    //get user by emailAddress
+    /***
+     * get user based on email address
+     * @param emailAddress email address of the user
+     * @return User the matching user with email address
+     */
+    @Override
+    public T findByEmailAddress(String emailAdress)
+    {
+    	return getByEmail(emailAdress);
+    }
     
     @Override
     public void updateLatLongByAddress(long userID, String address) {
@@ -130,12 +223,7 @@ public class SQLiteUserRepository<T extends User> implements UserRepository<T> {
         
     }
 
-    
-    @Override
-    public boolean userExist(String emailAddrss) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+ 
 
     @Override
     public List<WorkerSkill> getUserSkills(long userId) {
@@ -195,43 +283,7 @@ public class SQLiteUserRepository<T extends User> implements UserRepository<T> {
     }
 
     
-    /***
-     * get user based on userName
-     * @return User the matching user with userName
-     */
-    @Override
-    public T findByUsername(String userName)
-    {
-        T user = null;
-        for(T val : dummyUsers.values())
-        {    
-            if(val.getUserName().equals(userName)) {                
-                user  = val;
-                break;
-            }
-        }
-        return user;
-    }
     
-    //get user by emailAddress
-    /***
-     * get user based on email address
-     * @param emailAddress email address of the user
-     * @return User the matching user with email address
-     */
-    @Override
-    public T findByEmailAddress(String emailAdress)
-    {
-        T user = null;
-        for(T val : dummyUsers.values())
-        {    
-            if(val.getEmailAddress().equals(emailAdress)) {                
-                user  = val;
-                break;
-            }
-        }
-        return user;
-    }
     
     
     /**

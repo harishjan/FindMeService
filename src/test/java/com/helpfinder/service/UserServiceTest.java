@@ -8,8 +8,6 @@
 package com.helpfinder.service;
 
 import static org.junit.Assert.assertTrue;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -18,8 +16,6 @@ import org.junit.Test;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
-import com.helpfinder.model.User;
-import com.helpfinder.model.UserRole;
 import com.helpfinder.repository.CoreWorkerSkillRepository;
 import com.helpfinder.repository.DatabaseRepository;
 import com.helpfinder.repository.GoogleLocationRepository;
@@ -53,20 +49,16 @@ public class UserServiceTest {
      */
     @Test
     public void test_Create_new_user_which_alreadyexist_throws_UserExistException()
-    {    //create role
-        UserRole userRole = new UserRole();        
-        userRole.setUserRole(EUserType.ROLE_HELPFINDER_USER);            
-        Set<UserRole> userRoles = new HashSet<>();
-        userRoles.add(userRole);
+    {    
         //test creating new helpfinder user who already is registered
-        User helpFinderUser = new BasicUser();
-        helpFinderUser.setUserInformation("test helpfinderuser address", "John", "m", "johnm@test.com", userRoles);
+        BasicUser helpFinderUser = new BasicUser();
+        helpFinderUser.setUserInformation("test helpfinderuser address", "John", 
+        		"m", "johnm@test.com", EUserType.ROLE_HELPFINDER_USER);
         boolean userExistExceptionThrown = false;
         try    {
-            helpFinderUser = userService.createUser(helpFinderUser);
+            helpFinderUser = (BasicUser) userService.createUser(helpFinderUser);
         }
-        catch(UserExistException ex)
-        {
+        catch(UserExistException ex) {
             userExistExceptionThrown = true;
         }
         assertTrue(userExistExceptionThrown);

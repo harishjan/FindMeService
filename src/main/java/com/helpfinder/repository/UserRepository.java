@@ -24,9 +24,6 @@ public interface UserRepository<T extends User> {
     // create a new User and return the User with the new userId
     public T createUser(T user);
 
-    // finds if a user already exist with the email address
-    public boolean userExist(String emailAddrss);
-
     // gets the skills added to a user
     public List<WorkerSkill> getUserSkills(long userId);
 

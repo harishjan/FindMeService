@@ -16,6 +16,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.helpfinder.model.SecureUserDetails;
@@ -27,6 +28,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	
 	@Autowired
 	SecureUserService userService ;
+	
+	@Autowired
+	PasswordEncoder encoder;
+	
+	
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) authentication;
@@ -37,7 +43,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		  SecureUserDetails user = (SecureUserDetails)userService.loadUserByUsername(username);
 
 		  // validate the passowed
-		  if (!user.getPassword().equals(password)) {
+		  
+		  if (!encoder.matches(password, user.getPassword())) {
 		    throw new BadCredentialsException("Bad Credentials");
 		  }
 		  // clear password
@@ -49,8 +56,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
 	@Override
 	public boolean supports(Class<?> authentication) {
-		// TODO Auto-generated method stub
-		return false;
+		return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
 	}
 	
 	

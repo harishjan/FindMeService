@@ -30,7 +30,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   private JwtUtils jwtUtils;
 
   @Autowired
-  private SecureUserService userDetailsService;
+  private SecureUserService secureUserService;
 
   private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
@@ -42,7 +42,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = secureUserService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(
                 userDetails,

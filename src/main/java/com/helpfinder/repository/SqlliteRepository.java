@@ -66,6 +66,7 @@ public class SqlliteRepository implements DatabaseRepository {
             statement = connection.prepareStatement(query);
             addParameters.accept(statement);
             result = statement.executeUpdate();
+            connection.commit();
             
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Error connecting to db " + ex.getMessage());
@@ -86,10 +87,11 @@ public class SqlliteRepository implements DatabaseRepository {
      * 
      * @param query the select query
      * @return ResultSet the result of the select query
+     * @throws SQLException 
      */
 
     @Override
-    public ResultSet executeSelectQuery(String query, Consumer<PreparedStatement> addParameters) {
+    public void executeSelectQuery(String query, Consumer<PreparedStatement> addParameters, Consumer<ResultSet> processResult) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet result = null;
@@ -99,33 +101,19 @@ public class SqlliteRepository implements DatabaseRepository {
             statement = connection.prepareStatement(query);
             addParameters.accept(statement);
             // execute the query
-            result = statement.executeQuery(query);
-
+            result = statement.executeQuery();
+            processResult.accept(result);
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Error connecting to db " + ex.getMessage());
         } finally {
-            // close the connection
-            if (result != null) {
-                try {
-                    result.close();
-                } catch (SQLException e) {
-                    /* Ignored */}
-            }
-            if (statement != null) {
-                try {
+            if(result != null)
+            	result.close();
+            if (statement != null) 
                     statement.close();
-                } catch (SQLException e) {
-                    /* Ignored */}
-            }
-            if (connection != null) {
-                try {
+            if (connection != null) 
                     connection.close();
-                } catch (SQLException e) {
-                    /* Ignored */}
-            }
         }
-        // return the result
-        return result;
+        
     }
 
     /***

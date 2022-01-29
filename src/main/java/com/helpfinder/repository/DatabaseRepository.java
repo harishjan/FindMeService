@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public interface DatabaseRepository {
     
     // executes select query and returns the results
-    public ResultSet executeSelectQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;
+    public void executeSelectQuery(String query, Consumer<PreparedStatement> addParameters, Consumer<ResultSet> processResult)  throws SQLException;
     // executes an update query and returns the results
     public int executeUpdateQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;    
     // executes an insert query and returns the results

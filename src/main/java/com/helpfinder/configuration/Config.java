@@ -1,4 +1,4 @@
-package com.helpfinder.configuration;
+	package com.helpfinder.configuration;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;

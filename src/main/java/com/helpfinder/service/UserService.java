@@ -28,8 +28,6 @@ import com.helpfinder.repository.UserRepository;
 public class UserService<T extends User> {
 	
 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	@Autowired
-	private ApplicationContext context;
 	
     @Autowired
     final UserRepository<T> userRepo;

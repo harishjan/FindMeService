@@ -3,7 +3,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -16,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.helpfinder.security.jwt.AuthEntryPointJwt;
 import com.helpfinder.security.jwt.AuthTokenFilter;
-import com.helpfinder.service.SecureUserService;
 
 
 // web security related classed required to setup setup pipeline lines where certain resources can be opened up
@@ -31,8 +29,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      private static final String[] AUTH_WHITELIST = {
             "/swagger-ui/*", "/swagger-ui.html", "/webjars/**", "/v2/**", "/swagger-resources/**","/auth/**", "/v3/api-docs/**",  "/webjars/swagger-ui/**"
      };
-     @Autowired
-     private SecureUserService secureUserService;
+     //@Autowired
+     //private SecureUserService secureUserService;
     
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;

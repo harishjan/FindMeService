@@ -37,7 +37,7 @@ public class SqliteWorkForceLocatorRepository implements WorkForceLocatorReposit
 
         // create some dummy data
         // inquiry 10 created for user1 sent to user 2
-        WorkInquiry inquiry1 = new WorkInquiry(10, new Date(System.currentTimeMillis()),
+      /*  WorkInquiry inquiry1 = new WorkInquiry(10, new Date(System.currentTimeMillis()),
                 new Date(new Date(System.currentTimeMillis()).getTime()  + 172800* 1000), // added 2 days
                 this.userRepo.getUser(1), this.userRepo.getUser(2));
 
@@ -47,7 +47,7 @@ public class SqliteWorkForceLocatorRepository implements WorkForceLocatorReposit
                 this.userRepo.getUser(1), this.userRepo.getUser(3));
 
         dummaryWorkInquiries.put(10, inquiry1);
-        dummaryWorkInquiries.put(11, inquiry2);
+        dummaryWorkInquiries.put(11, inquiry2);*/
 
     }
 
@@ -55,7 +55,7 @@ public class SqliteWorkForceLocatorRepository implements WorkForceLocatorReposit
     public List<User> findWorkforceForSkills(Double[] latlong, List<WorkerSkill> skills, double mileRadius) {
         // TODO Auto-generated method stub returning dummy data
         List<User> match = new ArrayList<>();
-        match.add(userRepo.getUser(2));
+        match.add((User)userRepo.getUser(2));
         return match;
     }
 

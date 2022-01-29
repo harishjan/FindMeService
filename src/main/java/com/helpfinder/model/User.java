@@ -7,6 +7,7 @@
  */
 package com.helpfinder.model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -39,5 +40,9 @@ public interface User {
     public boolean hasPermission(UserPermissions permission);
     public Set<UserPermissions> getPermissions();
     public boolean isAllowedToTakeWork();
+    public void setCreatedOn(Date date);
+    public void setUpdatedOn(Date date);
+    public Date getCreatedOn();
+    public Date getUpdatedOn();
 
 }

@@ -16,9 +16,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -28,7 +26,6 @@ import org.junit.Test;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
 import com.helpfinder.model.User;
-import com.helpfinder.model.UserRole;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
 import com.helpfinder.repository.CoreWorkerSkillRepository;
@@ -40,11 +37,11 @@ import com.helpfinder.repository.SqlliteRepository;
 
 public class WorkforceLocatorServiceTest {
     GoogleLocationRepository locationRepo;
-    SQLiteUserRepository userRepo;
+    SQLiteUserRepository<BasicUser> userRepo;
     SqliteWorkForceLocatorRepository workforceLocatorRepo;
     InquiryEmailNotificationService notificationService;
     WorkforceLocatorService locatorService;
-    User helpFinderUser;
+    BasicUser helpFinderUser;
     ArrayList<WorkerSkill> workerUserSkills;
     DatabaseRepository databaseRepo;    
     CoreWorkerSkillRepository workerSkillRepository;    
@@ -55,11 +52,6 @@ public class WorkforceLocatorServiceTest {
     @Before
     public void setup()
     {
-        //create role
-        UserRole userRole = new UserRole();        
-        userRole.setUserRole(EUserType.ROLE_HELPFINDER_USER);            
-        Set<UserRole> userRoles = new HashSet<>();
-        userRoles.add(userRole);
         // create an object of type WorkerUSer
         WorkerSkill skill = new WorkerSkill(1, "handyman");
         ArrayList<WorkerSkill> workerSkills = new ArrayList<WorkerSkill>();
@@ -67,15 +59,16 @@ public class WorkforceLocatorServiceTest {
         locationRepo = new GoogleLocationRepository();
         databaseRepo = new SqlliteRepository(dataSource);
         workerSkillRepository = new CoreWorkerSkillRepository(databaseRepo);
-        userRepo = new SQLiteUserRepository(locationRepo, workerSkillRepository, databaseRepo);
+        userRepo = new SQLiteUserRepository<BasicUser>(locationRepo, workerSkillRepository, databaseRepo);
         userService = new UserService<BasicUser>(userRepo);
         workforceLocatorRepo = new SqliteWorkForceLocatorRepository(userRepo);
         notificationService = new InquiryEmailNotificationService();
         locatorService = new WorkforceLocatorService(workforceLocatorRepo, userService, notificationService);
         //create user and work skills for testing
         helpFinderUser = new BasicUser();
-        helpFinderUser.setUserInformation("test helpfinderuser address", "David", "walt", "waltDavid@test.com", userRoles);
-        helpFinderUser = userRepo.createUser(helpFinderUser);
+        helpFinderUser.setUserInformation("test helpfinderuser address", "David", "walt",
+        		"waltDavid@test.com", EUserType.ROLE_HELPFINDER_USER);
+        helpFinderUser = (BasicUser)userRepo.createUser(helpFinderUser);
         workerUserSkills = new ArrayList<WorkerSkill>();
         workerUserSkills.add(workerSkillRepository.getAllSkillsets().get(0));        
         System.setOut(new PrintStream(outputStreamCaptor));

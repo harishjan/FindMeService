@@ -8,10 +8,7 @@
  */
 
 package com.helpfinder.controller;
-
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -20,12 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.core.RepositoryCreationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -35,7 +36,6 @@ import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
 import com.helpfinder.model.SecureUserDetails;
-import com.helpfinder.model.User;
 import com.helpfinder.model.request.AuthRequest;
 import com.helpfinder.model.request.SignupRequest;
 import com.helpfinder.model.response.JwtResponse;
@@ -68,23 +68,31 @@ public class AuthController {
    */
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthRequest loginRequest) {
+	  
+	try
+	{
 
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtUtils.generateJwtToken(authentication);
-    
-    SecureUserDetails userDetails = (SecureUserDetails) authentication.getPrincipal();    
-    List<String> roles = userDetails.getAuthorities().stream()
-        .map(item -> item.getAuthority())
-        .collect(Collectors.toList());
-
-    return ResponseEntity.ok(new JwtResponse(jwt, 
-                         userDetails.getId(), 
-                         userDetails.getUsername(), 
-                         userDetails.getEmail(), 
-                         roles));
+	    Authentication authentication = authenticationManager.authenticate(
+	        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+	
+	    SecurityContextHolder.getContext().setAuthentication(authentication);
+	    String jwt = jwtUtils.generateJwtToken(authentication);
+	    
+	    SecureUserDetails userDetails = (SecureUserDetails) authentication.getPrincipal();    
+	    List<String> roles = userDetails.getAuthorities().stream()
+	        .map(item -> item.getAuthority())
+	        .collect(Collectors.toList());
+	
+	    return ResponseEntity.ok(new JwtResponse(jwt, 
+	                         userDetails.getId(), 
+	                         userDetails.getUsername(), 
+	                         userDetails.getEmail(), 
+	                         roles));
+	}
+	catch(BadCredentialsException | UsernameNotFoundException ex){
+    	System.err.println("Invalid UserName or Password " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid UserName or Password");
+    }
   }
 
   /***
@@ -134,15 +142,15 @@ public class AuthController {
 	  return registerUser(signUpRequest, EUserType.ROLE_MODERATOR);
   }
 
+  /***
+   * Common method to register users
+   * @param signUpRequest
+   * @param userType
+   * @return
+   */
   private ResponseEntity<?> registerUser(SignupRequest signUpRequest, EUserType userType)
   {
-	  if (userService.findByUsername(signUpRequest.getEmail()) == null) {
-	      return ResponseEntity
-	          .badRequest()
-	          .body(new MessageResponse("Error: Username is already taken!"));
-	    }
-
-	    if (userService.existsByEmailAddress(signUpRequest.getEmail()) == null) {
+	    if (userService.existsByEmailAddress(signUpRequest.getEmail()) != null) {
 	      return ResponseEntity
 	          .badRequest()
 	          .body(new MessageResponse("Error: Email is already in use!"));
@@ -150,7 +158,8 @@ public class AuthController {
 
 	    // Create new user's account
 	    BasicUser user = new BasicUser();    
-	    user.setUserInformation(signUpRequest.getAddress(), signUpRequest.getFirstName(),signUpRequest.getLastName(), signUpRequest.getEmail(), userType);
+	    user.setUserInformation(signUpRequest.getAddress(), signUpRequest.getFirstName(),signUpRequest.getLastName(), 
+	    		signUpRequest.getEmail(), userType);
 	    user.setPassword(encoder.encode(signUpRequest.getPassword()));
 	    user.setUserName(signUpRequest.getEmail());
 	    try    {
@@ -160,6 +169,12 @@ public class AuthController {
 	        System.err.println("User exist in the system " + e.getMessage());
 	        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
 	    }
+	    catch(RepositoryCreationException ex){
+	    	System.err.println("User creating user " + ex.getMessage());
+	        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+	    
+	    }
+	    
 
 	    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }

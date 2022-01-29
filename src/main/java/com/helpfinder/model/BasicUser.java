@@ -11,6 +11,7 @@ package com.helpfinder.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,27 +45,22 @@ public class BasicUser implements User {
  // Stores the userId 
     private long userId;
     
-    @Size(max = 250)
     // Stores the address of the user
     private String address;    
     
-    @Size(max = 20)
     //stores the latitude derived from the address
     private String latitude;
     
-    @Size(max = 20)
     //stores the longitude derived from the address
     private String longitude;
         
-    @Size(max = 250)
     //first name of the user
     private String firstName;
             
-    @Size(max = 250)
     //last name of the user
     private String lastName;
          
-     @Email
+  
     // email address of the user
      private String emailAddress;
      
@@ -72,14 +68,18 @@ public class BasicUser implements User {
      private EUserType userType;
     
     //same as email
-    @NotBlank
-    @Size(max = 20)
     private String userName;
     
     //password set by the user
-    @NotBlank
-    @Size(max = 120)
     private String password;
+    
+    //Date when this user was created  
+    private Date createdOnDate;
+    
+    
+    //Date when user was last updated
+    private Date UpdatedOnDate;
+    
 
     //the property which stores all skills sets of this user
     private List<WorkerSkill> workSkills = new ArrayList<WorkerSkill>();
@@ -339,12 +339,30 @@ public class BasicUser implements User {
         return false;
     }
     
+    //set the date created
+    public void setCreatedOn(Date date) {
+    	createdOnDate = date;
+    }
+    //set the date updated
+    public void setUpdatedOn(Date date){
+    	UpdatedOnDate = date;
+    }
+    //get the date created
+    public Date getCreatedOn() {
+    	return createdOnDate;
+    }
+    //get the date updated
+    public Date getUpdatedOn() {
+    	return UpdatedOnDate;
+    }
+    
     /***
      * gets the permission a user has based on the role
      * @return Set<UserPermissions> the user permissions
      */
     @Override
     public Set<UserPermissions> getPermissions() {	  
+    	System.out.print(getUserType().name() + " hellllooooooo");
 		return new HashSet<UserPermissions>(rolePermissionMapping.get(getUserType()));
     }
     
