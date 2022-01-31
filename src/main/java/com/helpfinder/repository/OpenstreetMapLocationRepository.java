@@ -35,7 +35,7 @@ public class OpenstreetMapLocationRepository implements LocationServiceRepositor
     public Double[] getLatLogFromAddress(String address) {
     	Double[] res = new Double[2];
         StringBuffer query;
-        //split using space or , coma
+        //split using space or ,coma
         String[] split = address.split("[\s,]");
         String queryResult = null;
         query = new StringBuffer();

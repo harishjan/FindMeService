@@ -6,7 +6,7 @@
  * @since   16-jan-2022
  */
 package com.helpfinder.repository;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -17,25 +17,16 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
 import com.helpfinder.model.HelpFinderUser;
 import com.helpfinder.model.WorkerSkill;
 import com.helpfinder.model.WorkerUser;
-import org.mockito.junit.MockitoJUnitRunner;
-
 
 //@RunWith(MockitoJUnitRunner.class)  
 @TestInstance(Lifecycle.PER_CLASS)

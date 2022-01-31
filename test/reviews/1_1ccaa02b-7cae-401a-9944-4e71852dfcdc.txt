@@ -1,0 +1,10 @@
+UserId
+1
+Title
+big title2022/01/31 13:38:32.0048
+Comment
+a big bold comment
+ReviewSubmittedOn
+2022/01/31 00:00:00.0000
+ReviewID
+/Users/harishjanardhanan/Documents/BU/cs622/helpfinder/test/reviews/1_1ccaa02b-7cae-401a-9944-4e71852dfcdc.txt
