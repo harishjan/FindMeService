@@ -10,19 +10,13 @@
 package com.helpfinder.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import org.apache.commons.lang3.NotImplementedException;
 
-//This help finder user and worker users are belong to this implemenation of the calss
-public class BasicUser implements User {    
+//Other user types are implemented from this class 
+public abstract class BasicUser implements User {    
     
     /**
      * constructor
@@ -64,7 +58,7 @@ public class BasicUser implements User {
     // email address of the user
      private String emailAddress;
      
-    // stores the user userrole     
+    // stores the user type  
      private EUserType userType;
     
     //same as email
@@ -79,6 +73,12 @@ public class BasicUser implements User {
     
     //Date when user was last updated
     private Date UpdatedOnDate;
+    
+    //cosine and sine values for lat and long used for distance calculations
+    private Double cosLatRadians;
+    private Double sinLatRadians;
+    private Double cosLongRadians;
+    private Double sinLongRadians;
     
 
     //the property which stores all skills sets of this user
@@ -331,12 +331,8 @@ public class BasicUser implements User {
      * @return boolean true if user has permissions else false
      */
     @Override
-    public boolean hasPermission(UserPermissions permission) {
-       
-       if(rolePermissionMapping.get(getUserType()).contains(permission))
-                return true;
-       
-        return false;
+    public boolean hasPermission(UserPermissions permission) {       
+       return getPermissions().contains(permission);
     }
     
     //set the date created
@@ -361,43 +357,39 @@ public class BasicUser implements User {
      * @return Set<UserPermissions> the user permissions
      */
     @Override
-    public Set<UserPermissions> getPermissions() {	  
-    	System.out.print(getUserType().name() + " hellllooooooo");
-		return new HashSet<UserPermissions>(rolePermissionMapping.get(getUserType()));
+    public List<UserPermissions> getPermissions() {	  
+    	throw new NotImplementedException();
     }
     
-    //user role mapping to permissions kept private 
-    public final static HashMap<EUserType, List<UserPermissions>> rolePermissionMapping = getRolePermissionMapping();
+    //getter setters for consine and sine values of lat/long
+    public Double getCosLatRadians() {
+    	return this.cosLatRadians;
+    }
     
-
-    private static HashMap<EUserType, List<UserPermissions>> getRolePermissionMapping(){   	
-        //this value is hard coded, might store in db
-        HashMap<EUserType, List<UserPermissions>> rolePermission = new HashMap<>();
-        rolePermission.put(EUserType.ROLE_ADMIN,  Arrays.asList(new UserPermissions[] {    
-                                    UserPermissions.ADD_ADMIN_USER, 
-                                    UserPermissions.ARCH_SITE_FEEDBACK, 
-                                    UserPermissions.DELETE_USER, 
-                                    UserPermissions.REVIEW_SITE_FEEDBACK,
-                                    UserPermissions.SEARCH_FOR_WORKERS
-                                }
-                            ));
-        rolePermission.put(EUserType.ROLE_HELPFINDER_USER,  Arrays.asList(new UserPermissions[] {
-                                    UserPermissions.SEARCH_FOR_WORKERS
-                                }
-                            ));
-        rolePermission.put(EUserType.ROLE_WORKER_USER,  Arrays.asList(new UserPermissions[] {
-                                    UserPermissions.SEARCH_FOR_WORKERS
-                                }
-                            ));
-        rolePermission.put(EUserType.ROLE_MODERATOR,  Arrays.asList(new UserPermissions[] {
-                                    UserPermissions.ARCH_SITE_FEEDBACK,
-                                    UserPermissions.REVIEW_SITE_FEEDBACK,
-                                    UserPermissions.SEARCH_FOR_WORKERS
-                                }
-                            ));
-        
-        return rolePermission;
+    public Double getSinLatRadians() {
+    	return this.sinLatRadians;
+    }
+    public Double getCosLongRadians() {
+    	return this.cosLongRadians;
+    }
+    public Double getSinLongRadians() {
+    	return this.sinLongRadians;
+    }
+    
+    public void setCosLatRadians(Double value) {
+    	this.cosLatRadians = value;
+    }
+    public void setSinLatRadians(Double value) {
+    	this.sinLatRadians = value;
+    }
+    public void setCosLongRadians(Double value) {
+    	this.cosLongRadians = value;
+    }
+    public void setSinLongRadians(Double value) {
+    	this.sinLongRadians = value;
     }
     
     
 }
+
+    

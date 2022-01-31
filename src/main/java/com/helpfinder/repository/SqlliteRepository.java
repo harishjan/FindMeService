@@ -7,12 +7,13 @@
  * @since   21-jan-2022
  */
 package com.helpfinder.repository;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Consumer;
+import java.util.function.Function;
+
 import javax.sql.DataSource;
 import javax.transaction.NotSupportedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,10 +92,11 @@ public class SqlliteRepository implements DatabaseRepository {
      */
 
     @Override
-    public void executeSelectQuery(String query, Consumer<PreparedStatement> addParameters, Consumer<ResultSet> processResult) throws SQLException {
+    public <R> R executeSelectQuery(String query, Consumer<PreparedStatement> addParameters, Function<ResultSet, R> processResult) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet result = null;
+        R output = null;
         try {
             // get connection and create statement to execute            
             connection = getConnection();
@@ -102,7 +104,7 @@ public class SqlliteRepository implements DatabaseRepository {
             addParameters.accept(statement);
             // execute the query
             result = statement.executeQuery();
-            processResult.accept(result);
+            output = processResult.apply(result);
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Error connecting to db " + ex.getMessage());
         } finally {
@@ -113,7 +115,8 @@ public class SqlliteRepository implements DatabaseRepository {
             if (connection != null) 
                     connection.close();
         }
-        
+		
+        return output;
     }
 
     /***
@@ -155,7 +158,7 @@ public class SqlliteRepository implements DatabaseRepository {
      * 
      * @throws NotSupportedException
      */
-    public java.sql.ResultSet executeSproc(String sprocName, Consumer<CallableStatement> addParameters)
+    public <R> R executeSproc(String sprocName, Function<ResultSet, R> processResult)
             throws SQLException, NotSupportedException {
         throw new NotSupportedException("Sprocs are not supported by sqllite");
     }

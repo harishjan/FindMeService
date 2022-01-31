@@ -9,35 +9,44 @@
 
 package com.helpfinder.repository;
 
+import java.security.InvalidParameterException;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
+import javax.naming.directory.InvalidAttributesException;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.core.RepositoryCreationException;
 import org.springframework.stereotype.Component;
-import com.helpfinder.model.User;
+import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
 
 @Component
 //This class is still not implemented these are dummy data
-public class SqliteWorkForceLocatorRepository implements WorkForceLocatorRepository {
+public class SqliteWorkForceLocatorRepository<T extends BasicUser> implements WorkForceLocatorRepository<T> {
 
     // dummy data for testing
     static HashMap<Integer, WorkInquiry> dummaryWorkInquiries = new HashMap<Integer, WorkInquiry>();
 
     // store the user repo instance
     @Autowired
-    private UserRepository userRepo;
+    private UserRepository<T> userRepo;
 
+    @Autowired
+    private DatabaseRepository databaseRepository;
     //@Autowired
-    public SqliteWorkForceLocatorRepository(UserRepository userRepo) {
+    public SqliteWorkForceLocatorRepository(UserRepository<T> userRepo, DatabaseRepository databaseRepositor) {
         this.userRepo = userRepo;
+        this.databaseRepository = databaseRepositor;
 
         // create some dummy data
         // inquiry 10 created for user1 sent to user 2
-      /*  WorkInquiry inquiry1 = new WorkInquiry(10, new Date(System.currentTimeMillis()),
+        WorkInquiry inquiry1 = new WorkInquiry(10, new Date(System.currentTimeMillis()),
                 new Date(new Date(System.currentTimeMillis()).getTime()  + 172800* 1000), // added 2 days
                 this.userRepo.getUser(1), this.userRepo.getUser(2));
 
@@ -47,22 +56,107 @@ public class SqliteWorkForceLocatorRepository implements WorkForceLocatorReposit
                 this.userRepo.getUser(1), this.userRepo.getUser(3));
 
         dummaryWorkInquiries.put(10, inquiry1);
-        dummaryWorkInquiries.put(11, inquiry2);*/
+        dummaryWorkInquiries.put(11, inquiry2);
 
     }
 
+    /***
+     * gets top 100 work users who are closes to the given mile radius for the skill set 
+     * 
+     */
+    /***
+     * gets top 100 worker users who are closes to the given mile radius for the skill sets that being searched for
+     * @param latlong
+     * @param skills
+     * @param mileRadius the distance in miles
+     * @returns multiplevaluemap of distance and the users
+     */
     @Override
-    public List<User> findWorkforceForSkills(Double[] latlong, List<WorkerSkill> skills, double mileRadius) {
-        // TODO Auto-generated method stub returning dummy data
-        List<User> match = new ArrayList<>();
-        match.add((User)userRepo.getUser(2));
-        return match;
+    public MultiValuedMap<Double, T> findWorkforceForSkills(Double[] latLong, List<WorkerSkill> skills, double mileRadius) {
+    	if(latLong.length <2 || mileRadius <= 0 || skills == null || skills.size() == 0 )
+    		throw new InvalidParameterException("Workforce locator input parameter is not valid");
+    	
+    	//convert lat long to cosine and sine values and create the query.
+    	String sqlQuery = getDistanceQuery(mileRadius, WorkForceLocatorRepository.getCosRadians( latLong[0]) , WorkForceLocatorRepository.getSinRadians(latLong[0])
+    			, WorkForceLocatorRepository.getCosRadians(latLong[1]), WorkForceLocatorRepository.getSinRadians(latLong[1]), skills);
+        List<T> match = new ArrayList<>();
+        match.add((T)userRepo.getUser(2));
+        
+        
+        try
+        {
+            return databaseRepository.executeSelectQuery(sqlQuery, (statement)->{                
+                },
+        		(result) ->{
+        			// map with key as distance and the value as user 
+        			MultiValuedMap<Double, T> workForces  = new ArrayListValuedHashMap<Double, T>();
+        			T user = null;
+                	try {
+                			//get all the matching records
+		        			while(result != null && result.next()) {		        				
+		        				// create the user by type
+		        				user = userRepo.createUserByTypeFromResultSet(result);
+		        				// get the distance calculated by the sql query
+		        				Double distanceACos = (double)result.getFloat("distanceACos");
+		        				// add the distance which is converted to miles and user in the map
+								workForces.put(WorkForceLocatorRepository.convertCosToMiles(distanceACos), user);
+		        			}
+		        			
+                	} catch (SQLException | InvalidAttributesException | ParseException ex) {
+                		throw new RepositoryCreationException("Error fetching result set  "+ ex.getMessage(), SqliteWorkForceLocatorRepository.class);
+					}
+                	return workForces;
+        		});
+        }
+        catch(SQLException ex)
+        {
+            throw new RepositoryCreationException("Error getting workforce "+ ex.getMessage(), SqliteWorkForceLocatorRepository.class);           
+        }
     }
-
+   
     @Override
     public WorkInquiry getInquiry(int inquiryId) {
         // TODO Auto-generated method stub
         return dummaryWorkInquiries.get(inquiryId);
     }
-
+  
+    
+    
+    /***
+     * get the query to select top 100 user who are with in the distance ordered by the distance in descending
+     * @param distance
+     * @param cosLatRadians
+     * @param sinLatRadians
+     * @param cosLongRadians
+     * @param sinLongRadians
+     * @return String the sql query
+     */
+    public String getDistanceQuery(double distance, double cosLatRadians, double sinLatRadians, double cosLongRadians, double sinLongRadians, List<WorkerSkill> skills) {
+    	
+    	// create the skills array to string params
+    	StringBuilder skillsString = new StringBuilder();
+    	for (WorkerSkill param : skills) 
+    		skillsString.append(",").append("'").append(param).append("'");
+    	
+    	StringBuilder queryString = new StringBuilder();
+    	
+    	// example of the the actual query when it is constructed
+        /*"SELECT u.userId, u.address, u.lat, u.long, u.firstName, u.lastName, u.emailAddress, u.userType, u.insertedOn, u.updatedOn , (" + sinLatRadians + "*\"sinLatRadians\"+" + cosLatRadians + "*\"cosLatRadians\"*(" + sinLongRadians 
+        		+ "*\"sinLongRadians\"+" + cosLongRadians + "*\"cosLongRadians\")) AS \"distanceACos\" FROM User u "
+				+ "INNER JOIN UserWorkSkill w on u.userId = w.userId "
+				+ "INNER join WorkerSkill s on w.workerSkillId = s.workerSkillId WHERE ("+sinLatRadians+" * \"sinLatRadians\" +"
+        		+ cosLatRadians +"* \"cosLatRadians\" * (+"+sinLongRadians +"* \"sinLongRadians\" + "+cosLongRadians +"* \"cosLongRadians\")) >"
+        		+ distance + " AND s.workerSkillName in (" + skillsString.toString().substring(1) + " ) ORDER BY \"distanceACos\" DESC limit 100";*/
+    	
+    	//build using string builder    	
+    	queryString.append("SELECT u.userId, u.address, u.lat, u.long, u.firstName, u.lastName, u.emailAddress, u.userType, u.insertedOn, u.updatedOn , (")
+    	.append(sinLatRadians).append("*\"sinLatRadians\"+").append(cosLatRadians).append("*\"cosLatRadians\"*(")
+    	.append(sinLongRadians).append("*\"sinLongRadians\"+").append(cosLongRadians).append( "*\"cosLongRadians\")) AS \"distanceACos\" FROM User u ")
+    	.append("INNER JOIN UserWorkSkill w on u.userId = w.userId ").append("INNER join WorkerSkill s on w.workerSkillId = s.workerSkillId WHERE (")
+    	.append(sinLatRadians).append(" * \"sinLatRadians\" +").append(cosLatRadians).append("* \"cosLatRadians\" * (+")
+    	.append(sinLongRadians).append("* \"sinLongRadians\" + ").append(cosLongRadians).append("* \"cosLongRadians\")) >")
+    	.append(distance).append(" AND s.workerSkillName in (").append(skillsString.toString().substring(1)).append(" ) ORDER BY \"distanceACos\" DESC limit 100");
+    	
+    	return queryString.toString();
+    }
 }

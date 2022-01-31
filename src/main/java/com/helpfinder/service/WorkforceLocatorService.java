@@ -10,23 +10,24 @@ package com.helpfinder.service;
 
 import java.util.List;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.User;
+import com.helpfinder.model.HelpFinderUser;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
 import com.helpfinder.repository.WorkForceLocatorRepository;
 
 @Service
-public class WorkforceLocatorService {
+public class WorkforceLocatorService<T extends BasicUser> {
     // instance of workforcelocator repository
     @Autowired
-    private WorkForceLocatorRepository workforceLocatorRepo;
+    private WorkForceLocatorRepository<T> workforceLocatorRepo;
     // instance of User service
     @Autowired
-    private UserService<BasicUser> userService;
+    private UserService<T> userService;
     // instance through which notification are sent to user
     @Autowired
     private InquiryNotificationService notificationService;
@@ -36,7 +37,7 @@ public class WorkforceLocatorService {
      * @param workforceLocatorRepo the implementation of WorkForceLocatorRepository
      * @param userRepo             the implementation of UserRepository
      */    
-    public WorkforceLocatorService(WorkForceLocatorRepository workforceLocatorRepo, UserService<BasicUser> userService,
+    public WorkforceLocatorService(WorkForceLocatorRepository<T> workforceLocatorRepo, UserService<T> userService,
             InquiryNotificationService notificationService) {
         this.workforceLocatorRepo = workforceLocatorRepo;
         this.userService = userService;
@@ -50,15 +51,12 @@ public class WorkforceLocatorService {
      * @param User              the user requesting the work
      * @param List<WorkerSkill> the list of skills for which the search is performed
      * @param mileRadius        the mile radius within which the search is performed
-     * @return List<User> list of matching users with skill set with in the mile
-     *         radius
+     * @return MultiValueMap<Double, T> multivaluemap with the distance and user as the key value
      */
-    public List<User> findWorkforce(User RequestedBy, List<WorkerSkill> skills, Double mileRadius) {
-        // hard coded
-        // TODO get the users based on closest lat long radius
-        List<User> matchingUsers = workforceLocatorRepo.findWorkforceForSkills(RequestedBy.getLatLong(), skills,
-                mileRadius);
-        return matchingUsers;
+    public MultiValuedMap<Double, T> findWorkforce(HelpFinderUser RequestedBy, List<WorkerSkill> skills, Double mileRadius) {
+        
+        return workforceLocatorRepo.findWorkforceForSkills(RequestedBy.getLatLong(), skills, mileRadius);
+        
     }
 
     /**

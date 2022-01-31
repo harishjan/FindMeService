@@ -47,8 +47,8 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
     //file where archived files will be added     
      @Value("${site.review.dir.archived}") public String reviewArchDirectory;
     // this formatter is used to keep the format in which date is stored in file
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSSS");
-    private SimpleDateFormat simpleFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSSS");
+    private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSSS");
+    private static SimpleDateFormat simpleFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSSS");
     
     public CoreSiteReviewsRepository(@Value("${site.review.dir}")String reviewDirectory,
                         @Value("${site.review.dir}")String reviewArchDirectory) {

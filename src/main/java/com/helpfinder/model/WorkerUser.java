@@ -7,6 +7,7 @@
  * @since   16-jan-2022
  */
 package com.helpfinder.model;
+import java.util.Arrays;
 import java.util.List;
 
 // the work user implementation from BasicUser
@@ -48,5 +49,15 @@ public class WorkerUser extends BasicUser{
         this.setSkills(workSkills);
     }
     
+    /***
+     * gets the permission a user has based on the role
+     * @return Set<UserPermissions> the user permissions
+     */
+    @Override
+    public List<UserPermissions> getPermissions() {
+		return  Arrays.asList(new UserPermissions[] {
+                UserPermissions.ALLOWED_TO_BE_HIRE
+            });
+    }
 
 }

@@ -20,81 +20,132 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
+import com.helpfinder.model.HelpFinderUser;
 import com.helpfinder.model.User;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
+import com.helpfinder.model.WorkerUser;
 import com.helpfinder.repository.CoreWorkerSkillRepository;
 import com.helpfinder.repository.DatabaseRepository;
-import com.helpfinder.repository.GoogleLocationRepository;
+import com.helpfinder.repository.OpenstreetMapLocationRepository;
 import com.helpfinder.repository.SQLiteUserRepository;
 import com.helpfinder.repository.SqliteWorkForceLocatorRepository;
 import com.helpfinder.repository.SqlliteRepository;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
 
+@TestInstance(Lifecycle.PER_CLASS)
 public class WorkforceLocatorServiceTest {
-    GoogleLocationRepository locationRepo;
-    SQLiteUserRepository<BasicUser> userRepo;
-    SqliteWorkForceLocatorRepository workforceLocatorRepo;
-    InquiryEmailNotificationService notificationService;
-    WorkforceLocatorService locatorService;
-    BasicUser helpFinderUser;
-    ArrayList<WorkerSkill> workerUserSkills;
+       
+
+    SQLiteUserRepository<WorkerUser> userRepo;
+    WorkforceLocatorService<WorkerUser> locatorService;
     DatabaseRepository databaseRepo;    
-    CoreWorkerSkillRepository workerSkillRepository;    
+    InquiryEmailNotificationService notificationService;
+    List<WorkerSkill> workerUserSkills;    
+    List<WorkerUser> workerUsers;
+    WorkerUser workerUser;
+    CoreWorkerSkillRepository workerSkillRepository;
+    @Mock
+    OpenstreetMapLocationRepository locationRepo;
+    @Mock
+    SqliteWorkForceLocatorRepository<WorkerUser> workforceLocatorRepo;
+    @Mock
+    HelpFinderUser helpFinderUser;    
+    @Mock
     DataSource dataSource;
-    UserService<BasicUser> userService;
+    UserService<WorkerUser> userService;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
-    
-    @Before
+    @Mock
+    PasswordEncoder encoder;
+    @BeforeEach
     public void setup()
     {
+    	locationRepo = Mockito.mock(OpenstreetMapLocationRepository.class);
+    	workforceLocatorRepo = (SqliteWorkForceLocatorRepository<WorkerUser>)Mockito.mock(SqliteWorkForceLocatorRepository.class);
+    	encoder = Mockito.mock(PasswordEncoder.class);
+		helpFinderUser = Mockito.mock(HelpFinderUser.class);
+		dataSource = Mockito.mock(DataSource.class);
+    //	Mock.init();
+    	//assertNotNull(locationRepo);
+    	//assertNotNull(workforceLocatorRepo);
+    	//assertNotNull(notificationService);
+    	//assertNotNull(locatorService);
+    	//assertNotNull(helpFinderUser);
+    	//assertNotNull(databaseRepo);
+    	//assertNotNull(workerSkillRepository);
         // create an object of type WorkerUSer
         WorkerSkill skill = new WorkerSkill(1, "handyman");
         ArrayList<WorkerSkill> workerSkills = new ArrayList<WorkerSkill>();
         workerSkills.add(skill);
-        locationRepo = new GoogleLocationRepository();
+        //locationRepo = new GoogleLocationRepository();
         databaseRepo = new SqlliteRepository(dataSource);
         workerSkillRepository = new CoreWorkerSkillRepository(databaseRepo);
-        userRepo = new SQLiteUserRepository<BasicUser>(locationRepo, workerSkillRepository, databaseRepo);
-        userService = new UserService<BasicUser>(userRepo);
-        workforceLocatorRepo = new SqliteWorkForceLocatorRepository(userRepo);
+        userRepo = new SQLiteUserRepository<WorkerUser>(locationRepo, workerSkillRepository, databaseRepo);
+        userService = new UserService<WorkerUser>(userRepo, locationRepo, encoder);
+        //mock this
+        //workforceLocatorRepo = new SqliteWorkForceLocatorRepository<HelpFinderUser>(userRepo);
         notificationService = new InquiryEmailNotificationService();
-        locatorService = new WorkforceLocatorService(workforceLocatorRepo, userService, notificationService);
+        locatorService = new WorkforceLocatorService<WorkerUser>(workforceLocatorRepo, userService, notificationService);
         //create user and work skills for testing
-        helpFinderUser = new BasicUser();
+        helpFinderUser = new HelpFinderUser();
+        helpFinderUser.setUserId(1);
         helpFinderUser.setUserInformation("test helpfinderuser address", "David", "walt",
         		"waltDavid@test.com", EUserType.ROLE_HELPFINDER_USER);
-        helpFinderUser = (BasicUser)userRepo.createUser(helpFinderUser);
+        //helpFinderUser = userRepo.createUser(helpFinderUser);
+    
         workerUserSkills = new ArrayList<WorkerSkill>();
         workerUserSkills.add(workerSkillRepository.getAllSkillsets().get(0));        
+        workerUser = new WorkerUser();
+        workerUser.setUserInformation("test worker address", "matt", "m",
+        		"mattm@test.com", EUserType.ROLE_HELPFINDER_USER);
+        workerUser.setUserId(1);
+        workerUsers = new ArrayList<WorkerUser>();
+        workerUsers.add(workerUser); 
         System.setOut(new PrintStream(outputStreamCaptor));
+        //create mock
+        MultiValuedMap<Double, WorkerUser> workForces  = new ArrayListValuedHashMap<>();
+        workForces.put(1.1, workerUser);
+        //return the mock object
+        when(workforceLocatorRepo.findWorkforceForSkills(any(Double[].class), anyList(),  any(double.class))).thenReturn(workForces);
 
     }
     
     @Test
     public void test_findWorder_within_1_mile()
     {    
-        
-        List<User> users = locatorService.findWorkforce(helpFinderUser, workerUserSkills, 1.0);
+    	
+    	
+    	MultiValuedMap<Double, WorkerUser> users = locatorService.findWorkforce(helpFinderUser, workerUserSkills, 1.0);
         //check size and email address returned are correct
         assertEquals(users.size(), 1);        
-        assertEquals(((BasicUser)users.get(0)).getEmailAddress(), "mattm@test.com");
+        assertEquals(((User)users.values().toArray()[0]).getEmailAddress(), "mattm@test.com");
     }
     @Test
     public void test_send_workinquiry_flow_until_hire() throws IOException
     {    
         
-        List<User> users = locatorService.findWorkforce(helpFinderUser, workerUserSkills, 1.0);
-        assertEquals(users.size(), 1);        
-        assertEquals(((BasicUser)users.get(0)).getEmailAddress(), "mattm@test.com");
+    	MultiValuedMap<Double, WorkerUser> users = locatorService.findWorkforce(helpFinderUser, workerUserSkills, 1.0);
+        assertEquals(users.size(), 1);    
+        assertNotNull(users.values());
+        assertEquals(((User)users.values().toArray()[0]).getEmailAddress(), "mattm@test.com");
         List<WorkInquiry> workInquiries = new ArrayList<WorkInquiry>();                
         WorkInquiry inquiry1 = null;
         // create work inquiries to send to all users returned by work force locator
-        for(User user: users){
+        for(User user: users.values()){
             // send a work inquiry to this user.
             // using dummy data
             //create a work inquiry        
@@ -111,7 +162,7 @@ public class WorkforceLocatorServiceTest {
         
         outputStreamCaptor.flush();
         //let each user commit to the work
-        for(User user: users){
+        for(User user: users.values()){
             // commit the work
             // using dummy data                                
             locatorService.commitWork(inquiry1, true);
@@ -121,7 +172,7 @@ public class WorkforceLocatorServiceTest {
         
     
         //let the user hire the one user
-        for(User user: users){
+        for(User user: users.values()){
             // commit the work
             // using dummy data                                
             locatorService.hireWork(inquiry1, true);

@@ -8,36 +8,45 @@
 
 package com.helpfinder.service;
 import java.util.List;
-
-import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.helpfinder.exception.InvalidAddressException;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.User;
+import com.helpfinder.model.EUserType;
 import com.helpfinder.model.UserPermissions;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerUser;
+import com.helpfinder.repository.LocationServiceRepository;
 import com.helpfinder.repository.UserRepository;
 
 @Service
-public class UserService<T extends User> {
+public class UserService<T extends BasicUser> {
 	
 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	
+	@Autowired
+	PasswordEncoder encoder;
 	
     @Autowired
     final UserRepository<T> userRepo;
     
+    @Autowired
+    final LocationServiceRepository locationRepo;
     /***
      * constructor
      * @param userRepo the instance of UserRepository implementation 
      */    
-    public UserService(UserRepository<T> userRepo)    {
-        this. userRepo = userRepo;    
+    public UserService(UserRepository<T> userRepo, final LocationServiceRepository locationRepo, PasswordEncoder encoder)    {
+        this.userRepo = userRepo;    
+        this.locationRepo = locationRepo;
+        this.encoder = encoder;
     }
     
     /***
@@ -45,22 +54,49 @@ public class UserService<T extends User> {
      * @param userId the userid reference in the system
      * @return User the instance of the user if it exist
      */
-    public User getUser(int userId) {
+    public T getUser(int userId) {
         return userRepo.getUser(userId);
     }
     
 
+   /***
+    * 
+    * @param <P> type of user to create
+    * @param user
+    * @return the User object
+    * @throws UserExistException
+    */
+    public <P extends T> T createUser(P user) throws UserExistException {
+    	 return userRepo.createUser(user);
+    }
+
     /***
-     * creates a new user
-     * @param user the User instance with all the details for the user
-     * @return User the instance of the user if it exist
-     * @throws UserExistException 
+     *  * creates a new user
+     * @param address
+     * @param firstName
+     * @param lastname
+     * @param emailAddress
+     * @param userName
+     * @param password
+     * @param userType
+     * @return User a type of BasicUser
+     * @throws UserExistException
      */
-    public User createUser(T user) throws UserExistException {
+    public T createUser(String address, String firstName, String lastname, String emailAddress, String userName, String password, EUserType userType) throws UserExistException, InvalidAddressException {
         //check if user exist
-        if(existsByEmailAddress(user.getEmailAddress()) != null)
-            throw new UserExistException(String.format("User %s already exist", user.getEmailAddress()));
-        return userRepo.createUser(user);
+    	if(existsByEmailAddress(emailAddress) != null)
+            throw new UserExistException(String.format("User %s already exist", emailAddress));
+    	if(!locationRepo.isValidAddress(address))
+    		throw new InvalidAddressException(String.format("The given address %s is not valid", address));
+    		
+    	//create the correct user type
+    	T user =  userRepo.createUserByType(userType, EUserType.ROLE_HELPFINDER_USER);		
+		user.setUserInformation(address, firstName, lastname, emailAddress, userType);
+	    user.setPassword(encoder.encode(password));
+	    user.setUserName(emailAddress);
+	    Double[] latLong = locationRepo.getLatLogFromAddress(address);
+	    user.setLatLong(latLong);        
+	    return userRepo.createUser(user);
         
     }
     
@@ -69,7 +105,7 @@ public class UserService<T extends User> {
      * @param emailAddress email address of the user
      * @return User the instance of the user if it exist
      */
-    public User existsByEmailAddress(String emailAddress){
+    public T existsByEmailAddress(String emailAddress){
         return userRepo.findByEmailAddress(emailAddress);
     }
     
@@ -78,7 +114,7 @@ public class UserService<T extends User> {
      * @param userName user name of the user
      * @return User the instance of the user if it exist
      */
-    public User findByUsername(String userName) {
+    public T findByUsername(String userName) {
         return userRepo.findByUsername(userName);
         
     }
@@ -89,7 +125,7 @@ public class UserService<T extends User> {
      * @return User the instance of the user if it exist
      * @throws UserExistException 
      */
-    public User createWorkerUser(T user) throws UserExistException {        
+    public T createWorkerUser(T user) throws UserExistException {        
         //check if user exist
         if(existsByEmailAddress(user.getEmailAddress()) != null)
             throw new UserExistException(String.format("User %s already exist", user.getEmailAddress()));

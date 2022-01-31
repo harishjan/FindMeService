@@ -8,6 +8,8 @@ This class is used to notify a site review is invalid
 package com.helpfinder.exception;
 
 public class InvalidSiteReviewException extends Exception {
+	
+	 public InvalidSiteReviewException() {}
     /**
      * constructor
      * @param message the message associated with the exception

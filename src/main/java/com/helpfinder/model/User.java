@@ -9,7 +9,6 @@ package com.helpfinder.model;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 //This is the interface which defines a user
 public interface User {    
@@ -38,7 +37,7 @@ public interface User {
     public void setUserId(long userId);
     public void setUserName(String userName);
     public boolean hasPermission(UserPermissions permission);
-    public Set<UserPermissions> getPermissions();
+    public List<UserPermissions> getPermissions();
     public boolean isAllowedToTakeWork();
     public void setCreatedOn(Date date);
     public void setUpdatedOn(Date date);

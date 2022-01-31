@@ -24,6 +24,9 @@ public class SiteReviewService {
     @Autowired
     SiteReviewsRepository siteReviewsRepository;
     
+    public SiteReviewService(SiteReviewsRepository siteReviewsRepository)    {
+    	this.siteReviewsRepository = siteReviewsRepository;
+    }
     /**
      * Saves the review in a file
      * @param review the review object which should be saved

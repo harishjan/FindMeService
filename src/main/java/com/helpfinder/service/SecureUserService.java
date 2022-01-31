@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.SecureUserDetails;
 import com.helpfinder.model.User;
-import com.helpfinder.repository.UserRepository;
 
 @Service
 public class SecureUserService implements UserDetailsService {

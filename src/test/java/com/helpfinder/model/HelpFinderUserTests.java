@@ -11,17 +11,21 @@ package com.helpfinder.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 //not implemented
 public class HelpFinderUserTests {
 
         @Test
-        public void testNewInstanceOfBasicUser() {
-           
-            
+        public void testNewInstanceOfBasicUser() {           
+        	
             //create instance of user
-            BasicUser user = new BasicUser((long) 1, "test address", "John", "M", "test@email.com", EUserType.ROLE_HELPFINDER_USER);
+            BasicUser user = new HelpFinderUser();
+            user.setAddress("test address");
+            user.setFirstName("John");
+            user.setLastName( "M");
+            user.setEmailAddress( "test@email.com");
+            user.setUserType(EUserType.ROLE_HELPFINDER_USER);            
             // assert the values
             assertEquals(user.getAddress(), "test address");
             assertEquals(user.getFirstName(), "John");

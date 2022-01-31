@@ -8,9 +8,18 @@
  */
 package com.helpfinder.repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 
+import javax.naming.directory.InvalidAttributesException;
+
+import org.springframework.data.repository.core.RepositoryCreationException;
 import org.springframework.stereotype.Component;
+
+import com.helpfinder.exception.UserExistException;
+import com.helpfinder.model.EUserType;
 import com.helpfinder.model.User;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
@@ -22,7 +31,7 @@ public interface UserRepository<T extends User> {
     public T getUser(long userId);
 
     // create a new User and return the User with the new userId
-    public T createUser(T user);
+    public T createUser(T user) throws RepositoryCreationException, UserExistException;
 
     // gets the skills added to a user
     public List<WorkerSkill> getUserSkills(long userId);
@@ -49,10 +58,10 @@ public interface UserRepository<T extends User> {
     public boolean updateHiredStatusForEnquiry(int inquiryId, boolean hiredStatus);
     
     //get user by username
-    public User findByUsername(String userName);
+    public T findByUsername(String userName);
     
     //get user by emailAddress
-    public User findByEmailAddress(String emailAdress);
+    public T findByEmailAddress(String emailAdress);
     
     //set latlong based on the address
     public void updateLatLongByAddress(long userID, String address);
@@ -60,6 +69,13 @@ public interface UserRepository<T extends User> {
     public List<WorkInquiry> getWorkInquiryCommited(Long userId);
     //get work for which user is hired
     public List<WorkInquiry> getWorkInquiriesHired(Long userId);
+    
+    //gets the user based on usertype from the resultset
+    public T createUserByTypeFromResultSet(ResultSet result) throws SQLException, InvalidAttributesException, ParseException;
+    /***
+     * creates a user for the given user type  
+     */
+    public T createUserByType(EUserType userType, EUserType defaultType);
     
 
 }

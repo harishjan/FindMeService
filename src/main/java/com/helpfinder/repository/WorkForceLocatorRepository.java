@@ -10,18 +10,68 @@ package com.helpfinder.repository;
 
 import java.util.List;
 
+import org.apache.commons.collections4.MultiValuedMap;
 import org.springframework.stereotype.Component;
-import com.helpfinder.model.User;
+
+import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
 
 @Component
-public interface WorkForceLocatorRepository {
+public interface WorkForceLocatorRepository<T extends BasicUser> {
 
     // find and return the users matching the skills and mileRadius
-    public List<User> findWorkforceForSkills(Double[] latlong, List<WorkerSkill> skills, double mileRadius);
+	//returns multivaluemap of distance and the user
+    public MultiValuedMap<Double, T> findWorkforceForSkills(Double[] latlong, List<WorkerSkill> skills, double mileRadius);
     
     // get the inquiry for the given inquiryId
     public WorkInquiry getInquiry(int inquiryId);
+    
+    /***
+     * converts the arccosine distance to kilometers
+     * @param distanceInACos
+     * @return double the kilometers value 
+     */
+    public static double convertCosToKiloMeters(double distanceInACos) {    
+        return Math.acos(distanceInACos) * 6380; 
+    }
+    
+    /***
+     * convert arccosine distance to miles
+     * @param distanceInACos
+     * @return double the value in miles
+     */
+    public static double convertCosToMiles(double distanceInACos) {
+    	return convertCosToKiloMeters(distanceInACos) * 0.621371;
+    }
+    
 
+    /***
+     * convert the given value to radians cosine value
+     * @param radians
+     * @return double the cosine value
+     */
+    public static double getCosRadians(double value) {
+    	return Math.cos(degree2radians(value));
+    }
+    
+    
+    /***
+     * convert the given value  raidans sine value
+     * @param radians
+     * @return double the sine value
+     */
+    public static double getSinRadians(double value) {
+    	return Math.sin(degree2radians(value));
+    }
+    
+    /**
+     * converts degree to radians
+     * @param deg the value in degrees which needs conversion
+     * @return double the value in radians
+     */
+    public static double degree2radians(double degree) {
+        return (degree * Math.PI / 180.0);
+    }
+    
 }

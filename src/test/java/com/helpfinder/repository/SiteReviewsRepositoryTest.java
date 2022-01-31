@@ -13,14 +13,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.helpfinder.exception.InvalidSiteReviewException;
 import com.helpfinder.model.SiteReview;
 
-@SpringBootTest 
+@TestInstance(Lifecycle.PER_CLASS)
 //Test class to verify SiteReviewsRepository
 public class SiteReviewsRepositoryTest {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSSS");
@@ -29,7 +32,7 @@ public class SiteReviewsRepositoryTest {
     /**
      *setup the comment logic for all test cases here 
      */
-    @Before
+    @BeforeAll
     public void setup()    {
         siteReviewsRepository = new CoreSiteReviewsRepository("/test/reviews/", "/test/reviews/arch/");        
     }

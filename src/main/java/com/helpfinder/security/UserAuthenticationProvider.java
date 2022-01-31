@@ -24,7 +24,7 @@ import com.helpfinder.service.SecureUserService;
 
 // this is a custom implementation for autentication provider to validate user name and password
 @Component
-public class CustomAuthenticationProvider implements AuthenticationProvider {
+public class UserAuthenticationProvider implements AuthenticationProvider {
 	
 	@Autowired
 	SecureUserService userService ;

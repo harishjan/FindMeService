@@ -15,7 +15,7 @@ public interface LocationServiceRepository {
     // gets the latLog From a given address
     public Double[] getLatLogFromAddress(String address);
 
-    // gets the distance between two lat longs
-    public double getDistanceBetweenLatLong(Double[] source, Double[] destination);
+    // checks if the address is valid
+    public boolean isValidAddress(String address);
 
 }

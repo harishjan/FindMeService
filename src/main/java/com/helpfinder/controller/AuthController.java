@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 
 import com.helpfinder.security.jwt.JwtUtils;
+import com.helpfinder.exception.InvalidAddressException;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
@@ -89,7 +90,7 @@ public class AuthController {
 	                         userDetails.getEmail(), 
 	                         roles));
 	}
-	catch(BadCredentialsException | UsernameNotFoundException ex){
+	catch(BadCredentialsException | UsernameNotFoundException  ex){
     	System.err.println("Invalid UserName or Password " + ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid UserName or Password");
     }
@@ -156,25 +157,20 @@ public class AuthController {
 	          .body(new MessageResponse("Error: Email is already in use!"));
 	    }
 
-	    // Create new user's account
-	    BasicUser user = new BasicUser();    
-	    user.setUserInformation(signUpRequest.getAddress(), signUpRequest.getFirstName(),signUpRequest.getLastName(), 
-	    		signUpRequest.getEmail(), userType);
-	    user.setPassword(encoder.encode(signUpRequest.getPassword()));
-	    user.setUserName(signUpRequest.getEmail());
-	    try    {
-	        userService.createUser(user);
+	    // Create new user's account	    
+	    try {
+				userService.createUser(signUpRequest.getAddress(), signUpRequest.getFirstName(),signUpRequest.getLastName(), 
+						signUpRequest.getEmail(), signUpRequest.getEmail(), signUpRequest.getPassword(), userType);		
 	    }
 	    catch (UserExistException e) {
 	        System.err.println("User exist in the system " + e.getMessage());
 	        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
 	    }
-	    catch(RepositoryCreationException ex){
-	    	System.err.println("User creating user " + ex.getMessage());
+	    catch(RepositoryCreationException | InvalidAddressException ex){
+	    	System.err.println("Error creating user " + ex.getMessage());
 	        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
 	    
 	    }
-	    
 
 	    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }

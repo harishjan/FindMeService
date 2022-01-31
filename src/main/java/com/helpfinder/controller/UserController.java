@@ -30,7 +30,7 @@ import com.helpfinder.service.UserService;
 public class UserController {
     
     @Autowired
-    UserService userService;
+    UserService<BasicUser> userService;
     
     
     /**
