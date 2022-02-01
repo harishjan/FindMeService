@@ -125,7 +125,7 @@ public class AuthController {
    * @return BasicUser the instance of user if successful
    */
   @PostMapping("/signup/registerAdmin/")
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasAuthority('ADD_ADMIN_USER')")
   public ResponseEntity<?> registerAdmin(@Valid @RequestBody SignupRequest signUpRequest) {
 	return registerUser(signUpRequest, EUserType.ROLE_ADMIN);
   }
@@ -133,12 +133,12 @@ public class AuthController {
   
   /***
    * User sign-up as moderator to the system using this endpoint 
-   * only an admin user can create an moderator users
+   * only an admin or a moderator can create an moderator user
    * @param signUpRequest the request with the details required for sign-up
    * @return BasicUser the instance of user if successful
    */
   @PostMapping("/signup/registerModerator/")
-  @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasAuthority('ARCH_SITE_FEEDBACK') or hasAuthority('ADD_ADMIN_USER')")  
   public ResponseEntity<?> registerModerator(@Valid @RequestBody SignupRequest signUpRequest) {
 	  return registerUser(signUpRequest, EUserType.ROLE_MODERATOR);
   }

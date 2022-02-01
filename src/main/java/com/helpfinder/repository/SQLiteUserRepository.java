@@ -61,26 +61,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
         this.locationServiceRepo = locationServiceRepo;
         this.workerSkillRepository = workerSkillRepository;
         this.databaseRepository = databaseRepository;
-        // create some dummy data
-        // 1 is a HelpFinderUser
-        // 2 and 3 is a WorkerUser
-      /*  User user1 = new BasicUser(1, "test address", "John", "m", "johnm@test.com", null);
-        user1.setLatLong(new Double[] {1.1,2.2});
-
-        List<WorkerSkill> user2Skills = new ArrayList<WorkerSkill>();
-        user2Skills.add(this.workerSkillRepository.getAllSkillsets().get(0));
-        user2Skills.add(this.workerSkillRepository.getAllSkillsets().get(1));        
-        WorkerUser user2 = new WorkerUser(2, "test2 address", "Matt", "p", "mattm@test.com", null, user2Skills);
-        user1.setLatLong(new Double[] {1.2,2.3});
-
-        List<WorkerSkill> user3Skills = new ArrayList<WorkerSkill>();
-        user3Skills.add(this.workerSkillRepository.getAllSkillsets().get(0));
-        user3Skills.add(this.workerSkillRepository.getAllSkillsets().get(3));
-        WorkerUser user3 = new WorkerUser(3, "test3 address", "Micheal", "S", "micheals@test.com", null, user3Skills);
-        user1.setLatLong(new Double[] {12.1,16.2});
-        dummyUsers.put((long) 1, (T) user1);
-        dummyUsers.put((long) 2, (T)user2);
-        dummyUsers.put((long) 3,  (T)user3);*/
+    
     }
 
     @Override
@@ -91,7 +72,8 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
     }
     
     String insertUserQuery = "insert into user (address, lat, long, firstName, lastName, emailAddress, userName, "
-            + "password, userType, cosLatRadians, sinLatRadians, cosLongRadians, sinLongRadians, insertedOn) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            + "password, userType, cosLatRadians, sinLatRadians, cosLongRadians, sinLongRadians, insertedOn) "
+            + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     String selectUserQuery = "select userId, address, lat, long, firstName, lastName, emailAddress, userName, "
             + "password, userType, insertedOn, updatedOn from user where emailaddress = ?;";
     /***
@@ -112,18 +94,24 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
             try {
             
                     statement.setString(1, user.getAddress());                
-                    statement.setFloat(2, (float) (user.getLatLong().length < 2 || user.getLatLong()[0] == null ? -1.0 : user.getLatLong()[0].floatValue()));
-                    statement.setFloat(3, (float) (user.getLatLong().length < 2  || user.getLatLong()[1] == null ? -1.0 : user.getLatLong()[1].floatValue()));
+                    statement.setFloat(2, (float) (user.getLatLong().length < 2 
+                    		|| user.getLatLong()[0] == null ? -1.0 : user.getLatLong()[0].floatValue()));
+                    statement.setFloat(3, (float) (user.getLatLong().length < 2  
+                    		|| user.getLatLong()[1] == null ? -1.0 : user.getLatLong()[1].floatValue()));
                     statement.setString(4, user.getFirstName());
                     statement.setString(5, user.getLastName());
                     statement.setString(6, user.getEmailAddress());
                     statement.setString(7, user.getEmailAddress());
                     statement.setString(8, user.getPassword());
                     statement.setString(9, user.getUserType().name());                        
-                    statement.setFloat(10, (float) (user.getLatLong().length < 2 || user.getLatLong()[0] == null ? -1.0 :  WorkForceLocatorRepository.getCosRadians(user.getLatLong()[0])));
-                    statement.setFloat(11, (float) (user.getLatLong().length < 2 || user.getLatLong()[0] == null ? -1.0 : WorkForceLocatorRepository.getSinRadians(user.getLatLong()[0])));
-                    statement.setFloat(12, (float) (user.getLatLong().length < 2  || user.getLatLong()[1] == null ? -1.0 : WorkForceLocatorRepository.getCosRadians(user.getLatLong()[1])));                        
-                    statement.setFloat(13, (float) (user.getLatLong().length < 2  || user.getLatLong()[1] == null ? -1.0 : WorkForceLocatorRepository.getSinRadians(user.getLatLong()[1])));
+                    statement.setFloat(10, (float) (user.getLatLong().length < 2 
+                    		|| user.getLatLong()[0] == null ? -1.0 :  WorkForceLocatorRepository.getCosRadians(user.getLatLong()[0])));
+                    statement.setFloat(11, (float) (user.getLatLong().length < 2 
+                    		|| user.getLatLong()[0] == null ? -1.0 : WorkForceLocatorRepository.getSinRadians(user.getLatLong()[0])));
+                    statement.setFloat(12, (float) (user.getLatLong().length < 2  
+                    		|| user.getLatLong()[1] == null ? -1.0 : WorkForceLocatorRepository.getCosRadians(user.getLatLong()[1])));                        
+                    statement.setFloat(13, (float) (user.getLatLong().length < 2  
+                    		|| user.getLatLong()[1] == null ? -1.0 : WorkForceLocatorRepository.getSinRadians(user.getLatLong()[1])));
                     statement.setString(14, dateFormatter.format(Instant.ofEpochMilli((new Date()).getTime())
                               .atZone(ZoneId.systemDefault())
                               .toLocalDateTime()));

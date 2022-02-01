@@ -20,7 +20,7 @@ public class OpenstreetMapLocationRepositoryTest {
 	 @Test
 	 public void GetLatLongTest()
 	 {
-		 Double[] latLong = locationRepository.getLatLogFromAddress("101 mount pleasant ave, Edison, nj, 08820");
+		 Double[] latLong = locationRepository.getLatLogFromAddress("1600 Pennsylvania Avenue NW, Washington, DC 20500");
 		 
 	 }
 }

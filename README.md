@@ -20,6 +20,50 @@ These are the following packages in the project
 2) This Project is integrated with repositories where I/O read/write operation are working specific for Assignment 2
 3) Swagger integration is working with-out any security features which is in progress.
 
+### Swagger UI ###
+To access swagger 
+1) Run >> mvn spring-boot:run
+2) On a web browser access>> http://localhost:8099/api/swagger-ui/index.html
+3) auth-controller : /auth/* apis are implemented and can be tested via swagger
+
+### Admin user cred in the db is###
+email : adminuser@gmail.com
+password: admin123
+
+### Worker user cred in the db is###
+email: testworkuser@gmail.com
+password: testuser1
+
+### helpfinder user cred in the db is###
+email: helpfinder@gmail.com
+password: testuser1
+
+### moderator user cred in the db is###
+email: moderatoruser@gmail.com,
+password: mod123
+
+### How to test the use cases for Assignment 2 ###
+
+Run the test in UserServiceTest.java.
+The output should look like below to verify the permission returned by different types of users
++++++++++++++++++Test running for generics+++++++++++++++++++++++
+UserService returning a helpfinder user
+SEARCH_FOR_WORKERS permission found for Helpfinder user
+Remaining permission not found for helpfinder user
+++++++++++++++++++++++++++++++++++++++++++++
+UserService returning a worker user
+ALLOWED_TO_BE_HIRE permission found for worker user
+Remaining permission not found for workder user
+++++++++++++++++++++++++++++++++++++++++++++
+UserService returning a admin user
+SEARCH_FOR_WORKERS, ADD_ADMIN_USER, ARCH_SITE_FEEDBACK, DELETE_USER, REVIEW_SITE_FEEDBACK permission found for admin user
+Remaining permission not found for admin user
+++++++++++++++++++++++++++++++++++++++++++++
+UserService returning a moderator user
+ARCH_SITE_FEEDBACK, REVIEW_SITE_FEEDBACK, SEARCH_FOR_WORKERS, permission found for moderator user
+Remaining permission not found for moderator user
++++++++++++++++++++End of generics tests+++++++++++++++++++++++++
+
 ### How to test the use cases for Assignment 2 ###
 
 1) For File I/O related use case, Run unit test SiteReviewsRespositoryTest.java.
@@ -30,10 +74,6 @@ The folder test/reviews/arch/ will have the archived files once review is archiv
 2) For User defined exception, run unit test UserServiceTest.java
 The unit test case check if the UserExistException is throw while creating an already existing user
 
-### Swagger UI ###
-To access swagger 
-1) Run >> mvn spring-boot:run
-2) On a web browser access>> http://localhost:8099/api/swagger-ui/index.html
 
 
 Following controllers are exposed[JWT token implementation is not complete]

@@ -79,14 +79,6 @@ public class WorkforceLocatorServiceTest {
     	encoder = Mockito.mock(PasswordEncoder.class);
 		helpFinderUser = Mockito.mock(HelpFinderUser.class);
 		dataSource = Mockito.mock(DataSource.class);
-    //	Mock.init();
-    	//assertNotNull(locationRepo);
-    	//assertNotNull(workforceLocatorRepo);
-    	//assertNotNull(notificationService);
-    	//assertNotNull(locatorService);
-    	//assertNotNull(helpFinderUser);
-    	//assertNotNull(databaseRepo);
-    	//assertNotNull(workerSkillRepository);
         // create an object of type WorkerUSer
         WorkerSkill skill = new WorkerSkill(1, "handyman");
         ArrayList<WorkerSkill> workerSkills = new ArrayList<WorkerSkill>();

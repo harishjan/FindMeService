@@ -7,13 +7,11 @@
  * @since   16-jan-2022
  */
 package com.helpfinder.repository;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import org.json.simple.JSONValue;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -25,7 +23,7 @@ public class OpenstreetMapLocationRepository implements LocationServiceRepositor
 	
 	
 	final String openStreetMapurl = "https://nominatim.openstreetmap.org/search?q=";
-    /**
+    /***
      * gets the lat log of a given address
      * 
      * @param address string address
@@ -35,8 +33,8 @@ public class OpenstreetMapLocationRepository implements LocationServiceRepositor
     public Double[] getLatLogFromAddress(String address) {
     	Double[] res = new Double[2];
         StringBuffer query;
-        //split using space or ,coma
-        String[] split = address.split("[\s,]");
+        //split using space or ,coma        
+        String[] split = address.split( "[\\s,]");
         String queryResult = null;
         query = new StringBuffer();
         // set the url to call
@@ -87,7 +85,7 @@ public class OpenstreetMapLocationRepository implements LocationServiceRepositor
         return res;
     }
 
-    /**
+    /***
      * checks if an address is valid
      * 
      * @param address   the input address     * 
