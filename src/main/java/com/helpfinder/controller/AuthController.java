@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.helpfinder.security.jwt.JwtUtils;
 import com.helpfinder.exception.InvalidAddressException;
+import com.helpfinder.exception.InvalidPasswordException;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
@@ -166,7 +167,7 @@ public class AuthController {
 	        System.err.println("User exist in the system " + e.getMessage());
 	        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
 	    }
-	    catch(RepositoryCreationException | InvalidAddressException ex){
+	    catch(RepositoryCreationException | InvalidAddressException | InvalidPasswordException ex ){
 	    	System.err.println("Error creating user " + ex.getMessage());
 	        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
 	    

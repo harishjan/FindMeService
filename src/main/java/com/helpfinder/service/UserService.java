@@ -8,6 +8,10 @@
 
 package com.helpfinder.service;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.RegExUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.helpfinder.exception.InvalidAddressException;
+import com.helpfinder.exception.InvalidPasswordException;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
@@ -81,16 +86,18 @@ public class UserService<T extends BasicUser> {
      * @param userType
      * @return User a type of BasicUser
      * @throws UserExistException
+     * @throws InvalidPasswordException 
      */
-    public T createUser(String address, String firstName, String lastname, String emailAddress, String userName, String password, EUserType userType) throws UserExistException, InvalidAddressException {
+    public T createUser(String address, String firstName, String lastname, String emailAddress, String userName, String password, EUserType userType) throws UserExistException, InvalidAddressException, InvalidPasswordException {
         //check if user exist
     	if(existsByEmailAddress(emailAddress) != null)
             throw new UserExistException(String.format("User %s already exist", emailAddress));
     	if(!locationRepo.isValidAddress(address))
     		throw new InvalidAddressException(String.format("The given address %s is not valid", address));
-    		
+    	if(!isValidPassword(password))
+    		throw new InvalidPasswordException("Password should between 7 to 20 in length, with one upper case, one lower case char , one special char and one number");
     	//create the correct user type
-    	T user =  userRepo.createUserByType(userType, EUserType.ROLE_HELPFINDER_USER);		
+    	T user =  userRepo.createUserByType(userType, userType);		
 		user.setUserInformation(address, firstName, lastname, emailAddress, userType);
 	    user.setPassword(encoder.encode(password));
 	    user.setUserName(emailAddress);
@@ -100,6 +107,14 @@ public class UserService<T extends BasicUser> {
         
     }
     
+    //method to validate password
+    private boolean isValidPassword(String pwd) {
+    	//min 7 char, max 20 one upper one lower and one number and on special char
+    	Pattern pattern = Pattern.compile(
+    	"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{7,20}$");
+    	Matcher match = pattern.matcher(pwd);
+    	return match.find();
+    }
     /**
      * checks if a user exist if so returns the user using email address 
      * @param emailAddress email address of the user

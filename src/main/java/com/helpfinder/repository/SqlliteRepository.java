@@ -50,11 +50,13 @@ public class SqlliteRepository implements DatabaseRepository {
 
     }
 
+    
     /***
      * gets the results of update statement like, update, insert and delete queries
-     * 
      * @param query the sql query
-     * @return int the number of rows effected
+     * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
+     * @return return the number of rows impacted by the query
+     * @throws SQLException
      */
     private int executeUpdateStatement(String query, Consumer<PreparedStatement> addParameters) throws SQLException{
         Connection connection = null;
@@ -87,10 +89,11 @@ public class SqlliteRepository implements DatabaseRepository {
      * gets result for a select statement
      * 
      * @param query the select query
-     * @return ResultSet the result of the select query
+     * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
+     * @param processResult Function<ResultSet, R> the lambda function which is called to process the result and return the type of the final object
+     * @return R the return type is the type returned by processResult lambda function     * 
      * @throws SQLException 
      */
-
     @Override
     public <R> R executeSelectQuery(String query, Consumer<PreparedStatement> addParameters, Function<ResultSet, R> processResult) throws SQLException {
         Connection connection = null;
@@ -123,6 +126,7 @@ public class SqlliteRepository implements DatabaseRepository {
      * executes the update statement
      * 
      * @param query update query
+     * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
      * @return int the number of rows effected
      */
     @Override
@@ -132,8 +136,8 @@ public class SqlliteRepository implements DatabaseRepository {
 
     /***
      * executes the insert statement
-     * 
-     * @param query insert query
+     * @param query update query
+     * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
      * @return int the number of rows effected
      */
     @Override
@@ -143,8 +147,8 @@ public class SqlliteRepository implements DatabaseRepository {
 
     /***
      * executes the delete statement
-     * 
-     * @param query delete query
+     * @param query update query
+     * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
      * @return int the number of rows effected
      */
 

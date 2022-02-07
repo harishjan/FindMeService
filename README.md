@@ -16,15 +16,142 @@ These are the following packages in the project
 * com.helpfinder.model.request: which contains the model used in a api request 
 
 ###Notes
-1) This project does not have any integration with any repository data sources, Sqlite data repository is created but the hook-up with the repository classes are pending. currently there are dummy data points which helps to test assignment 1 and 2 user cases related to users.
-2) This Project is integrated with repositories where I/O read/write operation are working specific for Assignment 2
-3) Swagger integration is working with-out any security features which is in progress.
+1) User Repository is hooked up Sqlite db and it is working now, the sqlite db is is part of the project folder</br>
+2) Swagger: Auth api functionality is implemented for user registration and signin, this can be verify through swagger</br>
+3) Jwt Bearer token implementation is also complete.</br>
+4) Workforce locator back end changes is partially complete, functionality to identify lat long form  OpenStreetmaplocation is complete.(Apis to expose these functionalities are not complete)</br>
+5) UI development is is progress, This project will be using React JS framework for building the UI</br>
+
+###To Run the tests for assignment 4 using JUnit :###
+
+Run below test in >> SiteReviewsRepositoryTest.java</br>
+1) test_Create_SiteReview_AsStream_and_check_StreamisSerialized_Properly()</br>
+2) test_Create_SiteReviewStream_Archive_And_Check_if_Review_Exist()</br>
+
+
+The output should look like below</br>
+
+Creating review with below details </br>
+++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+UserId</br>
+1</br>
+Title</br>
+big title2022/02/07 18:15:37.3811</br>
+Comment</br>
+a big bold comment</br>
+ReviewSubmittedOn</br>
+2022/02/07 00:00:00.0000</br>
+ReviewID</br>
+null</br>
+ReviewedDate</br>
+
+++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+Review serialized and stored successfully</br>
+Review deserialized and pulled from file with below details</br>
+++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+UserId</br>
+1</br>
+Title</br>
+big title2022/02/07 18:15:37.3811</br>
+Comment</br>
+a big bold comment</br>
+ReviewSubmittedOn</br>
+2022/02/07 00:00:00.0000</br>
+ReviewID</br>
+C:\bu\CS622\ap2\helpfinder\test\reviewsstream\1_1e6a41d7-bb43-4e48-ab43-3f3b05a643b1.txt</br>
+ReviewedDate</br>
+
+++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+Creating review with below details </br>
+++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+UserId</br>
+1</br>
+Title</br>
+big title2022/02/07 18:15:37.4076</br>
+Comment</br>
+a big bold comment</br>
+ReviewSubmittedOn</br>
+2022/02/07 18:15:37.4070</br>
+ReviewID</br>
+null</br>
+ReviewedDate</br>
+
+++++++++++++++++++++++++++++++++++++++++++++++++++
+Review serialized and stored successfully</br>
+Review deserialized and pulled from file with below details</br>
+++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+UserId</br>
+1</br>
+Title</br>
+big title2022/02/07 18:15:37.4076</br>
+Comment</br>
+a big bold comment</br>
+ReviewSubmittedOn</br>
+2022/02/07 18:15:37.4070</br>
+ReviewID</br>
+C:\bu\CS622\ap2\helpfinder\test\reviewsstream\1_2fbc3729-987b-43d7-8b8c-f8a9fd15d5d0.txt</br>
+ReviewedDate</br>
+
+++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+Review serialized and archived successfully</br>
+Review with title big title2022/02/07 18:15:37.4076 not found after archiving </br>
+
+
+
+###To Run the tests for assignment 3 using JUnit and Mockito framework :###
+
+Run below test in >> UserServiceTest.java
+Test method test_getUserByEamil_checkif_genericType_returnsthe_CorrectPermission_based_onUsertype()
+
+
+The output should look like below to verify the permission returned by different types of users</br>
++++++++++++++++++Test running for generics+++++++++++++++++++++++</br>
+UserService returning a helpfinder user</br>
+SEARCH_FOR_WORKERS permission found for Helpfinder user</br>
+Remaining permission not found for helpfinder user</br>
+++++++++++++++++++++++++++++++++++++++++++++</br>
+UserService returning a worker user</br>
+ALLOWED_TO_BE_HIRE permission found for worker user</br>
+Remaining permission not found for worker user</br>
+++++++++++++++++++++++++++++++++++++++++++++</br>
+UserService returning a admin user</br>
+SEARCH_FOR_WORKERS, ADD_ADMIN_USER, ARCH_SITE_FEEDBACK, DELETE_USER, REVIEW_SITE_FEEDBACK permission found for admin user</br>
+Remaining permission not found for admin user</br>
+++++++++++++++++++++++++++++++++++++++++++++</br>
+UserService returning a moderator user</br>
+ARCH_SITE_FEEDBACK, REVIEW_SITE_FEEDBACK, SEARCH_FOR_WORKERS, permission found for moderator user</br>
+Remaining permission not found for moderator user</br>
++++++++++++++++++++End of generics tests+++++++++++++++++++++++++</br>
+###To Run the tests for assignment 3 using JUnit and Mockito framework :###
+
+Run below test in >> UserServiceTest.java
+Test method test_getUserByEamil_checkif_genericType_returnsthe_CorrectPermission_based_onUsertype()
+
+
+The output should look like below to verify the permission returned by different types of users</br>
++++++++++++++++++Test running for generics+++++++++++++++++++++++</br>
+UserService returning a helpfinder user</br>
+SEARCH_FOR_WORKERS permission found for Helpfinder user</br>
+Remaining permission not found for helpfinder user</br>
+++++++++++++++++++++++++++++++++++++++++++++</br>
+UserService returning a worker user</br>
+ALLOWED_TO_BE_HIRE permission found for worker user</br>
+Remaining permission not found for worker user</br>
+++++++++++++++++++++++++++++++++++++++++++++</br>
+UserService returning a admin user</br>
+SEARCH_FOR_WORKERS, ADD_ADMIN_USER, ARCH_SITE_FEEDBACK, DELETE_USER, REVIEW_SITE_FEEDBACK permission found for admin user</br>
+Remaining permission not found for admin user</br>
+++++++++++++++++++++++++++++++++++++++++++++</br>
+UserService returning a moderator user</br>
+ARCH_SITE_FEEDBACK, REVIEW_SITE_FEEDBACK, SEARCH_FOR_WORKERS, permission found for moderator user</br>
+Remaining permission not found for moderator user</br>
++++++++++++++++++++End of generics tests+++++++++++++++++++++++++</br>
 
 ### Swagger UI ###
 To access swagger 
-1) Run >> mvn spring-boot:run
-2) On a web browser access>> http://localhost:8099/api/swagger-ui/index.html
-3) auth-controller : /auth/* apis are implemented and can be tested via swagger
+* Run >> mvn spring-boot:run
+* On a web browser access>> http://localhost:8099/api/swagger-ui/index.html
+* auth-controller : /auth/* apis are implemented and can be tested via swagger
 
 ### Admin user cred in the db is###
 email : adminuser@gmail.com
@@ -44,7 +171,7 @@ password: mod123
 
 ### How to test the use cases for Assignment 2 ###
 
-Run the test in UserServiceTest.java.
+Run the test in >> UserServiceTest.java.
 The output should look like below to verify the permission returned by different types of users
 +++++++++++++++++Test running for generics+++++++++++++++++++++++
 UserService returning a helpfinder user

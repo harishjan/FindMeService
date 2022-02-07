@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +25,7 @@ import com.helpfinder.model.WorkerSkill;
 import com.helpfinder.model.WorkerUser;
 import com.helpfinder.service.UserService;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(value = "/user")
 // User related information is accessed through this controller
@@ -60,6 +62,9 @@ public class UserController {
          BasicUser user = (BasicUser)userService.getUser(id);
          return user == null ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found") : ResponseEntity.ok(user);        
     }
-
-
+     @RequestMapping(value = "/getUserInquiriesSubmission", method = RequestMethod.GET)
+     public ResponseEntity<?> getUserInquiriesSubmission()
+     {
+    	 return null;
+     }
 }
