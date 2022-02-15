@@ -27,5 +27,9 @@ public interface WorkerSkillRepository {
 
     // get all allowed skills in the system for users
     public List<WorkerSkill> addNewSkill(List<WorkerSkill> skill);
+    //get a specific skill set
+    public WorkerSkill getWorkerskillById(int id);
+    // get skill by name
+    public WorkerSkill getWorkerskillByName(String skillName); 
 
 }

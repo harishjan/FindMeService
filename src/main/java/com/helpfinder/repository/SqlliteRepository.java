@@ -41,7 +41,7 @@ public class SqlliteRepository implements DatabaseRepository {
      * @throws ClassNotFoundException exception if the sql lite driver is not found
      * @throws SQLException           if connection cannot be established
      */
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
+    public Connection getConnection() throws ClassNotFoundException, SQLException {
         
         Connection connection = dataSource.getConnection();
         connection.setAutoCommit(false);
@@ -49,42 +49,62 @@ public class SqlliteRepository implements DatabaseRepository {
         return connection;
 
     }
-
-    
     /***
      * gets the results of update statement like, update, insert and delete queries
      * @param query the sql query
+     * @param connection if connection is passed then the roll back and commit should be done by the calling method
      * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
      * @return return the number of rows impacted by the query
      * @throws SQLException
      */
-    private int executeUpdateStatement(String query, Consumer<PreparedStatement> addParameters) throws SQLException{
-        Connection connection = null;
+    private int executeUpdateStatement(String query, Connection connection, Consumer<PreparedStatement> addParameters) throws SQLException{
+           //Connection connection = null;
+           boolean commitQuery = (connection == null);
         PreparedStatement statement = null;
         // -1 if the execution is not successful
         int result = -1;
         try {
             // get connection and create statement to execute
-            connection = getConnection();
+               if(commitQuery)
+                      connection = getConnection();
             statement = connection.prepareStatement(query);
             addParameters.accept(statement);
             result = statement.executeUpdate();
-            connection.commit();
+            ResultSet uniqueId = getGeneratedKeys(connection);            
+            // for insert statement the result is the last max row inserted
+            if(uniqueId != null && uniqueId.next()) 
+                result = uniqueId.getInt("uniqueid");
+                
+            if(commitQuery)
+                   connection.commit();
             
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Error connecting to db " + ex.getMessage());
+            if(commitQuery) {
+                   connection.rollback();
+            }
+            else
+                   throw new SQLException(ex.getMessage());// notify the calling method that the query did not work
+            
         } finally {
-            // close the connection
+               // close the connection
             if (statement != null)                
-                statement.close();                
-            if (connection != null) 
-                connection.close();
+                statement.close(); 
+               if(commitQuery && connection != null)
+                      connection.close();
                 
         }
         // return the result
         return result;
+           
     }
-
+    
+    //gets the last row inserted
+    private ResultSet getGeneratedKeys(Connection conn) throws SQLException {
+        PreparedStatement statement = conn.prepareStatement(
+            "select last_insert_rowid() as uniqueid;");
+        return statement.executeQuery();
+    }
     /***
      * gets result for a select statement
      * 
@@ -112,13 +132,13 @@ public class SqlliteRepository implements DatabaseRepository {
             System.out.println("Error connecting to db " + ex.getMessage());
         } finally {
             if(result != null)
-            	result.close();
+                   result.close();
             if (statement != null) 
                     statement.close();
             if (connection != null) 
                     connection.close();
         }
-		
+              
         return output;
     }
 
@@ -126,35 +146,38 @@ public class SqlliteRepository implements DatabaseRepository {
      * executes the update statement
      * 
      * @param query update query
+     * @param connection if connection is passed then the roll back and commit should be done by the calling method
      * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
      * @return int the number of rows effected
      */
     @Override
-    public int executeUpdateQuery(String query, Consumer<PreparedStatement> addParameters) throws SQLException{
-        return executeUpdateStatement(query, addParameters);
+    public int executeUpdateQuery(String query, Connection connection, Consumer<PreparedStatement> addParameters) throws SQLException{
+        return executeUpdateStatement(query,connection, addParameters);
     }
 
     /***
      * executes the insert statement
      * @param query update query
+     * @param connection if connection is passed then the roll back and commit should be done by the calling method
      * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
      * @return int the number of rows effected
      */
     @Override
-    public int executeInsertQuery(String query, Consumer<PreparedStatement> addParameters) throws SQLException{
-        return executeUpdateStatement(query, addParameters);
+    public int executeInsertQuery(String query, Connection connection, Consumer<PreparedStatement> addParameters) throws SQLException{
+        return executeUpdateStatement(query,connection, addParameters);
     }
 
     /***
      * executes the delete statement
      * @param query update query
+     * @param connection if connection is passed then the roll back and commit should be done by the calling method
      * @param addParameters Consumer<PreparedStatement> the lambda function called to add the parameter in PreparedStatment
      * @return int the number of rows effected
      */
 
     @Override
-    public int executeDeleteQuery(String query, Consumer<PreparedStatement> addParameters) throws SQLException{
-        return executeUpdateStatement(query, addParameters);
+    public int executeDeleteQuery(String query, Connection connection, Consumer<PreparedStatement> addParameters) throws SQLException{
+        return executeUpdateStatement(query,connection, addParameters);
     }
 
     /***

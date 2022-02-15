@@ -44,9 +44,9 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
     
    //directory where the site review files will be added     
    @Value("${site.review.dir}") public String reviewDirectory;
-	//file where archived files will be added     
+       //file where archived files will be added     
    @Value("${site.review.dir.archived}") public String reviewArchDirectory;
-	 //save file in serialized object configuration to enable it
+        //save file in serialized object configuration to enable it
    @Value("${site.review.saveasserializedobject}")boolean saveAsSerializedObject;
    
    public CoreSiteReviewsRepository(@Value("${site.review.dir}")String reviewDirectory,
@@ -62,10 +62,10 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
      */
     @Override
     public void saveSiteReview(SiteReview review) throws InvalidSiteReviewException{
-    	if(saveAsSerializedObject)
-    		saveAsSerializedObject(review, reviewDirectory);
-    	else
-    		saveAsString(review);
+           if(saveAsSerializedObject)
+                  saveAsSerializedObject(review, reviewDirectory);
+           else
+                  saveAsString(review);
     }  
     
     /***
@@ -75,24 +75,24 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
      * @throws InvalidSiteReviewException
      */
     private void saveAsSerializedObject(SiteReview review, String destination) throws InvalidSiteReviewException {
-    	//fileId is the reference to fetch this specific review file      
+           //fileId is the reference to fetch this specific review file      
         String fileId = createFile(review, destination);
         review.setReviewId(fileId);
-    	try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(fileId))){
-    		output.writeObject(review);
-    	}
-    	catch(IOException ex) {
-    		 System.err.println("Error opening the file " + ex.getMessage());
+           try(ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(fileId))){
+                  output.writeObject(review);
+           }
+           catch(IOException ex) {
+                   System.err.println("Error opening the file " + ex.getMessage());
              throw new InvalidSiteReviewException(ex.getMessage());    
-    	}
+           }
     }
     
     
     //constructs a file name and creates a the file and will return the file full path
     private String createFile(SiteReview review, String destination) throws InvalidSiteReviewException {
-    	//create a new file with user_guid.txt format
-    	 String fileName = review.getUserId() + "_"+ java.util.UUID.randomUUID().toString() + ".txt";
-    	  //fileId is the reference to fetch this specific review file      
+           //create a new file with user_guid.txt format
+            String fileName = review.getUserId() + "_"+ java.util.UUID.randomUUID().toString() + ".txt";
+             //fileId is the reference to fetch this specific review file      
          String fileId = createIfnotExist(destination, fileName);
          return fileId;
     }
@@ -145,44 +145,44 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
     
     //Converts a string from the input file path which has string representation of the object to SiteReview object
     private SiteReview convertToReviewFromString(String filePath) throws IOException, InvalidSiteReviewException{
-    	 SiteReview review = null;
-    	 //create a buffer reader
+            SiteReview review = null;
+            //create a buffer reader
         try(BufferedReader reader = new BufferedReader(new FileReader(filePath))) {            
-	        // this variable keeps track of lines from where the text is extracted to construct the SiteReview object
-	        int line = 0;// set the line number in file
-	        String curLine = reader.readLine();
-	        review = new SiteReview();
-	        while (curLine != null) {
-	            // pick the values from line 1,3,5,7,9, 11 and parse and set in SiteReview object
-	            switch (line) {
-	                case 1 : 
-	                         review.setUserId(Long.parseLong(curLine));
-	                         break;
-	                case 3: 
-	                         review.setTitle(curLine);
-	                         break;
-	                case 5:
-	                         review.setComment(curLine);
-	                         break;
-	                case 7: review.setSubmittedDate(DateFormatter.convertToSystemDate(curLine));
-	                         break;
-	                 case 9:
-	                         review.setReviewId(curLine);
-	                         break;
-	                 case 11:
-	                	 if(curLine != null || curLine.length() != 0)
-	                		 review.setReviewedDate(DateFormatter.convertToSystemDate(curLine));
+               // this variable keeps track of lines from where the text is extracted to construct the SiteReview object
+               int line = 0;// set the line number in file
+               String curLine = reader.readLine();
+               review = new SiteReview();
+               while (curLine != null) {
+                   // pick the values from line 1,3,5,7,9, 11 and parse and set in SiteReview object
+                   switch (line) {
+                       case 1 : 
+                                review.setUserId(Long.parseLong(curLine));
+                                break;
+                       case 3: 
+                                review.setTitle(curLine);
+                                break;
+                       case 5:
+                                review.setComment(curLine);
+                                break;
+                       case 7: review.setSubmittedDate(DateFormatter.convertToSystemDate(curLine));
+                                break;
+                        case 9:
+                                review.setReviewId(curLine);
+                                break;
+                        case 11:
+                               if(curLine != null || curLine.length() != 0)
+                                      review.setReviewedDate(DateFormatter.convertToSystemDate(curLine));
                          break;
-	                 default: break;
-	            }
-	            
-	           //get the next line
-	            curLine = reader.readLine();
-	            //increment the line
-	            line++;                    
-	        }
+                        default: break;
+                   }
+                   
+                  //get the next line
+                   curLine = reader.readLine();
+                   //increment the line
+                   line++;                    
+               }
         }catch(ParseException ex){
-        	throw new InvalidSiteReviewException(ex.getMessage());
+               throw new InvalidSiteReviewException(ex.getMessage());
         }
 
     
@@ -198,12 +198,12 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
      * @throws InvalidSiteReviewException
      */
     private SiteReview convertReviewFromStreamToObject(String filePath) throws IOException, InvalidSiteReviewException{
-    	
-    	try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filePath))) {
-    		
-    		return (SiteReview)input.readObject();
-    		
-    	} catch (FileNotFoundException | ClassNotFoundException ex) {
+           
+           try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(filePath))) {
+                  
+                  return (SiteReview)input.readObject();
+                  
+           } catch (FileNotFoundException | ClassNotFoundException ex) {
             System.err.println("Error opening the file " + ex.getMessage());
             throw new InvalidSiteReviewException(ex.getMessage());    
         }   
@@ -255,27 +255,27 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
     }
 
     //archive the review as string
-    private void archivedReviewAsString(Path source) throws InvalidSiteReviewException, IOException    {    	
-    	 String destinationFilePath = createIfnotExist(reviewArchDirectory , source.getFileName().toString());
+    private void archivedReviewAsString(Path source) throws InvalidSiteReviewException, IOException    {           
+            String destinationFilePath = createIfnotExist(reviewArchDirectory , source.getFileName().toString());
          Path destination = Paths.get(destinationFilePath);
-    	// move the file
+           // move the file
         Files.move(source, destination , StandardCopyOption.REPLACE_EXISTING);
         // append in the file the reviewed date
         try(Formatter outfile = new Formatter(new FileWriter(destinationFilePath, true))){ // open file        
             
-        	outfile.format(String.format("\nReviewedDate\n%s", DateFormatter.convertToSystemDateNowString()));
+               outfile.format(String.format("\nReviewedDate\n%s", DateFormatter.convertToSystemDateNowString()));
         }
-    	
+           
     }
     
     //archive the review as stream
     private void createArchivedReviewAsStream(Path source) throws IOException, InvalidSiteReviewException    {
-    	// get the deserialized object
-    	SiteReview review = convertReviewFromStreamToObject(source.toString());
-    	// save this object in arch folder
-    	saveAsSerializedObject(review, reviewArchDirectory);
-    	// delte the source
-    	Files.delete(source);
+           // get the deserialized object
+           SiteReview review = convertReviewFromStreamToObject(source.toString());
+           // save this object in arch folder
+           saveAsSerializedObject(review, reviewArchDirectory);
+           // delte the source
+           Files.delete(source);
     }
     /**
      * Moves the review to archived folder
@@ -294,7 +294,7 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
                 throw new InvalidSiteReviewException("Review Id is Invalid");
                                         
             if(saveAsSerializedObject)
-            	createArchivedReviewAsStream(source);
+                   createArchivedReviewAsStream(source);
             
             else archivedReviewAsString(source);
         }

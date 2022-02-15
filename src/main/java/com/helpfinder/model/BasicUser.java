@@ -15,6 +15,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 //Other user types are implemented from this class 
 public abstract class BasicUser implements User {    
     
@@ -28,7 +30,7 @@ public abstract class BasicUser implements User {
      * @param EUserType user type
      */
     public BasicUser(long userId, String address, String firstName, String lastname, String emailAddress, EUserType userType) {
-    	   this.userId = userId;
+              this.userId = userId;
            this.userName = emailAddress;
            this.setUserInformation(address, firstName, lastname, emailAddress, userType);
     }
@@ -65,6 +67,7 @@ public abstract class BasicUser implements User {
     private String userName;
     
     //password set by the user
+    @JsonIgnore
     private String password;
     
     //Date when this user was created  
@@ -72,7 +75,10 @@ public abstract class BasicUser implements User {
     
     
     //Date when user was last updated
-    private Date UpdatedOnDate;
+    private Date updatedOnDate;
+    
+    // users work description
+    private String userDescription;
     
     //cosine and sine values for lat and long used for distance calculations
     private Double cosLatRadians;
@@ -108,12 +114,12 @@ public abstract class BasicUser implements User {
      * Gets the latitude and longitude of the users address
      *@return Double[] latitude and longitude of the users address
      * */
-    public Double[] getLatLong()
+    public double[] getLatLong()
     {
-        Double[] latLongValues = new Double[2];        
+        double[] latLongValues = new double[2];        
         if(latitude != null && longitude != null) {
-            latLongValues[0] = Double.valueOf(latitude);
-            latLongValues[1] = Double.valueOf(longitude);
+            latLongValues[0] = (double)Double.valueOf(latitude);
+            latLongValues[1] = (double)Double.valueOf(longitude);
         }
         return  latLongValues;
     }
@@ -257,9 +263,9 @@ public abstract class BasicUser implements User {
     
     /**
      * sets the latitude and longitude of the users address
-     *@param Double[] latitude and longitude of the users address
+     *@param double[] latitude and longitude of the users address
      * */
-    public void setLatLong(Double[] latLong)
+    public void setLatLong(double[] latLong)
     {
         if(latLong == null || latLong.length != 2)
             throw new IllegalArgumentException("latLong array should be of size 2");
@@ -322,7 +328,7 @@ public abstract class BasicUser implements User {
      * @return boolean true if allowed to work otherwise false
      */
     public boolean isAllowedToTakeWork() {
-    	return getPermissions().contains(UserPermissions.ALLOWED_TO_BE_HIRE);
+           return getPermissions().contains(UserPermissions.ALLOWED_TO_BE_HIRE);
     }
     
     /***
@@ -337,19 +343,19 @@ public abstract class BasicUser implements User {
     
     //set the date created
     public void setCreatedOn(Date date) {
-    	createdOnDate = date;
+           createdOnDate = date;
     }
     //set the date updated
     public void setUpdatedOn(Date date){
-    	UpdatedOnDate = date;
+           updatedOnDate = date;
     }
     //get the date created
     public Date getCreatedOn() {
-    	return createdOnDate;
+           return createdOnDate;
     }
     //get the date updated
     public Date getUpdatedOn() {
-    	return UpdatedOnDate;
+           return updatedOnDate;
     }
     
     /***
@@ -357,38 +363,46 @@ public abstract class BasicUser implements User {
      * @return Set<UserPermissions> the user permissions
      */
     @Override
-    public List<UserPermissions> getPermissions() {	  
-    	throw new NotImplementedException();
+    public List<UserPermissions> getPermissions() {         
+           throw new NotImplementedException();
     }
     
     //getter setters for consine and sine values of lat/long
     public Double getCosLatRadians() {
-    	return this.cosLatRadians;
+           return this.cosLatRadians;
     }
     
     public Double getSinLatRadians() {
-    	return this.sinLatRadians;
+           return this.sinLatRadians;
     }
     public Double getCosLongRadians() {
-    	return this.cosLongRadians;
+           return this.cosLongRadians;
     }
     public Double getSinLongRadians() {
-    	return this.sinLongRadians;
+           return this.sinLongRadians;
     }
     
     public void setCosLatRadians(Double value) {
-    	this.cosLatRadians = value;
+           this.cosLatRadians = value;
     }
     public void setSinLatRadians(Double value) {
-    	this.sinLatRadians = value;
+           this.sinLatRadians = value;
     }
     public void setCosLongRadians(Double value) {
-    	this.cosLongRadians = value;
+           this.cosLongRadians = value;
     }
     public void setSinLongRadians(Double value) {
-    	this.sinLongRadians = value;
+           this.sinLongRadians = value;
     }
     
+    // get set user work description
+
+        public String getUserDescription()        {               
+               return userDescription;
+        }
+        public void setUserDescription(String desc) {
+               this.userDescription = desc;
+        }
     
 }
 

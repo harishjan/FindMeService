@@ -22,6 +22,63 @@ These are the following packages in the project
 4) Workforce locator back end changes is partially complete, functionality to identify lat long form  OpenStreetmaplocation is complete.(Apis to expose these functionalities are not complete)</br>
 5) UI development is is progress, This project will be using React JS framework for building the UI</br>
 
+
+#####Details about Assignment 5####
+The code to demonstrate concurrency is based on a hypothetical  scenario.</br>
+In this example a system is provided with a list of Jobs in text file where there will be following details:</br>
+JobId: the id of the job</br>
+Jobname: Name of the job performed</br>
+Complexity: complexity defines the money paid for the job; workers make more money with higher complex work. (Complexity of work range from 1 - 100)</br>
+E.g., of the input Job looks this</br>
+1 job1 50 </br>
+2 job2 60</br>
+3 job3 50</br>
+4 job4 70</br>
+</br>
+The Workers are also provided as an input text file where the following information is provided:</br>
+Worker Id : Id of the worker</br>
+Worker Name: Name of the worker</br>
+Efficiency: Efficiency of the worker, a worker with higher efficiency can finish the work faster (Efficiency ranges from 1- 10).</br>
+The amount of time to finish a work in millisecond for a work is defined as </br>
+= (Complexity of the work / Efficiency of the work) * 1000</br>
+E.g.: Worker input file looks like this:</br>
+1 Worker1 5</br>
+2 Worker2 9</br>
+</br>
+###To run unit test for Assignment 5 using junit##
+Run below test in >> JobAllocationProcessTest.java</br>
+>> test_AllTheJobsAreGettingProcessed()</br>
+
+</br>
+Output should look like this:</br>
++++++++++++++++++++++++++++++++++++++++++++Job Details++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+</br>
+Job job2 completed by worker Sam and took 7000 ms to complete, and was awarded 0.600 $</br>
+Job job1 completed by worker Peter and took 10000 ms to complete, and was awarded 0.500 $</br>
+Job job3 completed by worker Sam and took 6000 ms to complete, and was awarded 0.500 $</br>
+Job job5 completed by worker Sam and took 8000 ms to complete, and was awarded 0.700 $</br>
+Job job4 completed by worker Peter and took 14000 ms to complete, and was awarded 0.700 $</br>
+Job job7 completed by worker Peter and took 4000 ms to complete, and was awarded 0.200 $</br>
+Job job6 completed by worker Sam and took 12000 ms to complete, and was awarded 1.000 $</br>
+Job job9 completed by worker Sam and took 3000 ms to complete, and was awarded 0.300 $</br>
+Job job8 completed by worker Peter and took 12000 ms to complete, and was awarded 0.600 $</br>
+Job job10 completed by worker Sam and took 10000 ms to complete, and was awarded 0.800 $</br>
+Job job12 completed by worker Sam and took 3000 ms to complete, and was awarded 0.300 $</br>
+Job job13 completed by worker Sam and took 3000 ms to complete, and was awarded 0.300 $</br>
+Job job11 completed by worker Peter and took 18000 ms to complete, and was awarded 0.900 $</br>
+Job job14 completed by worker Sam and took 11000 ms to complete, and was awarded 0.900 $</br>
+</br>
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+</br>
+</br>
++++++++++++++++++++++++++++++++++++++++++Worker Details+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+</br>
+Worker Sam earned 5.400 $ in total </br>
+Worker Peter earned 2.900 $ in total </br>
+</br>
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</br>
+</br>
+
 ###To Run the tests for assignment 4 using JUnit :###
 
 Run below test in >> SiteReviewsRepositoryTest.java</br>
@@ -29,7 +86,9 @@ Run below test in >> SiteReviewsRepositoryTest.java</br>
 2) test_Create_SiteReviewStream_Archive_And_Check_if_Review_Exist()</br>
 
 
-The output should look like below</br>
+
+
+The output should look like below</br> and the persisted stream file should be in "test\reviewsstream "folder
 
 Creating review with below details </br>
 ++++++++++++++++++++++++++++++++++++++++++++++++++</br>

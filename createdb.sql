@@ -76,3 +76,31 @@ VALUES('Cleaning');
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('User',0);
 COMMIT;
+
+
+
+
+ 
+        insert into WorkerSkill(workerskillname) values("HandyMan");
+        insert into WorkerSkill(workerskillname) values("Painter");
+        insert into WorkerSkill(workerskillname) values("Cooking");
+        insert into WorkerSkill(workerskillname) values("Housecleaning");
+        insert into WorkerSkill(workerskillname) values("Maintenance");
+        insert into WorkerSkill(workerskillname) values("Plumber");
+        insert into WorkerSkill(workerskillname) values("Electrician");
+        insert into WorkerSkill(workerskillname) values("Carpenter");
+        insert into WorkerSkill(workerskillname) values("SnowRemoval");
+        insert into WorkerSkill(workerskillname) values("Demolition");
+        insert into WorkerSkill(workerskillname) values("DebrisRemoval");
+        insert into WorkerSkill(workerskillname) values("UnloadingAndLoading");
+        insert into WorkerSkill(workerskillname) values("ForkliftOperation");
+        insert into WorkerSkill(workerskillname) values("HandToolsPowerTools");
+        insert into WorkerSkill(workerskillname) values("FarmAndFieldWork");
+        insert into WorkerSkill(workerskillname) values("Catering");
+        insert into WorkerSkill(workerskillname) values("GrassCutting");
+        insert into WorkerSkill(workerskillname) values("Construction");
+        insert into WorkerSkill(workerskillname) values("SecurityGuard");
+        insert into WorkerSkill(workerskillname) values("Chauffeur");
+        insert into WorkerSkill(workerskillname) values("Butler");
+        insert into WorkerSkill(workerskillname) values("Janitor");
+        insert into WorkerSkill(workerskillname) values("AthleticTrainer");

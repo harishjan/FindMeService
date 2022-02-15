@@ -15,14 +15,13 @@ import org.springframework.stereotype.Component;
 
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.WorkInquiry;
-import com.helpfinder.model.WorkerSkill;
 
 @Component
 public interface WorkForceLocatorRepository<T extends BasicUser> {
 
     // find and return the users matching the skills and mileRadius
-	//returns multivaluemap of distance and the user
-    public MultiValuedMap<Double, T> findWorkforceForSkills(Double[] latlong, List<WorkerSkill> skills, double mileRadius);
+       //returns multivaluemap of distance and the user
+    public MultiValuedMap<Double, T> findWorkforceForSkills(double[] latlong, List<String> skills, double mileRadius);
     
     // get the inquiry for the given inquiryId
     public WorkInquiry getInquiry(int inquiryId);
@@ -42,7 +41,7 @@ public interface WorkForceLocatorRepository<T extends BasicUser> {
      * @return double the value in miles
      */
     public static double convertCosToMiles(double distanceInACos) {
-    	return convertCosToKiloMeters(distanceInACos) * 0.621371;
+           return Math.acos(distanceInACos ) *  (double)3958.756;
     }
     
 
@@ -52,9 +51,14 @@ public interface WorkForceLocatorRepository<T extends BasicUser> {
      * @return double the cosine value
      */
     public static double getCosRadians(double value) {
-    	return Math.cos(degree2radians(value));
+           return Math.cos(degree2radians(value));
     }
     
+    ///formula to convert miles to cos
+    public static double getDistanceInMilesToCos(double distanceinMile) {        
+        return Math.cos(distanceinMile / 3958.756);        
+    }
+ 
     
     /***
      * convert the given value  raidans sine value
@@ -62,7 +66,7 @@ public interface WorkForceLocatorRepository<T extends BasicUser> {
      * @return double the sine value
      */
     public static double getSinRadians(double value) {
-    	return Math.sin(degree2radians(value));
+           return Math.sin(degree2radians(value));
     }
     
     /**
@@ -75,3 +79,4 @@ public interface WorkForceLocatorRepository<T extends BasicUser> {
     }
     
 }
+

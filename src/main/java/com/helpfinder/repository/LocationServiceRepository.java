@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public interface LocationServiceRepository {
     // gets the latLog From a given address
-    public Double[] getLatLogFromAddress(String address);
+    public double[] getLatLogFromAddress(String address);
 
     // checks if the address is valid
     public boolean isValidAddress(String address);

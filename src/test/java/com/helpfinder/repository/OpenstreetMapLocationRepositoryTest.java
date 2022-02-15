@@ -11,16 +11,16 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 //Test class to verify location services are working
 //still working on this implementation
 public class OpenstreetMapLocationRepositoryTest {
-	
-	OpenstreetMapLocationRepository locationRepository;
-	 @BeforeAll
-	  public void setup()    {
-		 locationRepository = new OpenstreetMapLocationRepository();    
-	  }
-	 @Test
-	 public void GetLatLongTest()
-	 {
-		 Double[] latLong = locationRepository.getLatLogFromAddress("1600 Pennsylvania Avenue NW, Washington, DC 20500");
-		 
-	 }
+       
+       OpenstreetMapLocationRepository locationRepository;
+        @BeforeAll
+         public void setup()    {
+               locationRepository = new OpenstreetMapLocationRepository();    
+         }
+        @Test
+        public void GetLatLongTest()
+        {
+               double[] latLong = locationRepository.getLatLogFromAddress("1600 Pennsylvania Avenue NW, Washington, DC 20500");
+               
+        }
 }

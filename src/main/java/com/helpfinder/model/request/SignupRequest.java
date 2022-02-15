@@ -7,7 +7,11 @@
 
 package com.helpfinder.model.request;
 
+import java.util.List;
+
 import javax.validation.constraints.*;
+
+import com.helpfinder.model.WorkerSkill;
 
 public class SignupRequest {
 
@@ -32,8 +36,26 @@ public class SignupRequest {
   @NotBlank
   @Size(min = 10, max = 100)  
   private String address;
+    
+  private String userDescription;
+  
+  private  List<WorkerSkill> skills;
 
+  public void setUserDescription(String userDescription) {
+    this.userDescription = userDescription;
+  }
+  public String getUserDescription() {
+    return userDescription;
+  }
+  
+  public List<WorkerSkill> getSkills() {
+    return skills;
+  }
 
+  public void setSkills(List<WorkerSkill> skills) {
+    this.skills = skills;
+  }
+  
 
   public void setAddress(String address) {
     this.address = address;

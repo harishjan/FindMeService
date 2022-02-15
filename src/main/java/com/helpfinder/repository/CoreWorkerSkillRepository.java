@@ -6,9 +6,11 @@
  * @since   21-jan-2022
  */
 package com.helpfinder.repository;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,40 +22,60 @@ public class CoreWorkerSkillRepository implements WorkerSkillRepository {
 
     @Autowired
     DatabaseRepository databaseRepository;
-    List<WorkerSkill> skills;
-    
+    HashMap<Integer, WorkerSkill> skills;
+    private String selectWorkerSkill = "select WorkerSkillid, workerSkillName from WorkerSkill;";
+  
     /**
      * constructor     * 
      */    
     public CoreWorkerSkillRepository(DatabaseRepository databaseRepository) {
         this.databaseRepository = databaseRepository;
-        // hard coded skills
-        this.skills = new ArrayList<WorkerSkill>();
-        this.skills.add(new WorkerSkill(1, "HandyMan"));
-        this.skills.add(new WorkerSkill(2, "Painter"));
-        this.skills.add(new WorkerSkill(3, "Cooking"));
-        this.skills.add(new WorkerSkill(4, "Housecleaning"));
-        this.skills.add(new WorkerSkill(5, "Maintenance"));
-        this.skills.add(new WorkerSkill(6, "Plumber"));
-        this.skills.add(new WorkerSkill(7, "Electrician"));
-        this.skills.add(new WorkerSkill(8, "Carpenter"));
-        this.skills.add(new WorkerSkill(9, "SnowRemoval"));
-        this.skills.add(new WorkerSkill(10, "Demolition"));
-        this.skills.add(new WorkerSkill(11, "DebrisRemoval"));
-        this.skills.add(new WorkerSkill(12, "UnloadingAndLoading"));
-        this.skills.add(new WorkerSkill(13, "ForkliftOperation"));
-        this.skills.add(new WorkerSkill(14, "HandToolsPowerTools"));
-        this.skills.add(new WorkerSkill(15, "FarmAndFieldWork"));
-        this.skills.add(new WorkerSkill(16, "Catering"));
-        this.skills.add(new WorkerSkill(17, "GrassCutting"));
-        this.skills.add(new WorkerSkill(18, "Construction"));
-        this.skills.add(new WorkerSkill(19, "SecurityGuard"));
-        this.skills.add(new WorkerSkill(20, "Chauffeur"));
-        this.skills.add(new WorkerSkill(21, "Butler"));
-        this.skills.add(new WorkerSkill(22, "Janitor"));
-        this.skills.add(new WorkerSkill(23, "AthleticTrainer"));
+        loadWorkerSkills();
     }
+    
+    private void loadWorkerSkills()    {
+        try {
+            this.skills =  (HashMap<Integer, WorkerSkill>)databaseRepository.executeSelectQuery(selectWorkerSkill, (s)->{},(result)->{
+                HashMap<Integer, WorkerSkill> skills = new HashMap<Integer, WorkerSkill>();
+                try {
+                   while(result != null && result.next()) {
+                       skills.put((Integer)result.getInt("WorkerSkillid"), new WorkerSkill(result.getInt("WorkerSkillid"), 
+                       result.getString("workerSkillName")));
+                   }            
+                } catch (SQLException e) {                       
+                        System.err.println("Error fetching work skills");
+                }
+                return skills;
+            });
+        } catch (SQLException e) {
+            System.err.println("Error fetching work skills");
+        }                
         
+    }
+    
+    /***
+     * gets the work skill matching the work skill id
+     */
+    @Override
+    public WorkerSkill getWorkerskillById(int id) {
+        if(skills== null || skills.size() == 0)
+            loadWorkerSkills();
+        return skills.get(id);
+    }
+    
+    /**
+     * gets the work skill matching the skill name
+     */
+    @Override
+    public WorkerSkill getWorkerskillByName(String skillName) {
+        if(skills== null || skills.size() == 0)
+            loadWorkerSkills();
+        List<WorkerSkill> skill = skills.values().stream().filter(x -> x.getSkillName().toLowerCase()
+                .equals(skillName.toLowerCase())).collect(Collectors.toList());
+        if(skill.size() > 0)
+            return skill.get(0);
+        return null;
+    }
     
     /**
      * gets the list of skills which are available in the system to hire
@@ -62,7 +84,9 @@ public class CoreWorkerSkillRepository implements WorkerSkillRepository {
      */
     @Override
     public List<WorkerSkill> getAllSkillsets() {
-        return skills;
+        if(skills== null || skills.size() == 0)
+            loadWorkerSkills();
+        return new ArrayList<WorkerSkill>(skills.values());
     }
 
     @Override

@@ -28,7 +28,7 @@ public class WorkerUserTest {
         
         // set the user attributes
         WorkerUser user = new WorkerUser((long) 1, "test address", "John", "M", 
-        		"test@email.com",EUserType.ROLE_WORKER_USER, workerSkills);
+                      "test@email.com",EUserType.ROLE_WORKER_USER, workerSkills);
 
         // assert the values
         assertEquals(user.getAddress(), "test address");

@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.helpfinder.security.jwt.JwtUtils;
 import com.helpfinder.exception.InvalidAddressException;
 import com.helpfinder.exception.InvalidPasswordException;
+import com.helpfinder.exception.InvalidSkillException;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
@@ -70,29 +71,29 @@ public class AuthController {
    */
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthRequest loginRequest) {
-	  
-	try
-	{
+         
+       try
+       {
 
-	    Authentication authentication = authenticationManager.authenticate(
-	        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-	
-	    SecurityContextHolder.getContext().setAuthentication(authentication);
-	    String jwt = jwtUtils.generateJwtToken(authentication);
-	    
-	    SecureUserDetails userDetails = (SecureUserDetails) authentication.getPrincipal();    
-	    List<String> roles = userDetails.getAuthorities().stream()
-	        .map(item -> item.getAuthority())
-	        .collect(Collectors.toList());
-	
-	    return ResponseEntity.ok(new JwtResponse(jwt, 
-	                         userDetails.getId(), 
-	                         userDetails.getUsername(), 
-	                         userDetails.getEmail(), 
-	                         roles));
-	}
-	catch(BadCredentialsException | UsernameNotFoundException  ex){
-    	System.err.println("Invalid UserName or Password " + ex.getMessage());
+           Authentication authentication = authenticationManager.authenticate(
+               new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+       
+           SecurityContextHolder.getContext().setAuthentication(authentication);
+           String jwt = jwtUtils.generateJwtToken(authentication);
+           
+           SecureUserDetails userDetails = (SecureUserDetails) authentication.getPrincipal();    
+           List<String> roles = userDetails.getAuthorities().stream()
+               .map(item -> item.getAuthority())
+               .collect(Collectors.toList());
+       
+           return ResponseEntity.ok(new JwtResponse(jwt, 
+                                userDetails.getId(), 
+                                userDetails.getUsername(), 
+                                userDetails.getEmail(), 
+                                roles));
+       }
+       catch(BadCredentialsException | UsernameNotFoundException  ex){
+           System.err.println("Invalid UserName or Password " + ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid UserName or Password");
     }
   }
@@ -104,7 +105,7 @@ public class AuthController {
    */
   @PostMapping("/signup")
   public ResponseEntity<?> registerBsicUser(@Valid @RequestBody SignupRequest signUpRequest) {
-	return registerUser(signUpRequest, EUserType.ROLE_HELPFINDER_USER);    
+       return registerUser(signUpRequest, EUserType.ROLE_HELPFINDER_USER);    
   }
   
   
@@ -115,7 +116,7 @@ public class AuthController {
    */
   @PostMapping("/signup/registerWorker/")
   public ResponseEntity<?> registerWorker(@Valid @RequestBody SignupRequest signUpRequest) {
-	return registerUser(signUpRequest, EUserType.ROLE_WORKER_USER);    
+       return registerUser(signUpRequest, EUserType.ROLE_WORKER_USER);    
   }
   
   
@@ -128,7 +129,7 @@ public class AuthController {
   @PostMapping("/signup/registerAdmin/")
   @PreAuthorize("hasAuthority('ADD_ADMIN_USER')")
   public ResponseEntity<?> registerAdmin(@Valid @RequestBody SignupRequest signUpRequest) {
-	return registerUser(signUpRequest, EUserType.ROLE_ADMIN);
+       return registerUser(signUpRequest, EUserType.ROLE_ADMIN);
   }
   
   
@@ -141,39 +142,39 @@ public class AuthController {
   @PostMapping("/signup/registerModerator/")
   @PreAuthorize("hasAuthority('ARCH_SITE_FEEDBACK') or hasAuthority('ADD_ADMIN_USER')")  
   public ResponseEntity<?> registerModerator(@Valid @RequestBody SignupRequest signUpRequest) {
-	  return registerUser(signUpRequest, EUserType.ROLE_MODERATOR);
+         return registerUser(signUpRequest, EUserType.ROLE_MODERATOR);
   }
 
+  
   /***
    * Common method to register users
    * @param signUpRequest
    * @param userType
    * @return
    */
-  private ResponseEntity<?> registerUser(SignupRequest signUpRequest, EUserType userType)
+  private ResponseEntity<?> registerUser(SignupRequest signUpRequest, EUserType userType)  
   {
-	    if (userService.existsByEmailAddress(signUpRequest.getEmail()) != null) {
-	      return ResponseEntity
-	          .badRequest()
-	          .body(new MessageResponse("Error: Email is already in use!"));
-	    }
+           if (userService.existsByEmailAddress(signUpRequest.getEmail()) != null) {
+             return ResponseEntity
+                 .badRequest()
+                 .body(new MessageResponse("Error: Email is already in use!"));
+           }
 
-	    // Create new user's account	    
-	    try {
-				userService.createUser(signUpRequest.getAddress(), signUpRequest.getFirstName(),signUpRequest.getLastName(), 
-						signUpRequest.getEmail(), signUpRequest.getEmail(), signUpRequest.getPassword(), userType);		
-	    }
-	    catch (UserExistException e) {
-	        System.err.println("User exist in the system " + e.getMessage());
-	        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-	    }
-	    catch(RepositoryCreationException | InvalidAddressException | InvalidPasswordException ex ){
-	    	System.err.println("Error creating user " + ex.getMessage());
-	        return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
-	    
-	    }
+           // Create new user's account           
+           try {
+               userService.createUser(signUpRequest, userType);              
+           }
+           catch (UserExistException e) {
+               System.err.println("User exist in the system " + e.getMessage());
+               return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+           }
+           catch(RepositoryCreationException | InvalidAddressException | InvalidPasswordException | InvalidSkillException ex ){
+                  System.err.println("Error creating user " + ex.getMessage());
+               return ResponseEntity.badRequest().body(new MessageResponse(ex.getMessage()));
+           
+           }
 
-	    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+           return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
   
 }

@@ -45,8 +45,8 @@ public class SecureUserDetails implements UserDetails {
   }
 
   public static SecureUserDetails build(User user) {
-	  Set<GrantedAuthority> authorities = user.getPermissions().stream().map(p -> new SimpleGrantedAuthority(p.name())).collect(Collectors.toSet());			 
-	     
+         Set<GrantedAuthority> authorities = user.getPermissions().stream().map(p -> new SimpleGrantedAuthority(p.name())).collect(Collectors.toSet());                      
+            
     return new SecureUserDetails(
         user.getUserId(), 
         user.getUserName(), 
@@ -68,7 +68,7 @@ public class SecureUserDetails implements UserDetails {
     return email;
   }
   public void setPassword(String password) {
-	    this.password = password;
+           this.password = password;
   }
 
   @Override
@@ -110,4 +110,7 @@ public class SecureUserDetails implements UserDetails {
     SecureUserDetails user = (SecureUserDetails) o;
     return Objects.equals(id, user.id);
   }
+  
+  
+
 }

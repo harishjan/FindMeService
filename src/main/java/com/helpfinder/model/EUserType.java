@@ -23,14 +23,14 @@ public enum EUserType {
          private static final Map<String, EUserType> nameToValueMap =
          new HashMap<String, EUserType>();
      
-	     static {
-	         for (EUserType value : EnumSet.allOf(EUserType.class)) {
-	             nameToValueMap.put(value.name(), value);
-	         }
-	     }
-	     
-	     public static Optional<EUserType> forName(String name) {
-	         return Optional.of(nameToValueMap.get(name));
-	     }
+            static {
+                for (EUserType value : EnumSet.allOf(EUserType.class)) {
+                    nameToValueMap.put(value.name(), value);
+                }
+            }
+            
+            public static Optional<EUserType> forName(String name) {
+                return Optional.of(nameToValueMap.get(name));
+            }
 }
 

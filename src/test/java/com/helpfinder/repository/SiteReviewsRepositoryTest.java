@@ -34,7 +34,7 @@ public class SiteReviewsRepositoryTest {
      */
     @BeforeAll
     public void setup()    {
-    	// this instance stores the reviews in string format
+           // this instance stores the reviews in string format
         siteReviewsRepositoryString = new CoreSiteReviewsRepository("/test/reviews/", "/test/reviews/arch/", false);
         // this instance stores the review in serialized format 
         siteReviewsRepositoryStream = new CoreSiteReviewsRepository("/test/reviewsstream/", "/test/reviewsstream/arch/", true);
@@ -62,8 +62,8 @@ public class SiteReviewsRepositoryTest {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++");
         //save the review
         try {
-        	siteReviewsRepositoryStream.saveSiteReview(review);
-        	System.out.println("Review serialized and stored successfully");
+               siteReviewsRepositoryStream.saveSiteReview(review);
+               System.out.println("Review serialized and stored successfully");
         } catch (InvalidSiteReviewException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -71,7 +71,7 @@ public class SiteReviewsRepositoryTest {
         //get the review here the sorting is done ascending to get the latest docs first
         List<SiteReview> siteReviews;
         try {
-        	//This should deserialize the object
+               //This should deserialize the object
             siteReviews = siteReviewsRepositoryStream.getSiteReview(10, false);
         
             boolean foundReview = false; 
@@ -115,8 +115,8 @@ public class SiteReviewsRepositoryTest {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++");
         //save the review
         try {
-        	siteReviewsRepositoryStream.saveSiteReview(review);
-        	System.out.println("Review serialized and stored successfully");
+               siteReviewsRepositoryStream.saveSiteReview(review);
+               System.out.println("Review serialized and stored successfully");
         } catch (InvalidSiteReviewException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -131,12 +131,12 @@ public class SiteReviewsRepositoryTest {
                 if(siteReview.getTitle().equals(title)) {
                     // archive the file using the review Id
                     try {
-                    	System.out.println("Review deserialized and pulled from file with below details");
-                    	System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++");
+                           System.out.println("Review deserialized and pulled from file with below details");
+                           System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++");
                         System.out.println(siteReview.toString());
                         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++");
-                    	siteReviewsRepositoryStream.archiveReview(siteReview.getReviewId());
-                    	System.out.println("Review serialized and archived successfully");
+                           siteReviewsRepositoryStream.archiveReview(siteReview.getReviewId());
+                           System.out.println("Review serialized and archived successfully");
                     } catch (InvalidSiteReviewException e) {                    
                         e.printStackTrace();
                     }
@@ -155,8 +155,8 @@ public class SiteReviewsRepositoryTest {
                     break;
                 }
             }
-            if(reviewDoesnotExist)            	
-            	System.out.println(String.format("Review with title %s not found after archiving ", title));
+            if(reviewDoesnotExist)                   
+                   System.out.println(String.format("Review with title %s not found after archiving ", title));
             assertTrue(reviewDoesnotExist);
             
         } catch (InvalidSiteReviewException e1) {            
@@ -182,7 +182,7 @@ public class SiteReviewsRepositoryTest {
         review.setTitle(title);
         //save the review
         try {
-        	siteReviewsRepositoryString.saveSiteReview(review);
+               siteReviewsRepositoryString.saveSiteReview(review);
         } catch (InvalidSiteReviewException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -224,7 +224,7 @@ public class SiteReviewsRepositoryTest {
         review.setTitle(title);
         //save the review
         try {
-        	siteReviewsRepositoryString.saveSiteReview(review);
+               siteReviewsRepositoryString.saveSiteReview(review);
         } catch (InvalidSiteReviewException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -239,7 +239,7 @@ public class SiteReviewsRepositoryTest {
                 if(siteReview.getTitle().equals(title)) {
                     // archive the file using the review Id
                     try {
-                    	siteReviewsRepositoryString.archiveReview(siteReview.getReviewId());
+                           siteReviewsRepositoryString.archiveReview(siteReview.getReviewId());
                     } catch (InvalidSiteReviewException e) {                    
                         e.printStackTrace();
                     }

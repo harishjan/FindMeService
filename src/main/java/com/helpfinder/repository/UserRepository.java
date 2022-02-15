@@ -71,7 +71,7 @@ public interface UserRepository<T extends User> {
     public List<WorkInquiry> getWorkInquiriesHired(Long userId);
     
     //gets the user based on usertype from the resultset
-    public T createUserByTypeFromResultSet(ResultSet result) throws SQLException, InvalidAttributesException, ParseException;
+    public T createUserByTypeFromResultSet(ResultSet result, boolean addSkills) throws SQLException, InvalidAttributesException, ParseException;
     /***
      * creates a user for the given user type  
      */

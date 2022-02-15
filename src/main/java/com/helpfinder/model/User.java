@@ -15,7 +15,7 @@ public interface User {
     //getter/setter methods of all properties that a user should have
     public String getEmailAddress();
     public String getAddress();
-    public Double[] getLatLong();
+    public double[] getLatLong();
     public String getFirstName();
     public String getLastName();
     public EUserType getUserType();
@@ -24,12 +24,14 @@ public interface User {
     public List<WorkerSkill> getSkills();
     public String getUserName();
     public long getUserId();
+    public String getUserDescription();
+    public void setUserDescription(String desc);
     public String getPassword();
     public void setUserInformation(String address, String firstName, String lastname, String emailAddress, EUserType userType);
     public void setPassword(String password);
     public void setEmailAddress(String emailAddress);
     public void setAddress(String address);
-    public void setLatLong(Double[] latLong);
+    public void setLatLong(double[] latLong);
     public void setFirstName(String firstName);
     public void setLastName(String lastName);
     public void setUserType(EUserType userType);

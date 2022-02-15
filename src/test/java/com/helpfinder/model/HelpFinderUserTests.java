@@ -20,7 +20,7 @@ public class HelpFinderUserTests {
 
         @Test
         public void testNewInstanceOfBasicUser() {           
-        	
+               
             //create instance of user
             BasicUser user = new HelpFinderUser();
             user.setAddress("test address");

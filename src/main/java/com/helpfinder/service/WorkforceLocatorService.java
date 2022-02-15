@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.helpfinder.model.BasicUser;
-import com.helpfinder.model.HelpFinderUser;
 import com.helpfinder.model.WorkInquiry;
-import com.helpfinder.model.WorkerSkill;
 import com.helpfinder.repository.WorkForceLocatorRepository;
 
 @Service
@@ -49,13 +47,14 @@ public class WorkforceLocatorService<T extends BasicUser> {
      * radius
      * 
      * @param User              the user requesting the work
-     * @param List<WorkerSkill> the list of skills for which the search is performed
+     * @param userLatLong[] lat long to search     * 
+     * @param List<String> the list of skills for which the search is performed
      * @param mileRadius        the mile radius within which the search is performed
      * @return MultiValueMap<Double, T> multivaluemap with the distance and user as the key value
      */
-    public MultiValuedMap<Double, T> findWorkforce(HelpFinderUser RequestedBy, List<WorkerSkill> skills, Double mileRadius) {
         
-        return workforceLocatorRepo.findWorkforceForSkills(RequestedBy.getLatLong(), skills, mileRadius);
+    public MultiValuedMap<Double, T> findWorkforce(double[] userLatLong, List<String> skills, double mileRadius) {
+        return workforceLocatorRepo.findWorkforceForSkills(userLatLong, skills, mileRadius);
         
     }
 

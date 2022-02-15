@@ -4,8 +4,8 @@ package com.helpfinder.exception;
 
 public class InvalidAddressException extends Exception {    
 
-	 public InvalidAddressException() {}
-	 
+        public InvalidAddressException() {}
+        
    /**
     * constructor
     * @param message the message associated with the exception

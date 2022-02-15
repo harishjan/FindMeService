@@ -11,8 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 
 // the work user implementation from BasicUser
-public class WorkerUser extends BasicUser{
+public class WorkerUser extends BasicUser {       
     
+       
+           
     //empty constructor
     public WorkerUser()    {        
     }
@@ -55,7 +57,7 @@ public class WorkerUser extends BasicUser{
      */
     @Override
     public List<UserPermissions> getPermissions() {
-		return  Arrays.asList(new UserPermissions[] {
+              return  Arrays.asList(new UserPermissions[] {
                 UserPermissions.ALLOWED_TO_BE_HIRE
             });
     }

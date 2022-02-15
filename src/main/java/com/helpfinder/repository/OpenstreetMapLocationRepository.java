@@ -20,9 +20,9 @@ import org.springframework.stereotype.Component;
 //This class user open street map to expose location related features
 @Component
 public class OpenstreetMapLocationRepository implements LocationServiceRepository {
-	
-	
-	final String openStreetMapurl = "https://nominatim.openstreetmap.org/search?q=";
+       
+       
+       final String openStreetMapurl = "https://nominatim.openstreetmap.org/search?q=";
     /***
      * gets the lat log of a given address
      * 
@@ -30,8 +30,8 @@ public class OpenstreetMapLocationRepository implements LocationServiceRepositor
      * @return Double[] lat and long of the given address
      */
     @Override
-    public Double[] getLatLogFromAddress(String address) {
-    	Double[] res = new Double[2];
+    public double[] getLatLogFromAddress(String address) {
+        double[] res = new double[2];
         StringBuffer query;
         //split using space or ,coma        
         String[] split = address.split( "[\\s,]");
@@ -54,14 +54,14 @@ public class OpenstreetMapLocationRepository implements LocationServiceRepositor
         // append the address with the url
         query.append("&format=json&addressdetails=1");
         try {
-        	// call the api
-        	queryResult = makeOpenStreetMapApiRequest(query.toString());
+               // call the api
+               queryResult = makeOpenStreetMapApiRequest(query.toString());
         }catch(IOException ex) {
-        	System.out.println("Error calling openstreetmap api" + ex.getMessage());        	
+               System.out.println("Error calling openstreetmap api" + ex.getMessage());               
         }
 
         if (queryResult == null)            
-        	return null;
+               return null;
 
         // convert to json object
         Object obj = JSONValue.parse(queryResult);   
@@ -93,8 +93,8 @@ public class OpenstreetMapLocationRepository implements LocationServiceRepositor
      */
     @Override
     public boolean isValidAddress(String address) {
-    	Double[] latLong = getLatLogFromAddress(address);
-    	return latLong != null && latLong.length == 2 && latLong[0] != null && latLong[1] != null;
+           double[] latLong = getLatLogFromAddress(address);
+           return latLong != null && latLong.length == 2 && latLong[0] !=  0.0d && latLong[1] !=  0.0d;
     }
     
 
@@ -112,16 +112,16 @@ public class OpenstreetMapLocationRepository implements LocationServiceRepositor
         }
 
         try(BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))){
-	        String inputLine;
-	        StringBuffer response = new StringBuffer();
-	
-	        while ((inputLine = in.readLine()) != null) {
-	            response.append(inputLine);
-	        }
-	        return response.toString();
+               String inputLine;
+               StringBuffer response = new StringBuffer();
+       
+               while ((inputLine = in.readLine()) != null) {
+                   response.append(inputLine);
+               }
+               return response.toString();
         }
         catch(Exception ex)        {
-        	return "";
+               return "";
         }
         
     }

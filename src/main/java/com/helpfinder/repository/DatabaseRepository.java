@@ -21,12 +21,15 @@ public interface DatabaseRepository {
     // executes select query and returns the results
     public <R> R executeSelectQuery(String query, Consumer<PreparedStatement> addParameters, Function<ResultSet, R> processResult)  throws SQLException;
     // executes an update query and returns the results
-    public int executeUpdateQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;    
+    public int executeUpdateQuery(String query, Connection connection, Consumer<PreparedStatement> addParameters)  throws SQLException;    
     // executes an insert query and returns the results
-    public int executeInsertQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;
+    public int executeInsertQuery(String query, Connection connection, Consumer<PreparedStatement> addParameters)  throws SQLException;
     // executes an delete query and returns the results
-    public int executeDeleteQuery(String query, Consumer<PreparedStatement> addParameters)  throws SQLException;    
+    public int executeDeleteQuery(String query, Connection connection, Consumer<PreparedStatement> addParameters)  throws SQLException;    
     // executes sproc
     public <R> R executeSproc(String sprocName, Function<ResultSet, R> processResult)  throws SQLException, NotSupportedException;
+    public Connection getConnection() throws ClassNotFoundException, SQLException;
+    
+    
 
 }

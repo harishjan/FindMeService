@@ -9,8 +9,8 @@ This class is used to notify a a invalid password
 package com.helpfinder.exception;
 
 public class InvalidPasswordException extends Exception {
-	
-	 public InvalidPasswordException() {}
+       
+        public InvalidPasswordException() {}
     /**
      * constructor
      * @param message the message associated with the exception

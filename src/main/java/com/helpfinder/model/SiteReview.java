@@ -15,10 +15,10 @@ import com.helpfinder.common.DateFormatter;
 //This class stores the information of a site review
 public class SiteReview implements Serializable {
     /**
-	 * version of this class
-	 */
-	private static final long serialVersionUID = 1L;
-	//all properties
+        * version of this class
+        */
+       private static final long serialVersionUID = 1L;
+       //all properties
     private long userId;
     private String reviewId;
     private String title;
@@ -78,7 +78,7 @@ public class SiteReview implements Serializable {
 
     @Override
     public String toString() {
-    	 /* string will be in this format
+            /* string will be in this format
          * UserId
          * 23432 << some user id
          * Title
@@ -90,9 +90,9 @@ public class SiteReview implements Serializable {
          * ReviewId 
          * the file path including file name
         */              
-    	return String.format("UserId\n%d\nTitle\n%s\nComment\n%s\nReviewSubmittedOn\n%s\nReviewID\n%s\nReviewedDate\n%s", this.getUserId(), this.getTitle(), 
-    			this.getComment(), DateFormatter.convertToSystemDateString(this.getSubmittedDate()), getReviewId(),
-    			getReviewedDate()  == null ? "" : DateFormatter.convertToSystemDateString(this.getReviewedDate()));
+           return String.format("UserId\n%d\nTitle\n%s\nComment\n%s\nReviewSubmittedOn\n%s\nReviewID\n%s\nReviewedDate\n%s", this.getUserId(), this.getTitle(), 
+                         this.getComment(), DateFormatter.convertToSystemDateString(this.getSubmittedDate()), getReviewId(),
+                         getReviewedDate()  == null ? "" : DateFormatter.convertToSystemDateString(this.getReviewedDate()));
     }
     
 }

@@ -11,10 +11,10 @@ import java.io.Serializable;
 
 public class WorkerSkill implements Serializable {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	// id reference of the work skill
+        * 
+        */
+       private static final long serialVersionUID = 1L;
+       // id reference of the work skill
     private int workerSkillId;
     //the name of the skill
     private String workerSkillName;
