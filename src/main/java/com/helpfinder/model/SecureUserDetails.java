@@ -26,6 +26,9 @@ public class SecureUserDetails implements UserDetails {
   private Long id;
 
   private String username;
+  private String firstName;
+  private String lastName;
+
 
   private String email;
 
@@ -35,9 +38,11 @@ public class SecureUserDetails implements UserDetails {
   private Collection<? extends GrantedAuthority> authorities;
 
   
-  public SecureUserDetails(Long id, String username, String email, String password,
+  public SecureUserDetails(Long id, String username, String email, String password, String firstName, String lastName,
       Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
     this.username = username;
     this.email = email;
     this.password = password;
@@ -52,12 +57,23 @@ public class SecureUserDetails implements UserDetails {
         user.getUserName(), 
         user.getEmailAddress(),
         user.getPassword(), 
+        user.getFirstName(),
+        user.getLastName(),
         authorities);
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return authorities;
+  }
+  
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
   }
 
   public Long getId() {
