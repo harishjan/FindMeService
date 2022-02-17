@@ -9,6 +9,7 @@ package com.helpfinder.model;
 
 import java.util.Date;
 
+
 //work inquiry made by a user
 public class WorkInquiry {
     
@@ -30,7 +31,16 @@ public class WorkInquiry {
     private Date hiredDate;
     //status which shows if the worker is hired 
     private boolean isHired = false;
+    private Date insertedOn;
+    private Date updatedOn;
+    private String workDescription;
+    private Date cancelledDate;
+    private boolean isCancelled;
+    //The distance between the worker and the help finder user while inquiry was sent    
+    private double distanceFoundAwayfrom;
     
+    //empty constructor
+    public WorkInquiry() {}
     /**
      * constructor
      * @param workStartDate work start date
@@ -129,6 +139,14 @@ public class WorkInquiry {
         this.hiredDate = hiredDate;
     }
     
+    public void setHiredDate(Date hiredDate) {        
+        this.hiredDate = hiredDate;
+    }
+    
+    public void setIsHired(boolean isHired) {
+        this.isHired = isHired;    
+    }
+    
     /**
      * Sets work committed status along with date when the status is changed
      *@param isCommitted the boolean value of committed status
@@ -139,13 +157,45 @@ public class WorkInquiry {
         this.committedDate = committedDate;
     }
     
+    
+    public void setCommitedon(Date committedDate) {
+        this.committedDate = committedDate;
+    
+    }
+    
+    public void setIsCommitted(boolean isCommitted) {
+        this.isCommitted = isCommitted;
+    
+    }
+    
+    public void setCancelledDate(Date cancelledDate) {
+        this.cancelledDate = cancelledDate;
+    
+    }
+    
+    public void setIsCancelled(boolean isCancelled) {
+        this.isCancelled = isCancelled;
+    
+    }
+    
+    public Date getCancelledDate() {
+        return cancelledDate;
+    
+    }
+    
+    public boolean getIsCancelled() {
+        return isCancelled;
+    
+    }
+    
+    
 
     /**
      * sets the id reference of the inquiry
      *@param inquiryId int the inquiry reference id
      *
      * */
-    public void getInquiryId(int inquiryId) {
+    public void setInquiryId(int inquiryId) {
         this.inquiryId = inquiryId;
     }
     
@@ -155,7 +205,7 @@ public class WorkInquiry {
      * @param workStartDate the work start date 
      *@return Date date when the work should start
      * */
-    public void getWorkStartDate(Date workStartDate)    {
+    public void setWorkStartDate(Date workStartDate)    {
         this.workStartDate = workStartDate;
     }
     
@@ -164,7 +214,7 @@ public class WorkInquiry {
      * @param workEndDate the date when work ends
      *@return Date date when the work should end
      * */
-    public void getWorkEndDate(Date workEndDate)    {
+    public void setWorkEndDate(Date workEndDate)    {
         this.workEndDate = workEndDate;
     }
     
@@ -186,4 +236,30 @@ public class WorkInquiry {
         this.helpFinderUser = helpFinderUser;
     }
     
+    
+    public void setInsertedOn(Date insertedOn) {
+        this.insertedOn = insertedOn;
+    }
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+    public void setWorkDescription(String workDescription) {
+        this.workDescription = workDescription;
+    }
+    public void setDistanceFoundAwayfrom(double distanceFoundAwayfrom) {
+        this.distanceFoundAwayfrom = distanceFoundAwayfrom;
+    }
+    
+    public Date getInsertedOn() {
+        return insertedOn;
+    }
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+    public String getWorkDescription() {
+        return workDescription;   
+    }        
+    public double getDistanceFoundAwayfrom() {
+        return distanceFoundAwayfrom;
+    }
 }

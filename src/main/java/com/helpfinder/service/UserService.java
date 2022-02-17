@@ -7,13 +7,18 @@
  */
 
 package com.helpfinder.service;
+import static org.mockito.ArgumentMatchers.anyCollection;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.data.repository.core.RepositoryCreationException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.helpfinder.common.DateFormatter;
 import com.helpfinder.exception.InvalidAddressException;
 import com.helpfinder.exception.InvalidPasswordException;
 import com.helpfinder.exception.InvalidSkillException;
@@ -33,17 +39,20 @@ import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
 import com.helpfinder.model.WorkerUser;
 import com.helpfinder.model.request.SignupRequest;
+import com.helpfinder.model.request.WorkInquiryRequest;
 import com.helpfinder.repository.LocationServiceRepository;
 import com.helpfinder.repository.UserRepository;
 import com.helpfinder.repository.WorkerSkillRepository;
+
+import ch.qos.logback.core.filter.Filter;
 
 @Service
 public class UserService<T extends BasicUser> {
        
        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
        
-       @Autowired
-       PasswordEncoder encoder;
+   @Autowired
+   PasswordEncoder encoder;
        
     @Autowired
     final UserRepository<T> userRepo;
@@ -53,6 +62,10 @@ public class UserService<T extends BasicUser> {
     
     @Autowired
     WorkerSkillRepository workSkillRepo;
+    
+    @Autowired
+    private InquiryNotificationService notificationService;
+
     /***
      * constructor
      * @param userRepo the instance of UserRepository implementation 
@@ -191,44 +204,7 @@ public class UserService<T extends BasicUser> {
     }
     
     
-    /**
-     * gets the list of inquiries received by  user
-     * param userId the id of the user
-     * @return List<WorkInquiry> List of Work inquiries
-     */
-    public List<WorkInquiry> getWorkInquirieReceived(Long userId)    {
-        return userRepo.getUserWorkInquiriesReceived(userId);
-    }
-    
-    /**
-     * gets all the work inquiries made by the user which are committed by this worker user
-     * @param userId the id of the user
-     * @return List<WorkInquiry> list of work inquiry which has a committed status as true
-     */
-    public List<WorkInquiry> getWorkInquiryCommited(Long userId)    {        
-        return userRepo.getWorkInquiryCommited(userId);
-    }
-    
-    
-    /**
-     * gets the list of inquiries where user is hired
-     * @param userId the id of the user
-     * @return List<WorkInquiry> List of Work inquiries
-     */
-    public List<WorkInquiry> getWorkInquiriesHired(Long userId)    {    
-        return userRepo.getWorkInquiriesHired(userId);        
-        
-    }
-    
-    /**
-     * gets the list of inquiries sent by a user
-     * @param userId the id of the user
-     * @return List<WorkInquiry> List of Work inquiries
-     */
-    public List<WorkInquiry> getWorkInquiriesSent(Long userId)    {    
-        return userRepo.getUserWorkInquiriesSent(userId);        
-        
-    }
+   
     
     /**
      * This will tell if this user is allowed to work
@@ -242,6 +218,193 @@ public class UserService<T extends BasicUser> {
            return false;
     }
     
+    //sends a new work inquiry
+    /***
+     * 
+     * @param inquiryRequest
+     * @throws PermissionDeniedDataAccessException
+     * @throws Error
+     */
+    public void sendWorkInquiry(WorkInquiryRequest inquiryRequest) throws PermissionDeniedDataAccessException, Error {
+        
+        if(getAutenticatedUserId() != inquiryRequest.getHelpFinderUserId() || getAutenticatedUserId() == inquiryRequest.getWorkerUserId())
+            throw new PermissionDeniedDataAccessException("This operation is not allowed", null);
+        try
+        {
+            // checking if there is already an inquiry 
+            List<WorkInquiry> inquiries = userRepo.getWorkInquirySentToWorkerId(inquiryRequest.getHelpFinderUserId(), inquiryRequest.getWorkerUserId(), false);
+            if(inquiries != null && inquiries.size() > 0) {
+                // checking if there is already an inquiry 
+                if(inquiries.stream().filter(x -> x.getIsCancelled() == false && x.getWorkEndDate().after(DateFormatter.getDateNow())).count() > 0) {
+                    throw new Error("There is already a work inquiry sent to this user, cancel if the inquire is not required");
+                }
+                //dates should be valid
+                if(inquiryRequest.getWorkEndDate().before(DateFormatter.getDateNow()) && inquiryRequest.getWorkStartDate().before(DateFormatter.getDateNow())) {
+                    throw new Error("The date for hiring should be in the future");
+                }
+            }
+            userRepo.addWorkInquiry(inquiryRequest);
+        }catch(RepositoryCreationException ex){
+            throw new Error("Error processing the request");
+        }
+    }
+    
+    //get all inquiries sent to a worker
+    //fetchFullUserDetails if passed true will also return all the user details of helpfiner user and worker user
+    /***
+     * 
+     * @param fromHelpFinderUserId
+     * @param toWorkUserId
+     * @param fetchFullUserDetails
+     * @return
+     * @throws PermissionDeniedDataAccessException
+     * @throws Error
+     */
+    public List<WorkInquiry> getWorkInquirySentToWorkerId(long fromHelpFinderUserId, long toWorkUserId, boolean fetchFullUserDetails ) throws PermissionDeniedDataAccessException, Error  {
+        if(getAutenticatedUserId() != fromHelpFinderUserId)
+            throw new PermissionDeniedDataAccessException("This operation is not allowed", null);
+        try
+        {
+            List<WorkInquiry> inquiries = userRepo.getWorkInquirySentToWorkerId(fromHelpFinderUserId, toWorkUserId, fetchFullUserDetails);         
+            //inquiry dates should be valid
+            if(inquiries != null && inquiries.size() > 0) {
+                inquiries = inquiries.stream().filter(x -> x.getWorkEndDate().before(DateFormatter.getDateNow()) || 
+                        x.getWorkStartDate().before(DateFormatter.getDateNow())).collect(Collectors.toList());
+            }
+            return inquiries;
+        }catch(RepositoryCreationException ex){
+            throw new Error("Error processing the request");
+        }
+        
+    }
+    
+    //hire Inquiry submitted by a helpfinderuser to worker user with a specific workinquiryid
+    /***
+     *  
+     * @param helpFinderUserId
+     * @param WorkInquiryId
+     * @throws PermissionDeniedDataAccessException
+     * @throws Error
+     */
+    public void hireInquiry(long helpFinderUserId, long WorkInquiryId) throws PermissionDeniedDataAccessException, Error  {
+        if(getAutenticatedUserId() != helpFinderUserId)
+            throw new PermissionDeniedDataAccessException("This operation is not allowed", null);
+        try
+        {
+            userRepo.hireInquiry(helpFinderUserId, WorkInquiryId);
+        }catch(RepositoryCreationException ex){
+            throw new Error("Error processing the request");
+        }
+        
+    }
+    
+    //commits an Inquiry submitted by a helpfinderuser to worker user with a specific workinquiryid
+    /***
+     * 
+     * @param workerUserId     * 
+     * @param WorkInquiryId
+     * @throws PermissionDeniedDataAccessException
+     * @throws Error
+     */
+    public void commitInquiry(long workerUserId, long WorkInquiryId) throws PermissionDeniedDataAccessException, Error  {
+        if(getAutenticatedUserId() != workerUserId)
+            throw new PermissionDeniedDataAccessException("This operation is not allowed", null);
+        try
+        {
+            userRepo.commitInquiry(workerUserId, WorkInquiryId);
+        }catch(RepositoryCreationException ex){
+            throw new Error("Error processing the request");
+        }
+    }
+    
+    //gets the WorkInquiry for the given inquiryId and submitted by helpuser
+    /***
+     * 
+     * @param workInquiryId
+     * @param helpFinderUserId
+     * @return
+     * @throws PermissionDeniedDataAccessException
+     * @throws Error
+     */
+    public WorkInquiry getWorkInquiryByInquiryId(long workInquiryId, long helpFinderUserId ) throws PermissionDeniedDataAccessException, Error  {
+        if(getAutenticatedUserId() != helpFinderUserId)
+            throw new PermissionDeniedDataAccessException("This operation is not allowed", null);
+        try
+        {
+            return userRepo.getWorkInquiryByInquiryId(workInquiryId, helpFinderUserId );
+        }catch(RepositoryCreationException ex){
+            throw new Error("Error processing the request");
+        }
+    }
+    
+    /***
+     * This method updates the status of a inquiry to cancelled     * 
+     * @param helpFinderUserId
+     * @param WorkInquiryId
+     * @throws RepositoryCreationException
+     */
+    public void cancelInquiry(long helpFinderUserId, long workInquiryId) throws PermissionDeniedDataAccessException, Error{
+        if(getAutenticatedUserId() != helpFinderUserId)
+            throw new PermissionDeniedDataAccessException("This operation is not allowed", null);
+        try
+        {
+            userRepo.cancelInquiry(helpFinderUserId, workInquiryId);
+        }catch(RepositoryCreationException ex){
+            throw new Error("Error processing the request");
+        }
+    }
+    
+    
+    /***
+     * gets the work inquiry received by a user
+     * @param workUserId
+     * @param fetchFullUserDetails
+     * @return
+     * @throws PermissionDeniedDataAccessException
+     * @throws Error
+     */
+    public List<WorkInquiry> getWorkInquiryReceivedByUser(long workUserId, boolean fetchFullUserDetails ) throws PermissionDeniedDataAccessException, Error{
+        if(getAutenticatedUserId() != workUserId)
+            throw new PermissionDeniedDataAccessException("This operation is not allowed", null);
+        try
+        {
+            List<WorkInquiry> inquiries = userRepo.getWorkInquiryReceivedByUser(workUserId, fetchFullUserDetails);
+            //inquiry dates should be valid
+            if(inquiries != null && inquiries.size() > 0) {
+                inquiries = inquiries.stream().filter(x -> x.getWorkEndDate().before(DateFormatter.getDateNow()) || 
+                        x.getWorkStartDate().before(DateFormatter.getDateNow())).collect(Collectors.toList());
+            }
+            return inquiries;
+        }catch(RepositoryCreationException ex){
+            throw new Error("Error processing the request");
+        }
+    }
+    
+    
+    /***
+     * gets the work inquiry sent by a user
+     * @param workUserId
+     * @param fetchFullUserDetails
+     * @return
+     * @throws PermissionDeniedDataAccessException
+     * @throws Error
+     */
+    public List<WorkInquiry> getWorkInquirySentByUser(long helpFinderUserId, boolean fetchFullUserDetails ) throws PermissionDeniedDataAccessException, Error{
+        if(getAutenticatedUserId() != helpFinderUserId)
+            throw new PermissionDeniedDataAccessException("This operation is not allowed", null);
+        try
+        {
+            List<WorkInquiry> inquiries = userRepo.getWorkInquirySentByUser(helpFinderUserId, fetchFullUserDetails);
+            //inquiry dates should be valid
+            if(inquiries != null && inquiries.size() > 0) {
+                inquiries = inquiries.stream().filter(x -> x.getWorkEndDate().before(DateFormatter.getDateNow()) || 
+                        x.getWorkStartDate().before(DateFormatter.getDateNow())).collect(Collectors.toList());
+            }
+            return inquiries;
+        }catch(RepositoryCreationException ex){
+            throw new Error("Error processing the request");
+        }
+    }
     /***
      * checks if user has a certain permissions
      * @param UserPErmission the permission to check for
@@ -255,6 +418,15 @@ public class UserService<T extends BasicUser> {
            return false;
     }
     
+    
+    
+    //get user details from the current session
+    public static String getAutenticatedUserEmail() {
+        return getAutenticatedUser().getEmail();   
+    }
+    public static long getAutenticatedUserId() {
+        return getAutenticatedUser().getId();   
+    }
     public static SecureUserDetails getAutenticatedUser() {
         return (SecureUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }

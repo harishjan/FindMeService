@@ -19,9 +19,10 @@ These are the following packages in the project
 1) User Repository is hooked up Sqlite db and it is working now, the sqlite db is is part of the project folder</br>
 2) Swagger: Auth api functionality is implemented for user registration and signin, this can be verify through swagger</br>
 3) Jwt Bearer token implementation is also complete.</br>
-4) Workforce locator back end changes is partially complete, functionality to identify lat long form  OpenStreetmaplocation is complete.(Apis to expose these functionalities are not complete)</br>
-5) UI development is is progress, This project will be using React JS framework for building the UI</br>
-
+4) Login and search functionality is working from UI</br>
+5) To test login use this email password which is already registered in the system></br>  {"email": "test8@gmail.com",  "password": "Test5@1234"}
+6) for search functionalti there is a default lat long value which will pull some pre-registered users, which can also be tested from swagger endpoint /skill/search with request body >> <{"searchQuery":"handyman","mileRadius":5,"userLat":"40.5757637023926","userLong":"-74.3618087768555"}</br>
+</br>
 
 #####Details about Assignment 5####
 The code to demonstrate concurrency is based on a hypothetical  scenario.</br>

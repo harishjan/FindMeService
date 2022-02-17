@@ -23,6 +23,7 @@ import com.helpfinder.model.EUserType;
 import com.helpfinder.model.User;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
+import com.helpfinder.model.request.WorkInquiryRequest;
 
 @Component
 //interface to implement functionalities specific to users
@@ -39,14 +40,6 @@ public interface UserRepository<T extends User> {
     // update the user with the skills
     public boolean updateUserSkills(long userId, List<WorkerSkill> skills);
 
-    // get the not expired work inquiries sent by a user
-    public List<WorkInquiry> getUserWorkInquiriesSent(long userId);
-
-    // get the not expired inquiries received by a user
-    public List<WorkInquiry> getUserWorkInquiriesReceived(long userId);
-
-    // add a new inquiry and return the WorkInquiry with inquiryId updated
-    public WorkInquiry addInquiry(WorkInquiry inquiry);
 
     // update lat long for a user
     public boolean updateLatLong(long userId, Double[] latLong);
@@ -65,10 +58,6 @@ public interface UserRepository<T extends User> {
     
     //set latlong based on the address
     public void updateLatLongByAddress(long userID, String address);
-    //get work comment by user
-    public List<WorkInquiry> getWorkInquiryCommited(Long userId);
-    //get work for which user is hired
-    public List<WorkInquiry> getWorkInquiriesHired(Long userId);
     
     //gets the user based on usertype from the resultset
     public T createUserByTypeFromResultSet(ResultSet result, boolean addSkills) throws SQLException, InvalidAttributesException, ParseException;
@@ -76,6 +65,25 @@ public interface UserRepository<T extends User> {
      * creates a user for the given user type  
      */
     public T createUserByType(EUserType userType, EUserType defaultType);
+    
+    //submit a request
+    public void addWorkInquiry(WorkInquiryRequest inquiryRequest) throws RepositoryCreationException;
+    //get all inquiries sent to a worker
+    public List<WorkInquiry> getWorkInquirySentToWorkerId(long fromHelpUserId, long toWorkUserId, boolean fetchFullUserDetails ) throws RepositoryCreationException;
+    public void hireInquiry(long helpFinderUserId, long WorkInquiryId) throws RepositoryCreationException;
+    public void commitInquiry(long workerUserId, long WorkInquiryId) throws RepositoryCreationException;
+    public WorkInquiry getWorkInquiryByInquiryId(long workInquiryId, long helpFinderUserId )throws RepositoryCreationException ;
+    public void cancelInquiry(long helpFinderUserId, long WorkInquiryId) throws RepositoryCreationException;
+    public List<WorkInquiry> getWorkInquiryReceivedByUser(long workUserId, boolean fetchFullUserDetails ) throws RepositoryCreationException; 
+    /***
+     * gets all work inquiry sent by user     * 
+     * @param helpFinderUserId
+     * @param fetchFullUserDetail 
+     * @return
+     * @throws RepositoryCreationException
+     */
+    public List<WorkInquiry> getWorkInquirySentByUser(long helpFinderUserId, boolean fetchFullUserDetail ) throws RepositoryCreationException;
+        
     
 
 }

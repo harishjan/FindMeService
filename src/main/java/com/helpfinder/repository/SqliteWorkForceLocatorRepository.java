@@ -42,20 +42,6 @@ public class SqliteWorkForceLocatorRepository<T extends BasicUser> implements Wo
         this.userRepo = userRepo;
         this.databaseRepository = databaseRepositor;
 
-        // create some dummy data
-        // inquiry 10 created for user1 sent to user 2
-     //   WorkInquiry inquiry1 = new WorkInquiry(10, new Date(System.currentTimeMillis()),
-       //         new Date(new Date(System.currentTimeMillis()).getTime()  + 172800* 1000), // added 2 days
-     //           this.userRepo.getUser(1), this.userRepo.getUser(2));
-
-        // inquiry 11 created from user1 to user 3
-     //   WorkInquiry inquiry2 = new WorkInquiry(11, new Date(System.currentTimeMillis()),
-       //         new Date(new Date(System.currentTimeMillis()).getTime()  +  172800* 1000), // added 2 days
-     //           this.userRepo.getUser(1), this.userRepo.getUser(3));
-
-   //     dummaryWorkInquiries.put(10, inquiry1);
-    //    dummaryWorkInquiries.put(11, inquiry2);
-
     }
 
     /***
@@ -96,7 +82,7 @@ public class SqliteWorkForceLocatorRepository<T extends BasicUser> implements Wo
                                       // get the distance calculated by the sql query
                                       Double distanceACos = (double)result.getDouble("distanceACos");
                                       // add the distance which is converted to miles and user in the map
-                                            workForces.put(WorkForceLocatorRepository.convertCosToMiles(distanceACos), user);
+                                            workForces.put(WorkForceLocatorRepository.convertCosToMiles((distanceACos > 1.0) ? 1.0 : distanceACos), user);
                                }
                                            
                        } catch (SQLException | InvalidAttributesException | ParseException ex) {

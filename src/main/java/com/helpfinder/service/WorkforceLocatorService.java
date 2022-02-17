@@ -69,7 +69,7 @@ public class WorkforceLocatorService<T extends BasicUser> {
             // TODO hard coded now
             // TODO: update worker user with the new inquiry in DB
             // update the user with the inquiry
-            userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
+            //userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
             // notify the user about the inquiry
             notificationService.notifyUserAboutWork(inquiry);
         });
@@ -85,7 +85,7 @@ public class WorkforceLocatorService<T extends BasicUser> {
     public void commitWork(WorkInquiry inquiry, boolean commit) {
         // TODO creating dummy data        
         
-        userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
+        //userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
         // notify the user about the update committed status
         notificationService.notifyUserCommittedStatusChange(inquiry);
 
@@ -101,9 +101,11 @@ public class WorkforceLocatorService<T extends BasicUser> {
         // TODO creating dummy data
         // workforceLocatorRepo.getInquiry(inquiryId)        
 
-        userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
+       // userService.getWorkInquirieReceived( inquiry.getWorkerUser().getUserId()).add(inquiry);
         // notify the user about the update committed status
         notificationService.notifyWorkHireStatusChange(inquiry);
 
     }
+    
+   
 }

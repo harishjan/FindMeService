@@ -18,15 +18,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 //implementation of authentication entry point 
 @Component
+@ControllerAdvice
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
@@ -48,5 +52,11 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     final ObjectMapper mapper = new ObjectMapper();
     mapper.writeValue(response.getOutputStream(), body);
   }
-
+  
+  @ExceptionHandler(value = { AccessDeniedException.class })
+  public void commence(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex ) throws IOException {
+    response.setContentType("application/json");
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.getOutputStream().println("{ \"error\": \"" + ex.getMessage() + "\" }");
+  }
 }

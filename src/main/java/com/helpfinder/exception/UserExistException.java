@@ -9,7 +9,7 @@ package com.helpfinder.exception;
 //this exception is used when a user already exist while creating a new user
 public class UserExistException extends Exception {    
 
-        public UserExistException() {}
+    public UserExistException() {}
         
     /**
      * constructor

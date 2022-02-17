@@ -8,17 +8,13 @@
 package com.helpfinder.repository;
 
 
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.naming.directory.InvalidAttributesException;
@@ -27,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.core.RepositoryCreationException;
 import org.springframework.stereotype.Component;
 
+import com.helpfinder.common.DateFormatter;
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.AdminUser;
 import com.helpfinder.model.BasicUser;
@@ -36,18 +33,18 @@ import com.helpfinder.model.ModeratorUser;
 import com.helpfinder.model.WorkInquiry;
 import com.helpfinder.model.WorkerSkill;
 import com.helpfinder.model.WorkerUser;
+import com.helpfinder.model.request.WorkInquiryRequest;
 
 @Component
 // implementation is still not completed
 public class SQLiteUserRepository<T extends BasicUser> implements UserRepository<T> {
-    //date formatters
-    private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.SSSS");
-    private static SimpleDateFormat simpleFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSSS");    
+        
     // stores the location service repo
     @Autowired
     LocationServiceRepository locationServiceRepo;
     @Autowired
     WorkerSkillRepository workerSkillRepository;
+
     @Autowired
     DatabaseRepository databaseRepository;
     String selectUserByIdQuery = "select userId, address, lat, long, firstName, lastName, emailAddress, userName, "
@@ -186,9 +183,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
                                    || user.getLatLong()[1] ==  0.0d ? -1.0 : WorkForceLocatorRepository.getCosRadians(user.getLatLong()[1])));                        
                      statement.setFloat(13, (float) (user.getLatLong().length < 2  
                                    || user.getLatLong()[1] ==  0.0d ? -1.0 : WorkForceLocatorRepository.getSinRadians(user.getLatLong()[1])));
-                     statement.setString(14, dateFormatter.format(Instant.ofEpochMilli((new Date()).getTime())
-                               .atZone(ZoneId.systemDefault())
-                               .toLocalDateTime()));
+                     statement.setString(14, DateFormatter.convertToSystemDateNowString());
                      statement.setString(15, user.getUserDescription());
                      
                  }
@@ -216,6 +211,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
            }
     }
     
+    //get the skills of a user
     public List<WorkerSkill> getUserSkills(long userId)
     {
         try
@@ -348,10 +344,10 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
                              user.setSinLongRadians(result.getFloat("sinLongRadians") == -1.0 ? null : (double)result.getDouble("sinLongRadians"));
                              break;
                       case "insertedOn":
-                             user.setCreatedOn(simpleFormatter.parse(result.getString("insertedOn")));
+                             user.setCreatedOn(DateFormatter.convertToSystemDate(result.getString("insertedOn")));
                              break;
                       case "updatedOn":
-                             user.setUpdatedOn(result.getString("updatedOn") == null ? null : simpleFormatter.parse(result.getString("updatedOn")));
+                             user.setUpdatedOn(result.getString("updatedOn") == null ? null : DateFormatter.convertToSystemDate(result.getString("updatedOn")));
                              break;
                       case "userDescription":
                           user.setUserDescription(result.getString("userDescription"));
@@ -446,32 +442,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
         // TODO Auto-generated method stub
         return false;
     }
-
-    @Override
-    public List<WorkInquiry> getUserWorkInquiriesSent(long userId) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-    /**
-     * gets the list of inquiries received by  user
-     * @param userId the id of the user
-     * @return List<WorkInquiry> List of Work inquiries
-     */
-    @Override
-    public List<WorkInquiry> getUserWorkInquiriesReceived(long userId) {
-        //hard coded values for now
-        List<WorkInquiry> workInquiries = new ArrayList<>();
-        //filter        
-        return workInquiries;        
-    }
-
-    @Override
-    public WorkInquiry addInquiry(WorkInquiry inquiry) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  
 
     @Override
     public boolean updateLatLong(long userId, Double[] latLong) {
@@ -492,30 +463,407 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
     }
     
     
-    /**
-     * gets all the work inquiries made by the user which are committed by this worker user
-     * @param userId the id of the user
-     * @return List<WorkInquiry> list of work inquiry which has a committed status as true
-     */
-    public List<WorkInquiry> getWorkInquiryCommited(Long userId)    {
-        
-        //Hard coded value, implementation pending
-        List<WorkInquiry> workInquiries = getUserWorkInquiriesReceived(userId);
-        return workInquiries;
-    }
-    
-    
-    /**
-     * gets the list of inquiries where user is hired
-     * @param userId the id of the user
-     * @return List<WorkInquiry> List of Work inquiries
-     */
-    public List<WorkInquiry> getWorkInquiriesHired(Long userId)    {    
-        //hard coded values for now
-        List<WorkInquiry> workInquiries = getUserWorkInquiriesReceived(userId)    ;
-        return workInquiries;            
-        
-    }
+  
 
+    private String commitInquiryQuery = "UPDATE WorkInquiry SET committedDate = ?, updatedOn = ?, isCommitted = 1 where workerUserId = ? and WorkInquiryId = ?;";
+    private String hireInquiryQuery = "UPDATE WorkInquiry SET hiredDate = ?, updatedOn = ?, isHired = 1 where helpFinderUserId = ? and WorkInquiryId = ?;";
+    private String addInquiryQuery = "INSERT into WorkInquiry (workDescription, workStartDate, workEndDate,  insertedOn, helpFinderUserId, workerUserId ) VALUES(?,?,?,?,?,?);";
+    private String selectInquirySentFromUserToWorker = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDateDate, iscancelled from WorkInquiry where workerUserId = ? and helpFinderUserId = ? order by inquiryId limt 100;"; 
+    private String selectInquiryWithInquiryId = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDate, iscancelled from WorkInquiry where WorkInquiryId = ? and helpFinderUserId = ? order by inquiryId limt 100;";
+    private String selectInquiryReceivedByUser = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, committedDate,  cancelledDate, iscancelled from WorkInquiry where workerUserId = ? order by inquiryId limt 100;";
+    private String selectInquirySentByUser = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDate, iscancelled from WorkInquiry where helpFinderUserId = ? order by inquiryId limt 100;";
+    private String cancelInquiryQuery = "UPDATE WorkInquiry SET cancelledDate = ?, updatedOn = ?, iscancelled = 1 where helpFinderUserId = ? and WorkInquiryId = ?;";
+    
+    
+    
+    /***
+     * gets all work inquiry sent by user
+     * @param workInquiryId
+     * @param helpFinderUserId
+     * @return
+     * @throws RepositoryCreationException
+     */
+    public List<WorkInquiry> getWorkInquirySentByUser(long helpFinderUserId, boolean fetchFullUserDetail )
+            throws RepositoryCreationException {
+        
+        try
+        {
+            
+            return (List<WorkInquiry>)databaseRepository.executeSelectQuery(selectInquirySentByUser, (statement)->{
+                try {
+                       //set the parameters in the sql query
+                              statement.setLong(1, helpFinderUserId);                            
+                    }
+                    catch(SQLException ex)
+                    {
+                        throw new RepositoryCreationException("Error getting inquiry "+ ex.getMessage(), SQLiteUserRepository.class);
+                    }    
+                },
+                (result) ->{
+                             
+                      List<WorkInquiry> inquiries  = new ArrayList<WorkInquiry>();
+                       try {
+                           while(result != null && result.next()) {                            
+                                inquiries.add(createWorkInquiryFromResultSet(result, fetchFullUserDetail));
+                                                                            
+                           }
+                       } catch (SQLException | ParseException ex) {
+                              throw new RepositoryCreationException("Error fetching result set  "+ ex.getMessage(), SQLiteUserRepository.class);
+                       }
+                       return inquiries;
+                });
+        }
+        catch(SQLException ex)
+        {
+            throw new RepositoryCreationException("Error getting inquiry "+ ex.getMessage(), SQLiteUserRepository.class);           
+        }
+        
+    }
+    
+    /***
+     * gets the work inquiry based on the inquiry id and the user who has sent the inquiry
+     * @param workInquiryId
+     * @param helpFinderUserId
+     * @return
+     * @throws RepositoryCreationException
+     */
+    public WorkInquiry getWorkInquiryByInquiryId(long workInquiryId, long helpFinderUserId )
+            throws RepositoryCreationException {
+        
+        try
+        {
+            
+            return (WorkInquiry)databaseRepository.executeSelectQuery(selectInquiryWithInquiryId, (statement)->{
+                try {
+                       //set the parameters in the sql query
+                              statement.setLong(1, workInquiryId);
+                              statement.setLong(2, helpFinderUserId);  
+                    }
+                    catch(SQLException ex)
+                    {
+                        throw new RepositoryCreationException("Error getting inquiry "+ ex.getMessage(), SQLiteUserRepository.class);
+                    }    
+                },
+                (result) ->{
+                             
+                      WorkInquiry inquiries  = null;
+                       try {
+                           //only interested in the first record
+                           if(result != null && result.next()) {                            
+                               inquiries = createWorkInquiryFromResultSet(result, true);
+                                                                            
+                           }
+                       } catch (SQLException | ParseException ex) {
+                              throw new RepositoryCreationException("Error fetching result set  "+ ex.getMessage(), SQLiteUserRepository.class);
+                       }
+                       return inquiries;
+                });
+        }
+        catch(SQLException ex)
+        {
+            throw new RepositoryCreationException("Error getting inquiry "+ ex.getMessage(), SQLiteUserRepository.class);           
+        }
+        
+    }
+    
+    /***
+     * This method updates the status of a inquiry to hired     * 
+     * @param helpFinderUserId
+     * @param WorkInquiryId
+     * @throws RepositoryCreationException
+     */
+    public void hireInquiry(long helpFinderUserId, long WorkInquiryId) throws RepositoryCreationException{
+        try {
+            int result = databaseRepository.executeUpdateQuery(hireInquiryQuery, null, (statement)->{
+             try {
+             
+                     statement.setString(1, DateFormatter.convertToSystemDateNowString());                
+                     statement.setString(2, DateFormatter.convertToSystemDateNowString());                        
+                     statement.setLong(4, helpFinderUserId);
+                     statement.setLong(5, WorkInquiryId);
+                                                       
+                 }
+                 catch(SQLException ex) {
+                     throw new RepositoryCreationException("Error updating work inquiry "+ ex.getMessage(), SQLiteUserRepository.class);
+                
+                 }    
+                });
+            
+            if(result == -1)
+                throw new RepositoryCreationException("Error updating work inquiry  ", getClass());
+            //else:: to do
+            //    notificationService.notifyUserAboutWork(null);
+        } catch (SQLException e) {
+            throw new RepositoryCreationException("Error updating work inquiry  ", getClass());
+        }
+    }
+    
+    /***
+     * This method updates the status of a inquiry to cancelled     
+     * @param helpFinderUserId
+     * @param WorkInquiryId
+     * @throws RepositoryCreationException
+     */
+    public void cancelInquiry(long helpFinderUserId, long WorkInquiryId) throws RepositoryCreationException{
+        try {
+            int result = databaseRepository.executeUpdateQuery(cancelInquiryQuery, null, (statement)->{
+             try {
+             
+                     statement.setString(1, DateFormatter.convertToSystemDateNowString());                
+                     statement.setString(2, DateFormatter.convertToSystemDateNowString());                                     
+                     statement.setLong(4, helpFinderUserId);
+                     statement.setLong(5, WorkInquiryId);
+                                                       
+                 }
+                 catch(SQLException ex) {
+                     throw new RepositoryCreationException("Error updating work inquiry "+ ex.getMessage(), SQLiteUserRepository.class);
+                
+                 }    
+                });
+            
+            if(result == -1)
+                throw new RepositoryCreationException("Error updating work inquiry  ", getClass());
+            //else:: to do
+            //    notificationService.notifyUserAboutWork(null);
+        } catch (SQLException e) {
+            throw new RepositoryCreationException("Error updating work inquiry  ", getClass());
+        }
+    }
+    /***
+     * this method updates the status of a inquiry as commited from worker
+     * @param workerUserId     * 
+     * @param WorkInquiryId
+     * @throws RepositoryCreationException
+     */
+    public void commitInquiry(long workerUserId, long WorkInquiryId) throws RepositoryCreationException{
+        try {
+            int result = databaseRepository.executeUpdateQuery(commitInquiryQuery, null, (statement)->{
+             try {
+             
+                     statement.setString(1, DateFormatter.convertToSystemDateNowString());                
+                     statement.setString(2, DateFormatter.convertToSystemDateNowString());
+                     statement.setLong(3, workerUserId);  
+                     statement.setLong(5, WorkInquiryId);
+                                                       
+                 }
+                 catch(SQLException ex) {
+                     throw new RepositoryCreationException("Error updating work inquiry "+ ex.getMessage(), SQLiteUserRepository.class);
+                
+                 }    
+                });
+            
+            if(result == -1)
+                throw new RepositoryCreationException("Error updating work inquiry  ", getClass());
+            //else:: to do
+            //    notificationService.notifyUserAboutWork(null);
+        } catch (SQLException e) {
+            throw new RepositoryCreationException("Error updating work inquiry  ", getClass());
+        }
+    }
+    
+    /***
+     * This method submits a work inquiry
+     */
+    
+    public void addWorkInquiry(WorkInquiryRequest inquiryRequest) throws RepositoryCreationException{
+
+        try {
+            int result = databaseRepository.executeInsertQuery(addInquiryQuery, null, (statement)->{
+             try {
+             
+                     statement.setString(1, inquiryRequest.getWorkDescription());                
+                     statement.setString(2, DateFormatter.convertToSystemDateString(inquiryRequest.getWorkStartDate()));
+                     statement.setString(3, DateFormatter.convertToSystemDateString(inquiryRequest.getWorkEndDate()));
+                     statement.setString(4, DateFormatter.convertToSystemDateNowString());
+                     statement.setLong(5, inquiryRequest.getHelpFinderUserId());
+                     statement.setLong(6, inquiryRequest.getWorkerUserId());                                  
+                 }
+                 catch(SQLException ex) {
+                     throw new RepositoryCreationException("Error while sending the request "+ ex.getMessage(), SQLiteUserRepository.class);
+                
+                 }    
+                });
+            
+            if(result == -1)
+                throw new RepositoryCreationException("Error while sending the request", getClass());
+            //else:: to do
+            //    notificationService.notifyUserAboutWork(null);
+        } catch (SQLException e) {
+            throw new RepositoryCreationException("Error while sending the request", getClass());
+        }
+    }
+    
+    //creates a work skillset from result set
+    private WorkInquiry createWorkInquiryFromResultSet(ResultSet result, boolean fetchFullUserDetails) throws SQLException, ParseException {
+      //to check if columns exist
+        ResultSetMetaData metadata = result.getMetaData();
+        WorkInquiry inquiry = new WorkInquiry();        
+        //number of columns
+        int columns = metadata.getColumnCount();           
+        // now set each column which is available in the result set, if a column doesn't exist, then that field in user object is not set
+        for (int x = 1; x <= columns; x++) {
+            switch(metadata.getColumnName(x)) {
+            case "inquiryId"  :
+                inquiry.setInquiryId(result.getInt("inquiryId"));
+                break;
+            case "isCommitted":
+                inquiry.setIsCommitted(result.getInt("isCommitted") == 1 ? true : false);
+                break;
+            case "committedDate":
+                inquiry.setCommitedon(result.getString("committedDate") == null ? null : DateFormatter.convertToSystemDate(result.getString("committedDate")));
+                break;
+            case "iscancelled":
+                inquiry.setIsCancelled(result.getInt("iscancelled") == 1 ? true : false);
+                break;
+            case "cancelledDate":
+                inquiry.setCancelledDate(result.getString("cancelledDate") == null ? null : DateFormatter.convertToSystemDate(result.getString("cancelledDate")));
+                break;   
+                
+            case "workStartDate":
+                inquiry.setWorkStartDate(result.getString("workStartDate") == null ? null : DateFormatter.convertToSystemDate(result.getString("workStartDate")));
+                break;
+            case "workEndDate":
+                inquiry.setWorkEndDate(result.getString("workEndDate") == null ? null : DateFormatter.convertToSystemDate(result.getString("workEndDate")));
+                break;
+            case "helpFinderUserId":
+                long userId = result.getLong("helpFinderUserId");
+                BasicUser user = null;
+                if(fetchFullUserDetails)
+                    user = getUser(userId);
+                else {
+                    user = new HelpFinderUser();
+                    user.setUserId(userId);
+                }
+                
+                inquiry.setHelpFinderUser(user);
+                break;
+            case "workerUserId":
+                long workerUserId = result.getLong("workerUserId");
+                BasicUser workerUser = null;
+                if(fetchFullUserDetails)
+                    workerUser = getUser(workerUserId);
+                else {
+                    workerUser = new WorkerUser();
+                    workerUser.setUserId(workerUserId);
+                }
+                
+                inquiry.setWorkerUser(workerUser);
+                break;
+            case "hiredDate":
+                inquiry.setHiredDate(result.getString("hiredDate") == null ? null : DateFormatter.convertToSystemDate(result.getString("hiredDate")));
+                break;
+            case "isHired":
+                inquiry.setIsHired(result.getInt("isHired") == 1 ? true : false);
+                break;
+            case "workDescription":
+                inquiry.setWorkDescription(result.getString("workDescription") );
+                break;
+            case "distanceFoundAwayfrom":
+                inquiry.setDistanceFoundAwayfrom(result.getDouble("distanceFoundAwayfrom") );
+                break;
+            case "insertedOn" :
+                inquiry.setInsertedOn(result.getString("insertedOn") == null ? null : DateFormatter.convertToSystemDate(result.getString("insertedOn")));
+                break;
+            case "updatedOn":
+                inquiry.setUpdatedOn(result.getString("updatedOn") == null ? null : DateFormatter.convertToSystemDate(result.getString("updatedOn")));
+                break;
+            default: break;
+            
+                   
+            }
+            
+        }
+        return inquiry;
+    }
+    
+    @Override
+    /***
+     * Gets the work inquiry for the from helpuser to  another worker,
+     */    
+    public List<WorkInquiry> getWorkInquirySentToWorkerId(long fromHelpUserId, long toWorkUserId, boolean fetchFullUserDetails )
+            throws RepositoryCreationException {
+        
+        try
+        {
+            
+            return (List<WorkInquiry>)databaseRepository.executeSelectQuery(selectInquirySentFromUserToWorker, (statement)->{
+                try {
+                       //set the parameters in the sql query
+                              statement.setLong(1, toWorkUserId);
+                              statement.setLong(2, fromHelpUserId);  
+                    }
+                    catch(SQLException ex)
+                    {
+                        throw new RepositoryCreationException("Error getting inquiry "+ ex.getMessage(), SQLiteUserRepository.class);
+                    }    
+                },
+                (result) ->{
+                             
+                      List<WorkInquiry> inquiries  = new ArrayList<WorkInquiry>();
+                       try {
+                           //only interested in the first record
+                           while(result != null && result.next()) {                            
+                                inquiries.add(createWorkInquiryFromResultSet(result, fetchFullUserDetails));
+                                                                            
+                           }
+                       } catch (SQLException | ParseException ex) {
+                              throw new RepositoryCreationException("Error fetching result set  "+ ex.getMessage(), SQLiteUserRepository.class);
+                       }
+                       return inquiries;
+                });
+        }
+        catch(SQLException ex)
+        {
+            throw new RepositoryCreationException("Error getting work inquiry "+ ex.getMessage(), SQLiteUserRepository.class);           
+        }
+        
+    }
+    
+    
+    
+    /***
+     * Gets the work inquiry received by a user
+     * fetchFullUserDetails when set true will return all the user details of worker and the helpfinder user
+     */    
+    public List<WorkInquiry> getWorkInquiryReceivedByUser(long workUserId, boolean fetchFullUserDetails )
+            throws RepositoryCreationException {
+        
+        try
+        {
+            
+            return (List<WorkInquiry>)databaseRepository.executeSelectQuery(selectInquiryReceivedByUser, (statement)->{
+                try {
+                       //set the parameters in the sql query
+                              statement.setLong(1, workUserId);                                
+                    }
+                    catch(SQLException ex)
+                    {
+                        throw new RepositoryCreationException("Error getting user "+ ex.getMessage(), SQLiteUserRepository.class);
+                    }    
+                },
+                (result) ->{
+                             
+                      List<WorkInquiry> inquiries  = new ArrayList<WorkInquiry>();
+                       try {
+                           //only interested in the first record
+                           while(result != null && result.next()) {                            
+                                inquiries.add(createWorkInquiryFromResultSet(result, fetchFullUserDetails));
+                                                                            
+                           }
+                       } catch (SQLException | ParseException ex) {
+                              throw new RepositoryCreationException("Error fetching result set  "+ ex.getMessage(), SQLiteUserRepository.class);
+                       }
+                       return inquiries;
+                });
+        }
+        catch(SQLException ex)
+        {
+            throw new RepositoryCreationException("Error getting work inquiry "+ ex.getMessage(), SQLiteUserRepository.class);           
+        }
+        
+    }
 
 }
+
+
+   

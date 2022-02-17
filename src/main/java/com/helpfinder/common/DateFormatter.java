@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -14,18 +15,22 @@ public class DateFormatter {
     private static SimpleDateFormat simpleFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSSS");
     public static String convertToSystemDateString(Date date) {
            return dateFormatter.format(Instant.ofEpochMilli(date.getTime())
-            .atZone(ZoneId.systemDefault()).toLocalDateTime());
+            .atZone(ZoneOffset.UTC));
     }
     
     public static String convertToSystemDateNowString() {
            return dateFormatter.format(Instant.ofEpochMilli((new Date()).getTime())
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime());    
+                .atZone(ZoneOffset.UTC));    
     }
     
     public static Date convertToSystemDate(String date) throws ParseException{           
            return simpleFormatter.parse(date);           
     }
+
+    public static Date getDateNow(){           
+        return  Date.from(Instant.ofEpochMilli((new Date()).getTime())
+                .atZone(ZoneOffset.UTC).toInstant());       
+ }
 
 
 }

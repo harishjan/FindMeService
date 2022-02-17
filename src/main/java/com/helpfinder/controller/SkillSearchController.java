@@ -33,7 +33,7 @@ import com.helpfinder.service.WorkforceLocatorService;
 //This is not implementation completely
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/Skill")
+@RequestMapping("/skill")
 public class SkillSearchController {
  
     @Autowired
