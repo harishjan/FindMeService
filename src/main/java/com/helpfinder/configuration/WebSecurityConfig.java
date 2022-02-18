@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import com.helpfinder.security.jwt.AuthEntryPointJwt;
 import com.helpfinder.security.jwt.AuthTokenFilter;
@@ -70,7 +71,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //        .antMatchers(AUTH_WHITELIST).permitAll();
                // .antMatchers("/**/*").denyAll();
         
-        http.cors().and().csrf().disable()
+        http.csrf().disable()
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll()
@@ -80,4 +81,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
+    
 }
