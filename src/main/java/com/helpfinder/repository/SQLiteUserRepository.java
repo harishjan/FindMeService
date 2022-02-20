@@ -465,14 +465,24 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
     
   
 
-    private String commitInquiryQuery = "UPDATE WorkInquiry SET committedDate = ?, updatedOn = ?, isCommitted = 1 where workerUserId = ? and WorkInquiryId = ?;";
-    private String hireInquiryQuery = "UPDATE WorkInquiry SET hiredDate = ?, updatedOn = ?, isHired = 1 where helpFinderUserId = ? and WorkInquiryId = ?;";
-    private String addInquiryQuery = "INSERT into WorkInquiry (workDescription, workStartDate, workEndDate,  insertedOn, helpFinderUserId, workerUserId ) VALUES(?,?,?,?,?,?);";
-    private String selectInquirySentFromUserToWorker = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDateDate, iscancelled from WorkInquiry where workerUserId = ? and helpFinderUserId = ? order by inquiryId limt 100;"; 
-    private String selectInquiryWithInquiryId = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDate, iscancelled from WorkInquiry where WorkInquiryId = ? and helpFinderUserId = ? order by inquiryId limt 100;";
-    private String selectInquiryReceivedByUser = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, committedDate,  cancelledDate, iscancelled from WorkInquiry where workerUserId = ? order by inquiryId limt 100;";
-    private String selectInquirySentByUser = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDate, iscancelled from WorkInquiry where helpFinderUserId = ? order by inquiryId limt 100;";
-    private String cancelInquiryQuery = "UPDATE WorkInquiry SET cancelledDate = ?, updatedOn = ?, iscancelled = 1 where helpFinderUserId = ? and WorkInquiryId = ?;";
+    private String commitInquiryQuery = "UPDATE WorkInquiry SET committedDate = ?, updatedOn = ?, isCommitted = 1 where workerUserId = ? and InquiryId = ?;";
+    private String hireInquiryQuery = "UPDATE WorkInquiry SET hiredDate = ?, updatedOn = ?, isHired = 1 where helpFinderUserId = ? and InquiryId = ?;";
+    private String addInquiryQuery = "INSERT into WorkInquiry (workDescription, workStartDate, workEndDate,  insertedOn, helpFinderUserId, "
+            + "workerUserId, distanceFoundAwayfrom ) VALUES(?,?,?,?,?,?,?);";
+    private String selectInquirySentFromUserToWorker = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   "
+            + "workerUserId,   hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDate, iscancelled from "
+            + "WorkInquiry where workerUserId = ? and helpFinderUserId = ? order by inquiryId limit 100;"; 
+    private String selectInquiryWithInquiryId = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   "
+            + "hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDate, iscancelled from WorkInquiry where WorkInquiryId = ? "
+            + "and helpFinderUserId = ? order by inquiryId limit 100;";
+    private String selectTotalInquiries = "SELECT helpFinderUserId, workerUserId, count(*) as totalCount from WorkInquiry WHERE helpFinderUserId = ? and workerUserId = ? "
+            + "group by helpFinderUserId, workerUserId;";
+    private String selectInquiryReceivedByUser = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   "
+            + "hiredDate,  isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, committedDate,  cancelledDate, iscancelled from WorkInquiry "
+            + "where workerUserId = ? order by inquiryId limit 100;";
+    private String selectInquirySentByUser = "SELECT inquiryId,  isCommitted,    committedDate,  workStartDate,  workEndDate,    helpFinderUserId,   workerUserId,   hiredDate,  "
+            + "isHired,    workDescription,    distanceFoundAwayfrom,  insertedOn, updatedOn, cancelledDate, iscancelled from WorkInquiry where helpFinderUserId = ? order by inquiryId limit 100;";
+    private String cancelInquiryQuery = "UPDATE WorkInquiry SET cancelledDate = ?, updatedOn = ?, iscancelled = 1 where helpFinderUserId = ? and InquiryId = ?;";
     
     
     
@@ -492,7 +502,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
             return (List<WorkInquiry>)databaseRepository.executeSelectQuery(selectInquirySentByUser, (statement)->{
                 try {
                        //set the parameters in the sql query
-                              statement.setLong(1, helpFinderUserId);                            
+                      statement.setLong(1, helpFinderUserId);                            
                     }
                     catch(SQLException ex)
                     {
@@ -536,8 +546,8 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
             return (WorkInquiry)databaseRepository.executeSelectQuery(selectInquiryWithInquiryId, (statement)->{
                 try {
                        //set the parameters in the sql query
-                              statement.setLong(1, workInquiryId);
-                              statement.setLong(2, helpFinderUserId);  
+                      statement.setLong(1, workInquiryId);
+                      statement.setLong(2, helpFinderUserId);  
                     }
                     catch(SQLException ex)
                     {
@@ -579,8 +589,8 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
              
                      statement.setString(1, DateFormatter.convertToSystemDateNowString());                
                      statement.setString(2, DateFormatter.convertToSystemDateNowString());                        
-                     statement.setLong(4, helpFinderUserId);
-                     statement.setLong(5, WorkInquiryId);
+                     statement.setLong(3, helpFinderUserId);
+                     statement.setLong(4, WorkInquiryId);
                                                        
                  }
                  catch(SQLException ex) {
@@ -611,8 +621,8 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
              
                      statement.setString(1, DateFormatter.convertToSystemDateNowString());                
                      statement.setString(2, DateFormatter.convertToSystemDateNowString());                                     
-                     statement.setLong(4, helpFinderUserId);
-                     statement.setLong(5, WorkInquiryId);
+                     statement.setLong(3, helpFinderUserId);
+                     statement.setLong(4, WorkInquiryId);
                                                        
                  }
                  catch(SQLException ex) {
@@ -643,7 +653,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
                      statement.setString(1, DateFormatter.convertToSystemDateNowString());                
                      statement.setString(2, DateFormatter.convertToSystemDateNowString());
                      statement.setLong(3, workerUserId);  
-                     statement.setLong(5, WorkInquiryId);
+                     statement.setLong(4, WorkInquiryId);
                                                        
                  }
                  catch(SQLException ex) {
@@ -664,7 +674,6 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
     /***
      * This method submits a work inquiry
      */
-    
     public void addWorkInquiry(WorkInquiryRequest inquiryRequest) throws RepositoryCreationException{
 
         try {
@@ -676,7 +685,8 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
                      statement.setString(3, DateFormatter.convertToSystemDateString(inquiryRequest.getWorkEndDate()));
                      statement.setString(4, DateFormatter.convertToSystemDateNowString());
                      statement.setLong(5, inquiryRequest.getHelpFinderUserId());
-                     statement.setLong(6, inquiryRequest.getWorkerUserId());                                  
+                     statement.setLong(6, inquiryRequest.getWorkerUserId());
+                     statement.setDouble(7, inquiryRequest.getDistanceFoundAwayfrom());       
                  }
                  catch(SQLException ex) {
                      throw new RepositoryCreationException("Error while sending the request "+ ex.getMessage(), SQLiteUserRepository.class);
@@ -686,8 +696,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
             
             if(result == -1)
                 throw new RepositoryCreationException("Error while sending the request", getClass());
-            //else:: to do
-            //    notificationService.notifyUserAboutWork(null);
+          
         } catch (SQLException e) {
             throw new RepositoryCreationException("Error while sending the request", getClass());
         }
@@ -789,8 +798,8 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
             return (List<WorkInquiry>)databaseRepository.executeSelectQuery(selectInquirySentFromUserToWorker, (statement)->{
                 try {
                        //set the parameters in the sql query
-                              statement.setLong(1, toWorkUserId);
-                              statement.setLong(2, fromHelpUserId);  
+                      statement.setLong(1, toWorkUserId);
+                      statement.setLong(2, fromHelpUserId);  
                     }
                     catch(SQLException ex)
                     {
@@ -824,7 +833,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
     /***
      * Gets the work inquiry received by a user
      * fetchFullUserDetails when set true will return all the user details of worker and the helpfinder user
-     */    
+     */
     public List<WorkInquiry> getWorkInquiryReceivedByUser(long workUserId, boolean fetchFullUserDetails )
             throws RepositoryCreationException {
         
@@ -834,7 +843,7 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
             return (List<WorkInquiry>)databaseRepository.executeSelectQuery(selectInquiryReceivedByUser, (statement)->{
                 try {
                        //set the parameters in the sql query
-                              statement.setLong(1, workUserId);                                
+                        statement.setLong(1, workUserId);                                
                     }
                     catch(SQLException ex)
                     {
@@ -845,7 +854,8 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
                              
                       List<WorkInquiry> inquiries  = new ArrayList<WorkInquiry>();
                        try {
-                           //only interested in the first record
+                           
+                           //fetch the records and add in inquiries                            
                            while(result != null && result.next()) {                            
                                 inquiries.add(createWorkInquiryFromResultSet(result, fetchFullUserDetails));
                                                                             
@@ -859,6 +869,48 @@ public class SQLiteUserRepository<T extends BasicUser> implements UserRepository
         catch(SQLException ex)
         {
             throw new RepositoryCreationException("Error getting work inquiry "+ ex.getMessage(), SQLiteUserRepository.class);           
+        }
+        
+    }
+    
+    /***
+     * * gets the total work inquires sent by a user to another work user
+     * @param helpFinderUserId
+     * @param WorkInquiryId
+     * @return int the total count
+     */
+    public int getTotalInquires(long helpFinderUserId, long workUserId) throws RepositoryCreationException{
+        
+        try
+        {
+            
+            return (int)databaseRepository.executeSelectQuery(selectTotalInquiries, (statement)->{
+                try {
+                       //set the parameters in the sql query
+                      statement.setLong(1, helpFinderUserId);
+                      statement.setLong(2, workUserId);  
+                    }
+                    catch(SQLException ex)
+                    {
+                        throw new RepositoryCreationException("Error getting the count "+ ex.getMessage(), SQLiteUserRepository.class);
+                    }    
+                },
+                (result) ->{ 
+                     
+                    try {
+                           //only interested in the first record
+                           if(result != null && result.next())                             
+                                return result.getInt("totalCount");                                                                                                    
+                           
+                       } catch (SQLException ex) {
+                              throw new RepositoryCreationException("Error fetching result set  "+ ex.getMessage(), SQLiteUserRepository.class);
+                       }
+                       return 0;
+                });
+        }
+        catch(SQLException ex)
+        {
+            throw new RepositoryCreationException("Error getting count"+ ex.getMessage(), SQLiteUserRepository.class);           
         }
         
     }

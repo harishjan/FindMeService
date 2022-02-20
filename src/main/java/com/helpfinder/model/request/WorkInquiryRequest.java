@@ -23,7 +23,7 @@ public class WorkInquiryRequest {
     private Date workEndDate;
     
     //the user who is requesting for the work
-    
+    @NotBlank
     private long helpFinderUserId;
     // the user who receiving the work
     @NotBlank
@@ -48,6 +48,10 @@ public class WorkInquiryRequest {
         return helpFinderUserId;
     }
 
+    public void setHelpFinderUserId(long helpFinderUserId) {
+        this.helpFinderUserId = helpFinderUserId;
+    }
+
     public long getWorkerUserId() {
         return workerUserId;
     }
@@ -69,7 +73,6 @@ public class WorkInquiryRequest {
         this.workEndDate = workEndDate;
     }
     
-    public void setHelpFinderUserId(long helpFinderUserId) {}
     
     public void setWorkerUserId(long WorkerUserId) {
         this.workerUserId = WorkerUserId;

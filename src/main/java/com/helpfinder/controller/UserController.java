@@ -9,6 +9,7 @@
 package com.helpfinder.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.PermissionDeniedDataAccessException;
@@ -17,16 +18,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.SecureUserDetails;
 import com.helpfinder.model.WorkerSkill;
-import com.helpfinder.model.WorkerUser;
 import com.helpfinder.model.request.SignupRequest;
 import com.helpfinder.model.request.WorkInquiryRequest;
 import com.helpfinder.service.UserService;
@@ -72,7 +72,7 @@ public class UserController {
     public ResponseEntity<?> getUserInfo( ) {     
          SecureUserDetails secUser = UserService.getAutenticatedUser();
          BasicUser user = (BasicUser)userService.findByUsername(secUser.getEmail());
-         return user == null ? ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found") : ResponseEntity.ok(user);        
+         return user == null ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message" ,"User not found")) : ResponseEntity.ok(user);        
     }
     
     /***
@@ -85,15 +85,14 @@ public class UserController {
     @PreAuthorize("hasAuthority('SEARCH_FOR_WORKERS') ")
     public ResponseEntity<?> sendWorkInquiry(@RequestBody WorkInquiryRequest workInquiryRequest)
     {
-        SecureUserDetails secUser = UserService.getAutenticatedUser();
-        workInquiryRequest.setHelpFinderUserId(secUser.getId());
+        SecureUserDetails secUser = UserService.getAutenticatedUser();        
         try {
             userService.sendWorkInquiry(workInquiryRequest);
         }
         catch(PermissionDeniedDataAccessException | Error e) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message" , e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Work Inquiry sent");        
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message" , "Work Inquiry sent"));        
     }
     
     /***
@@ -109,7 +108,7 @@ public class UserController {
             return ResponseEntity.ok( userService.getWorkInquiryReceivedByUser(secUser.getId(), true));
         }
         catch(PermissionDeniedDataAccessException | Error e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message" ,e.getMessage()));
         }             
     }
     
@@ -120,16 +119,16 @@ public class UserController {
      */
     @RequestMapping(value = "/commitInquiry", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @PreAuthorize("hasAuthority('ALLOWED_TO_BE_HIRE')")
-    public ResponseEntity<?> commitInquiry(@RequestBody int inquiryId)
+    public ResponseEntity<?> commitInquiry(@RequestParam int inquiryId)
     {
         SecureUserDetails secUser = UserService.getAutenticatedUser();        
         try {
             userService.commitInquiry(secUser.getId(), inquiryId);
         }
         catch(PermissionDeniedDataAccessException | Error e) {
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message" ,e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Work Inquiry committed");        
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message" ,"Work Inquiry committed"));        
     }
         
     /***
@@ -139,16 +138,16 @@ public class UserController {
      */
     @RequestMapping(value = "/hireInquiry", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @PreAuthorize("hasAuthority('SEARCH_FOR_WORKERS')")
-    public ResponseEntity<?> hireInquiry(@RequestBody int inquiryId)
+    public ResponseEntity<?> hireInquiry(@RequestParam int inquiryId)
     {
         SecureUserDetails secUser = UserService.getAutenticatedUser();        
         try {
              userService.hireInquiry(secUser.getId(), inquiryId);
         }
         catch(PermissionDeniedDataAccessException | Error e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message" ,e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Work Inquiry hired");        
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message" ,"Work Inquiry hired"));        
     }
     
     /***
@@ -158,16 +157,16 @@ public class UserController {
      */
     @RequestMapping(value = "/cancelInquiry", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @PreAuthorize("hasAuthority('SEARCH_FOR_WORKERS')")
-    public ResponseEntity<?> cancelInquiry(@RequestBody int inquiryId)
+    public ResponseEntity<?> cancelInquiry(@RequestParam int inquiryId)
     {
         SecureUserDetails secUser = UserService.getAutenticatedUser();        
         try {
             userService.cancelInquiry(secUser.getId(), inquiryId);
         }
         catch(PermissionDeniedDataAccessException | Error e) {
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message" ,e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Work Inquiry cancelled");        
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message" ,"Work Inquiry cancelled"));        
     }
     
     /***
@@ -183,7 +182,7 @@ public class UserController {
             return ResponseEntity.ok( userService.getWorkInquirySentByUser(secUser.getId(), true));
         }
         catch(PermissionDeniedDataAccessException | Error e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message" ,e.getMessage()));
         }
         
     }

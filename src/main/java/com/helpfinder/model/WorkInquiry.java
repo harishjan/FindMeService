@@ -69,7 +69,7 @@ public class WorkInquiry {
      * Gets the committed status from the worker
      *@return boolean  committed status 
      * */
-    public boolean hasWorkCommited() {
+    public boolean getIsCommited() {
         return isCommitted;
     }
     

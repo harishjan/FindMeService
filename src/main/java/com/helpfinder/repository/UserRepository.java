@@ -70,11 +70,26 @@ public interface UserRepository<T extends User> {
     public void addWorkInquiry(WorkInquiryRequest inquiryRequest) throws RepositoryCreationException;
     //get all inquiries sent to a worker
     public List<WorkInquiry> getWorkInquirySentToWorkerId(long fromHelpUserId, long toWorkUserId, boolean fetchFullUserDetails ) throws RepositoryCreationException;
-    public void hireInquiry(long helpFinderUserId, long WorkInquiryId) throws RepositoryCreationException;
-    public void commitInquiry(long workerUserId, long WorkInquiryId) throws RepositoryCreationException;
+    public void hireInquiry(long helpFinderUserId, long workInquiryId) throws RepositoryCreationException;
+    public void commitInquiry(long workerUserId, long workInquiryId) throws RepositoryCreationException;
+    /***
+     * Gets the work inquiry for the from helpuser to  another worker,
+     */
     public WorkInquiry getWorkInquiryByInquiryId(long workInquiryId, long helpFinderUserId )throws RepositoryCreationException ;
     public void cancelInquiry(long helpFinderUserId, long WorkInquiryId) throws RepositoryCreationException;
-    public List<WorkInquiry> getWorkInquiryReceivedByUser(long workUserId, boolean fetchFullUserDetails ) throws RepositoryCreationException; 
+    /***
+     * Gets the work inquiry received by a user
+     * fetchFullUserDetails when set true will return all the user details of worker and the helpfinder user
+     */
+    public List<WorkInquiry> getWorkInquiryReceivedByUser(long workUserId, boolean fetchFullUserDetails ) throws RepositoryCreationException;
+
+    /***
+     * * gets the total work inquires sent by a user to another work user
+     * @param helpFinderUserId
+     * @param WorkInquiryId
+     * @return int the total count
+     */
+    public int getTotalInquires(long helpFinderUserId, long workUserId) throws RepositoryCreationException;
     /***
      * gets all work inquiry sent by user     * 
      * @param helpFinderUserId

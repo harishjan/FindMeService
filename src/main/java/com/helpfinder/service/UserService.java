@@ -7,13 +7,11 @@
  */
 
 package com.helpfinder.service;
-import static org.mockito.ArgumentMatchers.anyCollection;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +41,6 @@ import com.helpfinder.model.request.WorkInquiryRequest;
 import com.helpfinder.repository.LocationServiceRepository;
 import com.helpfinder.repository.UserRepository;
 import com.helpfinder.repository.WorkerSkillRepository;
-
-import ch.qos.logback.core.filter.Filter;
 
 @Service
 public class UserService<T extends BasicUser> {
@@ -235,13 +231,17 @@ public class UserService<T extends BasicUser> {
             List<WorkInquiry> inquiries = userRepo.getWorkInquirySentToWorkerId(inquiryRequest.getHelpFinderUserId(), inquiryRequest.getWorkerUserId(), false);
             if(inquiries != null && inquiries.size() > 0) {
                 // checking if there is already an inquiry 
-                if(inquiries.stream().filter(x -> x.getIsCancelled() == false && x.getWorkEndDate().after(DateFormatter.getDateNow())).count() > 0) {
-                    throw new Error("There is already a work inquiry sent to this user, cancel if the inquire is not required");
+                if(inquiries.stream().filter(x -> x.getIsCancelled() == false && (DateFormatter.compareDatePart(x.getWorkEndDate(), DateFormatter.getDateNow()) >=0)).count() > 0) {
+                    throw new Error("There is already a work inquiry sent to this user, cancel the existing inquire if not required");
                 }
-                //dates should be valid
-                if(inquiryRequest.getWorkEndDate().before(DateFormatter.getDateNow()) && inquiryRequest.getWorkStartDate().before(DateFormatter.getDateNow())) {
-                    throw new Error("The date for hiring should be in the future");
-                }
+               
+            }
+            //dates should be valid
+            if(DateFormatter.compareDatePart(inquiryRequest.getWorkEndDate(), DateFormatter.getDateNow()) <=0 || 
+                    DateFormatter.compareDatePart(inquiryRequest.getWorkStartDate() ,DateFormatter.getDateNow()) <= 0 ||
+                    DateFormatter.compareDatePart(inquiryRequest.getWorkStartDate() ,inquiryRequest.getWorkEndDate()) > 0
+                    ) {
+                throw new Error("The date for hiring should be in the future and the hiring start date cannot be after hiring end date");
             }
             userRepo.addWorkInquiry(inquiryRequest);
         }catch(RepositoryCreationException ex){
@@ -371,8 +371,8 @@ public class UserService<T extends BasicUser> {
             List<WorkInquiry> inquiries = userRepo.getWorkInquiryReceivedByUser(workUserId, fetchFullUserDetails);
             //inquiry dates should be valid
             if(inquiries != null && inquiries.size() > 0) {
-                inquiries = inquiries.stream().filter(x -> x.getWorkEndDate().before(DateFormatter.getDateNow()) || 
-                        x.getWorkStartDate().before(DateFormatter.getDateNow())).collect(Collectors.toList());
+                inquiries = inquiries.stream().filter(x -> x.getWorkEndDate().after(DateFormatter.getDateNow()) || 
+                        x.getWorkStartDate().after(DateFormatter.getDateNow())).collect(Collectors.toList());
             }
             return inquiries;
         }catch(RepositoryCreationException ex){
@@ -397,8 +397,8 @@ public class UserService<T extends BasicUser> {
             List<WorkInquiry> inquiries = userRepo.getWorkInquirySentByUser(helpFinderUserId, fetchFullUserDetails);
             //inquiry dates should be valid
             if(inquiries != null && inquiries.size() > 0) {
-                inquiries = inquiries.stream().filter(x -> x.getWorkEndDate().before(DateFormatter.getDateNow()) || 
-                        x.getWorkStartDate().before(DateFormatter.getDateNow())).collect(Collectors.toList());
+                inquiries = inquiries.stream().filter(x -> x.getWorkEndDate().after(DateFormatter.getDateNow()) || 
+                        x.getWorkStartDate().after(DateFormatter.getDateNow())).collect(Collectors.toList());
             }
             return inquiries;
         }catch(RepositoryCreationException ex){

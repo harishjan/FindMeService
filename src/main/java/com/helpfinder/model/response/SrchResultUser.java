@@ -4,19 +4,19 @@ import com.helpfinder.model.BasicUser;
 
 // response object for the skill search result
 public class SrchResultUser {
-    private double distanceFromUsersLocation;
+    private double distanceFoundAwayfrom;
     private BasicUser user;
-    public SrchResultUser(double distanceFromUsersLocation, BasicUser user) {
-        this.distanceFromUsersLocation = distanceFromUsersLocation;
+    public SrchResultUser(double distanceFoundAwayfrom, BasicUser user) {
+        this.distanceFoundAwayfrom = distanceFoundAwayfrom;
         this.user = user; 
     }
     
-    public void setDistanceFromUsersLocation(double distanceFromUsersLocation) {
-        this.distanceFromUsersLocation = distanceFromUsersLocation;
+    public void setDistanceFoundAwayfrom(double distanceFoundAwayfrom) {
+        this.distanceFoundAwayfrom = distanceFoundAwayfrom;
     }
     
-    public double getDistanceFromUsersLocation() {
-        return this.distanceFromUsersLocation;
+    public double getDistanceFoundAwayfrom() {
+        return this.distanceFoundAwayfrom;
     }
     
     public void setUser(BasicUser user) {

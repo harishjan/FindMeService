@@ -63,9 +63,7 @@ public class SqliteWorkForceLocatorRepository<T extends BasicUser> implements Wo
            //convert lat long to cosine and sine values and create the query.
            String sqlQuery = getDistanceQuery(mileRadius, WorkForceLocatorRepository.getCosRadians( latLong[0]) , WorkForceLocatorRepository.getSinRadians(latLong[0])
                          , WorkForceLocatorRepository.getCosRadians(latLong[1]), WorkForceLocatorRepository.getSinRadians(latLong[1]), skills);
-        List<T> match = new ArrayList<>();
-        match.add((T)userRepo.getUser(2));
-        
+       
         
         try
         {

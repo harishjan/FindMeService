@@ -19,10 +19,28 @@ These are the following packages in the project
 1) User Repository is hooked up Sqlite db and it is working now, the sqlite db is is part of the project folder</br>
 2) Swagger: Auth api functionality is implemented for user registration and signin, this can be verify through swagger</br>
 3) Jwt Bearer token implementation is also complete.</br>
-4) Login and search functionality is working from UI</br>
-5) To test login use this email password which is already registered in the system></br>  {"email": "test8@gmail.com",  "password": "Test5@1234"}
-6) for search functionalti there is a default lat long value which will pull some pre-registered users, which can also be tested from swagger endpoint /skill/search with request body >> <{"searchQuery":"handyman","mileRadius":5,"userLat":"40.5757637023926","userLong":"-74.3618087768555"}</br>
-</br>
+4) Login, search and work request flow is working now, location lat long is hard coded only in UI, the back is completely working</br>
+5) To test login use this email password which is already registered in the system</br>  
+    
+    This is a worker user:
+    Email: davidspellman@gmail.com
+    Password: Test5@1234
+    
+    Email: This is a normal help finder user:
+    test8897ch@gmail.com
+    Password: Test5@1234
+6) For search functionality there is a default lat long value which will pull some pre-registered users, this done only for demo, otherwise if we have proper user data the search should return result with lat long radius.
+
+#####Details of testing Assignment 6 using JUnit####
+Run below test in >> WorkforceLocatorServiceTest.java</br>
+All data is mocked using mockito framework
+
+>> test_findWorder_within_1_mile()
+>> >> test_findWorder_within_1_mile()()()
+>> test_Commit_Hire_cancel_WorkInquiry()
+>> test_getInquiriesSent()
+>> test_getInquiriesReceived()
+ 
 
 #####Details about Assignment 5####
 The code to demonstrate concurrency is based on a hypothetical  scenario.</br>

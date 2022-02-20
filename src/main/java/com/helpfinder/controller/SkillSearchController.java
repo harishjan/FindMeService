@@ -10,7 +10,7 @@ package com.helpfinder.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -71,7 +71,7 @@ public class SkillSearchController {
         }
         catch(Exception ex){
             System.err.println("Invalid UserName or Password " + ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No Search results");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message" ,"No Search results"));
         }
     }
 }

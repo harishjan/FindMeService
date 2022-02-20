@@ -9,6 +9,7 @@
 
 package com.helpfinder.controller;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -96,7 +97,7 @@ public class AuthController {
        }
        catch(BadCredentialsException | UsernameNotFoundException  ex){
            System.err.println("Invalid UserName or Password " + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid UserName or Password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message" ,"Invalid UserName or Password"));
     }
   }
 
@@ -116,7 +117,7 @@ public class AuthController {
    * @param signUpRequest the request with the details required for sign-up
    * @return BasicUser the instance of user if successful
    */
-  @PostMapping("/signup/registerWorker/")
+  @PostMapping("/registerWorker")
   public ResponseEntity<?> registerWorker(@Valid @RequestBody SignupRequest signUpRequest) {
        return registerUser(signUpRequest, EUserType.ROLE_WORKER_USER);    
   }
@@ -176,7 +177,7 @@ public class AuthController {
            
            }
 
-           return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+           return ResponseEntity.ok(Map.of("message" ,"User registered successfully!"));
   }
   
 }
