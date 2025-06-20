@@ -49,11 +49,11 @@ FindMeService is a RESTful API built with Spring Boot for connecting users seeki
 ## Default Users for Testing
 
 - Worker:
-  - Email: <davidspellman@gmail.com>
-  - Password: Test5@1234
+  - Email: <user some email>
+  - Password: some password
 - Help Finder:
-  - Email: <test8897ch@gmail.com>
-  - Password: Test5@1234
+  - Email: <user some email>
+  - Password: some password
 
 ## Testing
 
