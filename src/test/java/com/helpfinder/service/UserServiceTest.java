@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   verify all user service functionalities
  * @author  Harish Janardhanan * 
@@ -9,16 +9,16 @@ package com.helpfinder.service;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-
 import javax.sql.DataSource;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

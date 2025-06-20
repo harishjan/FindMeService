@@ -1,6 +1,6 @@
 
 /*
- * BU Term project for cs622
+ 
  
   This class implements the functionality required to create a sqllite repo
  * @author  Harish Janardhanan * 
@@ -16,6 +16,7 @@ import java.util.function.Function;
 
 import javax.sql.DataSource;
 import javax.transaction.NotSupportedException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

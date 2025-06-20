@@ -1,37 +1,105 @@
-# HelpFinder 
+# FindMeService
+
+FindMeService is a RESTful API built with Spring Boot for connecting users seeking help with available workers. It uses a SQLite database and provides authentication, JWT-based authorization, and a search system for finding workers by location and skill.
+
+## Key Features
+
+- User registration and login with JWT authentication
+- Worker and help-seeker user roles
+- Search for workers by location (lat/long) and skill
+- Site review and feedback system
+- RESTful API endpoints (see Swagger UI)
+- JUnit and Mockito-based unit tests
+
+## Tech Stack
+
+- Java 8
+- Spring Boot 2.6.2
+- Maven
+- SQLite
+- Swagger/OpenAPI
+
+## Project Structure
+
+- `com.helpfinder`: Main Spring Boot application
+- `com.helpfinder.model`: Data models
+- `com.helpfinder.repository`: Data access repositories
+- `com.helpfinder.service`: Business logic/services
+- `com.helpfinder.controller`: API controllers
+- `com.helpfinder.exception`: Custom exceptions
+- `com.helpfinder.model.request`: API request models
+
+## Database
+
+- SQLite database (`helpfinder.db`)
+- Schema and sample data in `createdb.sql` and `data.sql`
+
+## How to Run
+
+1. Ensure Java 8 and Maven are installed.
+2. Build and run the project with Maven:
+
+   ```
+   ./mvnw spring-boot:run
+   ```
+
+3. Access the API at `http://localhost:8098/api`
+4. Swagger UI available at `/swagger-ui.html`
+
+## Default Users for Testing
+
+- Worker:
+  - Email: <davidspellman@gmail.com>
+  - Password: Test5@1234
+- Help Finder:
+  - Email: <test8897ch@gmail.com>
+  - Password: Test5@1234
+
+## Testing
+
+- JUnit tests in `src/test/java/com/helpfinder`
+- Example: `WorkforceLocatorServiceTest.java`
+
+---
+
+# Original Notes
 
 ### Guides
+
 This project is work in progress to run as RESTful api using springboot framework
 NOTE:
 This project is coded to run with java runtime version 8
 THis project requires MAVEN version 2.6.2
 
 These are the following packages in the project
-* com.helpfinder: which contains the the spring boot application where the spring boot is begins the application.
-* com.helpfinder.model: which contains all model classes used in the project
-* com.helpfinder.repository: which contains all repos which connect to the respective data sources to add update delete data points.
-* com.helpfinder.service: which contains all services through which different functionalities are exposed outside.
-* com.helpfinder.controller: which contains controllers for the api endpoints.
-* com.helpfinder.exception: which contains the user defined exceptions
-* com.helpfinder.model.request: which contains the model used in a api request 
 
-###Notes
+- com.helpfinder: which contains the the spring boot application where the spring boot is begins the application.
+- com.helpfinder.model: which contains all model classes used in the project
+- com.helpfinder.repository: which contains all repos which connect to the respective data sources to add update delete data points.
+- com.helpfinder.service: which contains all services through which different functionalities are exposed outside.
+- com.helpfinder.controller: which contains controllers for the api endpoints.
+- com.helpfinder.exception: which contains the user defined exceptions
+- com.helpfinder.model.request: which contains the model used in a api request
+
+### Notes
+
 1) User Repository is hooked up Sqlite db and it is working now, the sqlite db is is part of the project folder</br>
 2) Swagger: Auth api functionality is implemented for user registration and signin, this can be verify through swagger</br>
 3) Jwt Bearer token implementation is also complete.</br>
 4) Login, search and work request flow is working now, location lat long is hard coded only in UI, the back is completely working</br>
 5) To test login use this email password which is already registered in the system</br>  
-    
+
     This is a worker user:
-    Email: davidspellman@gmail.com
+    Email: <davidspellman@gmail.com>
     Password: Test5@1234
-    
+
     Email: This is a normal help finder user:
-    test8897ch@gmail.com
+    <test8897ch@gmail.com>
     Password: Test5@1234
 6) For search functionality there is a default lat long value which will pull some pre-registered users, this done only for demo, otherwise if we have proper user data the search should return result with lat long radius.
 
-#####Details of testing Assignment 6 using JUnit####
+##### Details of testing Assignment 6 using JUnit ####
+
 Run below test in >> WorkforceLocatorServiceTest.java</br>
 All data is mocked using mockito framework
 
@@ -40,9 +108,9 @@ All data is mocked using mockito framework
 >> test_Commit_Hire_cancel_WorkInquiry()
 >> test_getInquiriesSent()
 >> test_getInquiriesReceived()
- 
 
-#####Details about Assignment 5####
+##### Details about Assignment 5 ####
+
 The code to demonstrate concurrency is based on a hypothetical  scenario.</br>
 In this example a system is provided with a list of Jobs in text file where there will be following details:</br>
 JobId: the id of the job</br>
@@ -64,7 +132,9 @@ E.g.: Worker input file looks like this:</br>
 1 Worker1 5</br>
 2 Worker2 9</br>
 </br>
-###To run unit test for Assignment 5 using junit##
+
+### To run unit test for Assignment 5 using junit ##
+
 Run below test in >> JobAllocationProcessTest.java</br>
 >> test_AllTheJobsAreGettingProcessed()</br>
 
@@ -98,14 +168,12 @@ Worker Peter earned 2.900 $ in total </br>
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</br>
 </br>
 
-###To Run the tests for assignment 4 using JUnit :###
+### To Run the tests for assignment 4 using JUnit ###
 
 Run below test in >> SiteReviewsRepositoryTest.java</br>
+
 1) test_Create_SiteReview_AsStream_and_check_StreamisSerialized_Properly()</br>
 2) test_Create_SiteReviewStream_Archive_And_Check_if_Review_Exist()</br>
-
-
-
 
 The output should look like below</br> and the persisted stream file should be in "test\reviewsstream "folder
 
@@ -174,13 +242,10 @@ ReviewedDate</br>
 Review serialized and archived successfully</br>
 Review with title big title2022/02/07 18:15:37.4076 not found after archiving </br>
 
-
-
-###To Run the tests for assignment 3 using JUnit and Mockito framework :###
+### To Run the tests for assignment 3 using JUnit and Mockito framework ###
 
 Run below test in >> UserServiceTest.java
 Test method test_getUserByEamil_checkif_genericType_returnsthe_CorrectPermission_based_onUsertype()
-
 
 The output should look like below to verify the permission returned by different types of users</br>
 +++++++++++++++++Test running for generics+++++++++++++++++++++++</br>
@@ -200,11 +265,11 @@ UserService returning a moderator user</br>
 ARCH_SITE_FEEDBACK, REVIEW_SITE_FEEDBACK, SEARCH_FOR_WORKERS, permission found for moderator user</br>
 Remaining permission not found for moderator user</br>
 +++++++++++++++++++End of generics tests+++++++++++++++++++++++++</br>
-###To Run the tests for assignment 3 using JUnit and Mockito framework :###
+
+### To Run the tests for assignment 3 using JUnit and Mockito framework ###
 
 Run below test in >> UserServiceTest.java
 Test method test_getUserByEamil_checkif_genericType_returnsthe_CorrectPermission_based_onUsertype()
-
 
 The output should look like below to verify the permission returned by different types of users</br>
 +++++++++++++++++Test running for generics+++++++++++++++++++++++</br>
@@ -226,25 +291,31 @@ Remaining permission not found for moderator user</br>
 +++++++++++++++++++End of generics tests+++++++++++++++++++++++++</br>
 
 ### Swagger UI ###
-To access swagger 
-* Run >> mvn spring-boot:run
-* On a web browser access>> http://localhost:8099/api/swagger-ui/index.html
-* auth-controller : /auth/* apis are implemented and can be tested via swagger
 
-### Admin user cred in the db is###
-email : adminuser@gmail.com
+To access swagger
+
+- Run >> mvn spring-boot:run
+- On a web browser access>> <http://localhost:8099/api/swagger-ui/index.html>
+- auth-controller : /auth/* apis are implemented and can be tested via swagger
+
+### Admin user cred in the db is ###
+
+email : <adminuser@gmail.com>
 password: admin123
 
-### Worker user cred in the db is###
-email: testworkuser@gmail.com
+### Worker user cred in the db is ###
+
+email: <testworkuser@gmail.com>
 password: testuser1
 
-### helpfinder user cred in the db is###
-email: helpfinder@gmail.com
+### helpfinder user cred in the db is ###
+
+email: <helpfinder@gmail.com>
 password: testuser1
 
-### moderator user cred in the db is###
-email: moderatoruser@gmail.com,
+### moderator user cred in the db is ###
+
+email: <moderatoruser@gmail.com>,
 password: mod123
 
 ### How to test the use cases for Assignment 2 ###
@@ -279,20 +350,17 @@ The folder test/reviews/arch/ will have the archived files once review is archiv
 2) For User defined exception, run unit test UserServiceTest.java
 The unit test case check if the UserExistException is throw while creating an already existing user
 
-
-
 Following controllers are exposed[JWT token implementation is not complete]
+
 1) site-review-controller - site review flow functionality is implemented through this controller.
 2) user-controller - [DUMMY DATA]user basic operations are in this controller
 3) auth-controller - [IMPLEMENTATION not complete]
 
-
 ### How to test The use cases for Assignment 1 ###
 
-
-* open command prompt and Navigate to helpfinder\ project folder
-* RUN > mvn clean install
-* RUN > mvn compile exec:java -Dexec.mainClass="com.helpfinder.TestSkillFinder"
+- open command prompt and Navigate to helpfinder\ project folder
+- RUN > mvn clean install
+- RUN > mvn compile exec:java -Dexec.mainClass="com.helpfinder.TestSkillFinder"
 
 We should see a section similar to this in the output:
 +++++++++ BEGINING USE CASE 1 TESTS +++++++++++++++
@@ -310,26 +378,53 @@ The User Id is 1642459563305
 
 +++++++++ END USE CASE 1 TEST +++++++++++++++
 
-
 +++++++++ BEGINING USE CASE 2 TESTS +++++++++++++++
 
 Searching for users with in 1 mile..
 1 matching user found, and now sending work request to the user
 
-Email Sent requesting Work from waltDavid@test.com to user mattm@test.com >>
+Email Sent requesting Work from <waltDavid@test.com> to user <mattm@test.com> >>
  Work start date: Mon Jan 17 end date: Wed Jan 19
 
 Executing logic to commit a work
 
-Email sent to waltDavid@test.com informing that user mattm@test.com committed the work
+Email sent to <waltDavid@test.com> informing that user <mattm@test.com> committed the work
 
 Executing logic to hire the work
 
-Email sent to mattm@test.com informing that the waltDavid@test.com has hired the user for the work
+Email sent to <mattm@test.com> informing that the <waltDavid@test.com> has hired the user for the work
 
 +++++++++ END USE CASE 2 TESTS +++++++++++++++
 
-###Directly run the test from eclipse
+### Directly run the test from eclipse
 
 Test can be directly run from the eclipse if required by executing the test file >> com.helpfinder.TestSkillFinder.java
 Unit test can be directly run from eclipse or by running mvn test
+
+## Security and Configuration
+
+### JWT Secret Key
+
+- The JWT secret key is set in `src/main/resources/application.properties` as:
+
+  ```properties
+  com.helpfinder.jwtSecret=your_secret_key_here
+  ```
+
+- **Important:** For security, you should change the value of `com.helpfinder.jwtSecret` to a strong, unique secret before deploying or sharing your code. Do not use the default or example value in production.
+- You can also set this value using an environment variable or external configuration for better security.
+
+### Database Setup
+
+- The application uses a SQLite database by default (`helpfinder.db`).
+- Database connection settings are in `src/main/resources/application.properties`:
+
+  ```properties
+  db.url=jdbc:sqlite:helpfinder.db
+  db.username=your_db_username
+  db.password=your_db_password
+  ```
+
+- **Update the `db.username` and `db.password` values** as needed for your environment. The default values are `sa` for both, but you should change these for production or if you use a different database.
+- Make sure to update the username and password wherever they are referenced in the codebase if you change them.
+- The database schema and sample data are provided in `createdb.sql` and `data.sql`.

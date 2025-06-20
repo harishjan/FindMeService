@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This class will use openstreet map apis to expose functionality related to users location
   // the code reference is taken from http://julien.gunnm.org/geek/programming/2015/09/13/how-to-get-geocoding-information-in-java-without-google-maps-api/
@@ -12,9 +12,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import org.json.simple.JSONValue;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.springframework.stereotype.Component;
 
 //This class user open street map to expose location related features

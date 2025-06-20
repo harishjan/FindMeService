@@ -1,6 +1,5 @@
 
-/*
- * BU Term project for cs622
+/* 
 This class is used to notify a a invalid password 
  * @author  Harish Janardhanan * 
  * @since   07-Feb-2022

@@ -1,7 +1,7 @@
 
 
 /*
- * BU Term project for cs622
+ 
  
   This class implements the functionality required for AuthenticationProvider to validate user name and passowrd
  * @author  Harish Janardhanan * 

@@ -1,6 +1,6 @@
 
 /*
- * BU Term project for cs622
+ 
  
      This class tells Hibernate how SQLite handles @Id columns, 
  * @author  Harish Janardhanan * 

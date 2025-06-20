@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
  interface to implement with functionality to send Notification to users using different channels
  * @author  Harish Janardhanan * 

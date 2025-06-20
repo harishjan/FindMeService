@@ -1,6 +1,5 @@
 
-/*
- * BU Term project for cs622
+/* 
  
 Site review related functionalities are expose through this controller
  * @author  Harish Janardhanan * 

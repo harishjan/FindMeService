@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This interface is the implementation to manage work skills
   

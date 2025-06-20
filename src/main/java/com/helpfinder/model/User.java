@@ -1,5 +1,4 @@
-/*
- * BU Term project for cs622
+/* 
  
   This class is used to store the information of a process  
  * @author  Harish Janardhanan * 

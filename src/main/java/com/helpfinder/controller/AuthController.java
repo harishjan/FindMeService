@@ -1,6 +1,5 @@
 
-/*
- * BU Term project for cs622
+/* 
  
  This class is used for exposing the apis required for User authentication and registration   
  * @author  Harish Janardhanan * 

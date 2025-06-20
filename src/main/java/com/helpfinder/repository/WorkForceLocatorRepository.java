@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This interface is the implementation for the data access layer to detect the works  based on different criterias
   
@@ -79,4 +79,3 @@ public interface WorkForceLocatorRepository<T extends BasicUser> {
     }
     
 }
-

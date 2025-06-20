@@ -1,32 +1,35 @@
 /*
- * BU Term project for cs622
+ 
  
   Test class to verify UserRepository
  * @author  Harish Janardhanan * 
  * @since   16-jan-2022
  */
 package com.helpfinder.repository;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+
 import com.helpfinder.exception.UserExistException;
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.EUserType;
 import com.helpfinder.model.HelpFinderUser;
 import com.helpfinder.model.WorkerSkill;
 import com.helpfinder.model.WorkerUser;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 @TestInstance(Lifecycle.PER_CLASS)
 //Test class to verify UserRepository

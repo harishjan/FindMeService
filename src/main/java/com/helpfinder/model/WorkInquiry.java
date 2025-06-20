@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This class is used to store the Work inquiries made by users
  * @author  Harish Janardhanan * 

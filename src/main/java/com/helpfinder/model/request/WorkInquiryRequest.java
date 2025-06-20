@@ -1,6 +1,6 @@
     
 /*
- * BU Term project for cs622
+ 
  
   This class is used to sent a workInquiryRequest
  * @author  Harish Janardhanan * 

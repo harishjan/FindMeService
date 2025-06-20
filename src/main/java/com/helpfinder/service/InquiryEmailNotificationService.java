@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
  Functionalities to send email notification to users for inquiries are implemented in this class
  * @author  Harish Janardhanan * 

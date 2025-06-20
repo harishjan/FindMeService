@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   Test class to verify workforcelocator service
  * @author  Harish Janardhanan * 
@@ -8,16 +8,19 @@
 package com.helpfinder.service;
 
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,11 +57,6 @@ import com.helpfinder.repository.OpenstreetMapLocationRepository;
 import com.helpfinder.repository.SQLiteUserRepository;
 import com.helpfinder.repository.SqliteWorkForceLocatorRepository;
 import com.helpfinder.repository.SqlliteRepository;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.any;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class WorkforceLocatorServiceTest {

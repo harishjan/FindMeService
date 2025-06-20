@@ -1,6 +1,5 @@
 
-/*
- * BU Term project for cs622
+/* 
  
  User related information is accessed through this controller
  * @author  Harish Janardhanan * 

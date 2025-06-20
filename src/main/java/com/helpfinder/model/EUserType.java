@@ -1,6 +1,5 @@
 
-/*
- * BU Term project for cs622
+/* 
  
  This is the enum which define the user type  
  * @author  Harish Janardhanan * 
@@ -33,4 +32,3 @@ public enum EUserType {
                 return Optional.of(nameToValueMap.get(name));
             }
 }
-

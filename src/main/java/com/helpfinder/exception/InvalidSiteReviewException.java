@@ -1,5 +1,4 @@
-/*
- * BU Term project for cs622
+/* 
 This class is used to notify a site review is invalid 
  * @author  Harish Janardhanan * 
  * @since   23-Jan-2022

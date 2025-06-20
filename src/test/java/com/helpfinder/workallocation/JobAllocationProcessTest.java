@@ -1,6 +1,6 @@
 package com.helpfinder.workallocation;
 /*
- * BU Term project for cs622
+ 
  
   Test class to verify joballocationprocessor
  * @author  Harish Janardhanan * 

@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This class implements methods used manage site reviews
  * @author  Harish Janardhanan * 
@@ -29,10 +29,9 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
-
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.apache.commons.io.comparator.LastModifiedFileComparator;
 
 import com.helpfinder.common.DateFormatter;
 import com.helpfinder.exception.InvalidSiteReviewException;
@@ -306,4 +305,3 @@ public class CoreSiteReviewsRepository implements SiteReviewsRepository{
     }
 
 }
-

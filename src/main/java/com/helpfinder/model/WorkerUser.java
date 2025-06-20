@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   Concrete class which is the worker user in the system, the method setUserInformation is overloaded here to accept users skills
 

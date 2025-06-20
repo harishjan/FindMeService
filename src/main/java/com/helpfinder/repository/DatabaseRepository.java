@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This interface defines the functionalities required for a database repository
  * @author  Harish Janardhanan * 
@@ -7,7 +7,10 @@
  */
 package com.helpfinder.repository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 

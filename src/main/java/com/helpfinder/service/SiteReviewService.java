@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
  Functionalities to submit and review the site feedbacks are exposed through this class
  * @author  Harish Janardhanan * 
@@ -8,6 +8,7 @@
 
 package com.helpfinder.service;
 
+import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.List;
 

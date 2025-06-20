@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This class is the data access layer to get work force location related functionalities using sqlite as the db
   
@@ -12,15 +12,17 @@ package com.helpfinder.repository;
 import java.security.InvalidParameterException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.naming.directory.InvalidAttributesException;
+
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.core.RepositoryCreationException;
 import org.springframework.stereotype.Component;
+
 import com.helpfinder.model.BasicUser;
 import com.helpfinder.model.WorkInquiry;
 

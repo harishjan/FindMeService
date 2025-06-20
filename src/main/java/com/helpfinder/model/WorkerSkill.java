@@ -1,5 +1,4 @@
-/*
- * BU Term project for cs622
+/* 
  
   This class the different skills used in the system which can be associated with a WorkUser
  * @author  Harish Janardhanan * 

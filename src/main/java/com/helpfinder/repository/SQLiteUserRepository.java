@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This class implements the sqlite data access layer for access user related information
  * @author  Harish Janardhanan * 

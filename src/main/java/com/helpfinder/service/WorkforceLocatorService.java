@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This class gives the functionality to find work force and the skills that are available in the market
   Use this class as a singleton instance

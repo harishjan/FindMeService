@@ -1,6 +1,5 @@
 
-/*
- * BU Term project for cs622
+/* 
  
  This class stores the information of a site review  
  * @author  Harish Janardhanan * 

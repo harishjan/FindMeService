@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   Test class to verify SiteReviewsRepository
  * @author  Harish Janardhanan * 
@@ -9,11 +9,13 @@ package com.helpfinder.repository;
 
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

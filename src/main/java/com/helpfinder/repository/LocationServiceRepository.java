@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This interface is the implementation for the data access layer to location specific functionalities
   

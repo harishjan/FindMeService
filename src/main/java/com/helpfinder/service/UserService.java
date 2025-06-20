@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
   This class defines the functionalities required to manage Users
  * @author  Harish Janardhanan * 

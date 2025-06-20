@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
      Hibernate doesn't ship with a Dialect for SQLite. This the custom implementation
      reference taken from https://fullstackdeveloper.guru/2020/05/01/how-to-integrate-sqlite-database-with-spring-boot/

@@ -1,5 +1,4 @@
-/*
- * BU Term project for cs622
+/* 
  
  This class implements user interface which is the base class for any other basic user types like worker user and help finder users in this system
   This class is used used to define common functionalities in all user types  

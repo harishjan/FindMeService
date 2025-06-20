@@ -1,6 +1,6 @@
 
 /*
- * BU Term project for cs622
+ 
  
   Unit test for HelpFinderUser
   

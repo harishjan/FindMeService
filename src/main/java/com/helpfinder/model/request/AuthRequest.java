@@ -1,5 +1,5 @@
 /*
- * BU Term project for cs622
+ 
  
  This class stores the authentication request data  
  * @author  Harish Janardhanan * 
